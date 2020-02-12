@@ -1,10 +1,10 @@
 {
   "compilerOptions": {
     "strict": true,
-    "module": "commonjs",
+    "module": "ESNext",
     "esModuleInterop": true,
     "experimentalDecorators": true,
-    "sourceMap": true,
+    "noEmit": true,
     "allowJs": true,
     "lib": [
       "es6",

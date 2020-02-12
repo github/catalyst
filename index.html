@@ -1,11 +1,18 @@
-<hello-controller>
-  <input data-target="hello.name" type="text" />
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+  </head>
+  <body>
+    <hello-controller>
+      <input data-target="HelloController.nameTarget" type="text" />
 
-  <button data-action="click->hello#greet">
-    Greet
-  </button>
+      <button data-action="click->HelloController#greet">
+        Greet
+      </button>
 
-  <span data-target="hello.output"> </span>
-</hello-controller>
-<script src="index.js"></script>
-
+      <span data-target="HelloController.outputTarget"> </span>
+    </hello-controller>
+    <script src="dist/index.js"></script>
+  </body>
+</html>

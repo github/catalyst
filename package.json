@@ -11,6 +11,10 @@
     "javascript"
   ],
   "devDependencies": {
+    "@rollup/plugin-typescript": "^3.0.0",
+    "rollup": "^1.31.0",
+    "systemjs": "^6.2.2",
+    "tslib": "^1.10.0",
     "typescript": "^3.7.5"
   }
 }
