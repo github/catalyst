@@ -40,29 +40,14 @@ function target(proto, propertyKey) {
   });
 }
 
-function attribute(proto, propertyKey) {
-  Object.defineProperty(proto, propertyKey, {
-    get() {
-      console.log('get attribute', propertyKey, this)
-      return this.getAttribute("data-" + propertyKey);
-    },
-    set(value) {
-      return this.setAttribute("data-" + propertyKey, value);
-    }
-  });
-}
-
-
 /********************************************************************/
 
 @controllerElement
 class Hello extends HTMLElement {
-  @target input = HTMLInputElement;
+  @target name = HTMLInputElement;
   @target output = HTMLElement;
 
-  @attribute name = "World";
-
   greet() {
-    this.outputTarget.textContent = `Hello, ${this.inputTarget.value}!`;
+    this.outputTarget.textContent = `Hello, ${this.nameTarget.value}!`;
   }
 }
