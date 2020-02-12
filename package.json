@@ -1,0 +1,16 @@
+{
+  "name": "vanilla-ts",
+  "version": "1.0.0",
+  "description": "JavaScript and TypeScript example starter project",
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {},
+  "keywords": [
+    "typescript",
+    "javascript"
+  ],
+  "devDependencies": {
+    "typescript": "^3.7.5"
+  }
+}
