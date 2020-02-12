@@ -11,8 +11,15 @@ export function bind(classObject: any) {
     if (oldConnectedCallback) oldConnectedCallback.call(this)
     for(const el of this.querySelectorAll('[data-action]')) {
       for (const [eventName, ref, method] of bindings(el.getAttribute('data-action')||'', classObject.name)) {
-        this.addEventListener(eventName, (event: Event) => {
-          if (event.target === el) this[method](event)
+        let receiver = this
+        let delegate = el
+        if (ref === 'window') {
+          receiver = delegate = window
+        } else if (ref === 'document') {
+          receiver = delegate = document
+        }
+        receiver.addEventListener(eventName, (event: Event) => {
+          if (event.target === delegate) this[method](event)
         })
       }
     }
@@ -32,7 +39,7 @@ export function target(proto: any, propertyKey: string) {
     configurable: true,
     get: function() {
       const target = this.querySelector(
-        `[data-target="${this.constructor.name + "." + propertyKey}"]`
+        `[data-target=*"${this.constructor.name + "." + propertyKey}"]`
       );
       Object.defineProperty(this, propertyKey, {
         value: target,
