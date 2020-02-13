@@ -8,7 +8,8 @@
     "allowJs": true,
     "lib": [
       "es6",
-      "dom"
+      "dom",
+      "dom.iterable"
     ],
     "target": "ES2020",
     "rootDir": "src",

@@ -5,13 +5,18 @@
   </head>
   <body>
     <hello-controller>
-      <input data-target="HelloController.nameTarget" type="text" />
+      <input data-target="hello-controller.nameTarget" type="text" data-action="click:hello-controller#greet"/>
 
-      <button data-action="click->HelloController#greet">
-        Greet
-      </button>
+      <ajax-form>
 
-      <span data-target="HelloController.outputTarget"> </span>
+        <button data-action="click:hello-controller#greet">
+          Greet
+        </button>
+
+        <span data-target="hello-controller.outputTarget"> </span>
+
+      </ajax-form>
+
     </hello-controller>
     <script src="dist/index.js"></script>
   </body>
