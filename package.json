@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "JavaScript and TypeScript example starter project",
   "scripts": {
-    "build": "tsc"
+    "build": "rollup -c rollup.config.ts"
   },
   "dependencies": {},
   "keywords": [
