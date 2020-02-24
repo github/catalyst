@@ -1,19 +1,30 @@
 {
-  "name": "vanilla-ts",
-  "version": "1.0.0",
-  "description": "JavaScript and TypeScript example starter project",
-  "scripts": {
-    "build": "rollup -c rollup.config.ts"
-  },
-  "dependencies": {},
+  "private": true,
   "keywords": [
     "typescript",
     "javascript"
   ],
+  "homepage": "https://github.com/keithamus/catalyst#readme",
+  "bugs": {
+    "url": "https://github.com/keithamus/catalyst/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/keithamus/catalyst.git"
+  },
+  "license": "MIT",
+  "author": "Keith Cirkel (https://keithcirkel.co.uk/)",
+  "contributors": [
+    "Kristján Oddsson <koddsson@gmail.com>"
+  ],
+  "workspaces": [
+    "core/",
+    "decorators/",
+    "site/"
+  ],
   "devDependencies": {
     "@rollup/plugin-typescript": "^3.0.0",
     "rollup": "^1.31.0",
-    "systemjs": "^6.2.2",
     "tslib": "^1.10.0",
     "typescript": "^3.7.5"
   }

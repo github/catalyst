@@ -5,7 +5,7 @@ import {dasherize} from './dasherize'
  * `data-target` element of the same name.
  */
 
-const createSelector = (receiver: Element, key: string) => `[data-target~="${dasherize(receiver.constructor.name) + "." + key}"]`
+const createSelector = (receiver: Element, key: string) => `[data-target*="${receiver.tagName.toLowerCase()}.${key}"]`
 
 export function target(proto: object, key: string) {
   Object.defineProperty(
@@ -14,7 +14,7 @@ export function target(proto: object, key: string) {
     {
       configurable: true,
       get: function() {
-        return this.querySelector(createSelector(this, key))
+        return this.querySelectorAll(createSelector(this, key)).find((el: Element) => el.closest(this.tagName) === this)
       },
     }
   );
@@ -27,7 +27,7 @@ export function targets(proto: object, key: string) {
     {
       configurable: true,
       get: function() {
-        return this.querySelectorAll(createSelector(this, key))
+        return this.querySelectorAll(createSelector(this, key)).filter((el: Element) => el.closest(this.tagName) === this)
       },
     }
   );
