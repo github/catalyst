@@ -1,0 +1,14 @@
+{
+  "name": "@catalyst/core",
+  "version": "1.0.0",
+  "description": "Helpers for creating HTML Elements as Controllers",
+  "license": "MIT",
+  "author": "Keith Cirkel (https://keithcirkel.co.uk/)",
+  "contributors": [
+    "Kristján Oddsson <koddsson@gmail.com>"
+  ],
+  "main": "dist/index.esm.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
