@@ -15,3 +15,9 @@ exclude:
 collections:
   guide:
     output: true
+
+defaults: 
+  - scope:
+      type: guide
+    values:
+      layout: guide
