@@ -4,23 +4,24 @@
     "typescript",
     "javascript"
   ],
-  "homepage": "https://github.com/keithamus/catalyst#readme",
+  "homepage": "https://github.github.io/catalyst",
   "bugs": {
-    "url": "https://github.com/keithamus/catalyst/issues"
+    "url": "https://github.com/github/catalyst/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/keithamus/catalyst.git"
+    "url": "git+https://github.com/github/catalyst.git"
   },
   "license": "MIT",
-  "author": "Keith Cirkel (https://keithcirkel.co.uk/)",
+  "author": "GitHub Inc.",
   "contributors": [
+    "Keith Cirkel (https://keithcirkel.co.uk/)",
     "Kristján Oddsson <koddsson@gmail.com>"
   ],
   "workspaces": [
     "core/",
     "decorators/",
-    "site/"
+    "docs/"
   ],
   "devDependencies": {
     "@rollup/plugin-typescript": "^3.0.0",
