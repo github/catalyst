@@ -1,5 +1,5 @@
 import {bind} from './bind'
 import {register} from './register'
-import {target, targets} from './target'
+import {findTarget, findTargets} from './findtarget'
 
-export {bind, register, target, targets}
+export {bind, register, findTarget, findTargets}

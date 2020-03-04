@@ -5,7 +5,12 @@
  *
  * Example: HelloController => hello-controller
  */
-export function register(classObject: Function) {
+
+interface CustomElement {
+  new(): HTMLElement
+}
+
+export function register(classObject: CustomElement) {
   const name = classObject.name.replace(/([a-zA-Z])(?=[A-Z])/g, '$1-').toLowerCase()
   if (!window.customElements.get(name)) {
     // @ts-ignore
