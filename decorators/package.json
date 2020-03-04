@@ -9,6 +9,9 @@
     "Kristján Oddsson <koddsson@gmail.com>"
   ],
   "main": "dist/index.esm.js",
+  "files": [
+    "dist"
+  ],
   "dependencies": {
     "@catalyst/core": "^1.0.0"
   },
