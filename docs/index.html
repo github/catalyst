@@ -26,38 +26,36 @@ layout: default
   <div class="mt-6">
     <h1 class="h000-mktg mt-6 mr-6">Catalyse your Web Components</h1>
     <div class="d-flex">
-      <div class="">
-        <pre><code>
+      <div class="mt-4">
+        {% highlight html %}
+<div data-controller="hello">
+  <input data-target="hello.name" type="text">
 
+  <button data-action="click->hello#greet">
+    Greet
+  </button>
 
-        &lt;div data-controller=&quot;hello&quot;&gt;
-          &lt;input data-target=&quot;hello.name&quot; type=&quot;text&quot;&gt;
-
-          &lt;button data-action=&quot;click-&gt;hello#greet&quot;&gt;
-            Greet
-          &lt;/button&gt;
-
-          &lt;span data-target=&quot;hello.output&quot;&gt;
-          &lt;/span&gt;
-        &lt;/div&gt;
-          </code></pre>
+  <span data-target="hello.output">
+  </span>
+</div> 
+        {% endhighlight %}
       </div>
       <div class="">
-        <pre><code>
-        import { bindEvents, target,  } from "@catalyst/core"
+        {% highlight js %}
+import { bindEvents, target,  } from "@catalyst/core"
 
-        @register
-        @bindEvents
-        export default class extends Controller {
-          @target nameTarget: HTMLElement
-          @target outputTarget: HTMLElement
+@register
+@bindEvents
+export default class extends Controller {
+  @target nameTarget: HTMLElement
+  @target outputTarget: HTMLElement
 
-          greet() {
-            this.outputTarget.textContent =
-              `Hello, ${this.nameTarget.value}!`
-          }
-        }
-        </code></pre>
+  greet() {
+    this.outputTarget.textContent =
+      `Hello, ${this.nameTarget.value}!`
+  }
+}
+        {% endhighlight %}
       </div>
     </div>
   </div>
