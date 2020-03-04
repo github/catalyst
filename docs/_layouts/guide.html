@@ -10,7 +10,7 @@ layout: default
         {% assign sorted = site.guide | sort: 'chapter' %}
         {% for guide in sorted %}
         <li class="py-1">
-          <a href="{{ site.baseurl }}/{{ guide.url }}">{{ guide.title }}</a>
+          <a href="{{ site.baseurl }}{{ guide.url }}">{{ guide.title }}</a>
           <span class="d-block text-gray-light f5">{{ guide.subtitle }}</span>
         </li>
         {% endfor %}
