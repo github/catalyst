@@ -1,0 +1,44 @@
+---
+---
+<!DOCTYPE html>
+<html class="height-full">
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="/primer.css">
+  </head>
+  <body class="d-flex flex-column height-full">
+    <header class="position-sticky top-0 d-flex"
+      style="z-index: 1; background-image: linear-gradient(to top, transparent, white 25%)">
+      <div class="flex-1 pl-3 pb-6 col-3 {% if page.layout  == "guide" %}bg-gray{% endif %}">
+        <h1 class="m-0 mt-2">Catalyst</h1>
+      </div>
+      <nav class="f3 col-9 d-flex flex-justify-end">
+        <ul class="d-flex list-style-none mr-6">
+          <li class="m-3">
+            <a href="/">
+              Home
+            </a>
+          </li>
+          <li class="m-3">
+            <a href="/guide/introduction">
+              Guide
+            </a>
+          </li>
+          <li class="m-3">
+            <a href="/reference">
+              Reference
+            </a>
+          </li>
+          <li class="m-3">
+            <a href="https://github.com/github/catalyst">
+              Source Code
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </header>
+
+    {{ content }}
+    
+  </body>
+</html>

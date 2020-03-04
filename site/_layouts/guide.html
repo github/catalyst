@@ -1,0 +1,26 @@
+---
+layout: default
+---
+
+<div class="d-flex flex-1">
+
+  <aside class="col-3 pl-4 pt-1 bg-gray">
+    <nav>
+      <ol class="f3-light ml-4">
+        {% assign sorted = site.guide | sort: 'chapter' %}
+        {% for guide in sorted %}
+        <li class="py-1">
+          <a href="{{ guide.url }}">{{ guide.title }}</a>
+          <span class="d-block text-gray-light f5">{{ guide.subtitle }}</span>
+        </li>
+        {% endfor %}
+      </ol>
+    </nav>
+  </aside>
+
+  <section class="col-9 pl-4">
+    <h1 class="mb-4 f0-light">{{ page.title }}</h1>
+    {{ content }}
+  </section>
+
+</div>
