@@ -24,6 +24,7 @@
     "docs/"
   ],
   "scripts": {
+    "clean": "rm -rf {core,decorators}/{lib,tsconfig.tsbuildinfo} tsconfig.tsbuildinfo",
     "build": "tsc --build"
   },
   "devDependencies": {
