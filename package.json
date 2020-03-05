@@ -23,6 +23,9 @@
     "decorators/",
     "docs/"
   ],
+  "scripts": {
+    "build": "tsc --build"
+  },
   "devDependencies": {
     "tslib": "^1.10.0",
     "typescript": "^3.7.5"
