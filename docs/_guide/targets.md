@@ -3,7 +3,7 @@ chapter: 5
 subtitle: Querying Descendants
 ---
 
-Catalyst Components are just Web Components, and so you can simply use `querySelector` or `querySelectorAll` to select descendants of the element. Targets, however, provide a more consistent interface for accessing descendants, using `querySelectorAll` as a base. 
+Catalyst Components are just Web Components, and so you can simply use `querySelector` or `querySelectorAll` to select descendants of the element. Targets, however, provide a more consistent interface for accessing descendants. 
 
 ### Example
 
