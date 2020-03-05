@@ -2,6 +2,7 @@
   "name": "@catalyst/core",
   "version": "1.0.0",
   "description": "Helpers for creating HTML Elements as Controllers",
+  "type": "module",
   "private": true,
   "license": "MIT",
   "author": "GitHub Inc.",

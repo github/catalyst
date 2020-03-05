@@ -9,6 +9,7 @@
     "Kristján Oddsson <koddsson@gmail.com>"
   ],
   "main": "dist/index.js",
+  "type": "module",
   "private": true,
   "files": [
     "dist"
