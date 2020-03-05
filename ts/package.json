@@ -1,8 +1,8 @@
 {
-  "name": "@catalyst/decorators",
+  "name": "@catalyst/ts",
   "version": "1.0.0",
   "private": true,
-  "description": "Helpers for creating HTML Elements as Controllers",
+  "description": "TypeScript Decorators wrapping @catalyst/core functions",
   "license": "MIT",
   "author": "GitHub Inc.",
   "contributors": [
