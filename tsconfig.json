@@ -19,5 +19,9 @@
     "paths": {
       "@catalyst/*": ["*/src"]
     }
-  }
+  },
+  "references": [
+    {"path": "./core" },
+    {"path": "./decorators" }
+  ]
 }
