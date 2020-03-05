@@ -1,6 +1,7 @@
 {
   "name": "@catalyst/decorators",
   "version": "1.0.0",
+  "private": true,
   "description": "Helpers for creating HTML Elements as Controllers",
   "license": "MIT",
   "author": "GitHub Inc.",
@@ -8,16 +9,15 @@
     "Keith Cirkel (https://keithcirkel.co.uk/)",
     "Kristján Oddsson <koddsson@gmail.com>"
   ],
-  "main": "src/index.ts",
   "type": "module",
-  "private": true,
+  "main": "src/index.ts",
   "files": [
     "dist"
   ],
-  "dependencies": {
-    "@catalyst/core": "^1.0.0"
-  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@catalyst/core": "^1.0.0"
   }
 }

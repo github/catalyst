@@ -11,6 +11,17 @@
     ],
     "target": "ES2020",
     "moduleResolution": "node",
+    "noEmit": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "baseUrl": ".",
+    "paths": {
+      "@catalyst/*": ["*/src"]
+    }
   },
-  "include": ["**/*.ts"]
+  "references": [
+    {"path": "./core" },
+    {"path": "./decorators" }
+  ]
 }

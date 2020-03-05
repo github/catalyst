@@ -23,6 +23,10 @@
     "decorators/",
     "docs/"
   ],
+  "scripts": {
+    "clean": "rm -rf {core,decorators}/{lib,tsconfig.tsbuildinfo} tsconfig.tsbuildinfo",
+    "build": "tsc --build"
+  },
   "devDependencies": {
     "tslib": "^1.10.0",
     "typescript": "^3.7.5"
