@@ -1,15 +1,15 @@
 {
   "name": "@catalyst/core",
   "version": "1.0.0",
-  "description": "Helpers for creating HTML Elements as Controllers",
-  "type": "module",
   "private": true,
+  "description": "Helpers for creating HTML Elements as Controllers",
   "license": "MIT",
   "author": "GitHub Inc.",
   "contributors": [
     "Keith Cirkel (https://keithcirkel.co.uk/)",
     "Kristján Oddsson <koddsson@gmail.com>"
   ],
+  "type": "module",
   "main": "src/index.ts",
   "files": [
     "dist"
