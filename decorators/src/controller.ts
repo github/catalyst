@@ -1,7 +1,11 @@
 import {register} from '@catalyst/core'
-import {bind} from './bind'
+import {bindEvents} from './bind'
 
-export function controller(classObject: Function) {
+interface CustomElement {
+  new(): HTMLElement
+}
+
+export function controller(classObject: CustomElement) {
   register(classObject)
-  bind(classObject)
+  bindEvents(classObject)
 }

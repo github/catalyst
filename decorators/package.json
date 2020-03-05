@@ -8,7 +8,12 @@
     "Keith Cirkel (https://keithcirkel.co.uk/)",
     "Kristján Oddsson <koddsson@gmail.com>"
   ],
-  "main": "dist/index.esm.js",
+  "main": "src/index.ts",
+  "type": "module",
+  "private": true,
+  "files": [
+    "dist"
+  ],
   "dependencies": {
     "@catalyst/core": "^1.0.0"
   },

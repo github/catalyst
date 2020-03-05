@@ -2,13 +2,18 @@
   "name": "@catalyst/core",
   "version": "1.0.0",
   "description": "Helpers for creating HTML Elements as Controllers",
+  "type": "module",
+  "private": true,
   "license": "MIT",
   "author": "GitHub Inc.",
   "contributors": [
     "Keith Cirkel (https://keithcirkel.co.uk/)",
     "Kristján Oddsson <koddsson@gmail.com>"
   ],
-  "main": "dist/index.esm.js",
+  "main": "src/index.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   }

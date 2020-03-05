@@ -2,3 +2,4 @@
 *.js.map
 node_modules
 _site
+package-lock.json
