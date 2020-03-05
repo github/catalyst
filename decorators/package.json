@@ -10,7 +10,8 @@
     "Kristján Oddsson <koddsson@gmail.com>"
   ],
   "type": "module",
-  "main": "src/index.ts",
+  "main": "lib/index.js",
+  "module": "lib/index.js",
   "files": [
     "dist"
   ],
