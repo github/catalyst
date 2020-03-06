@@ -7,7 +7,7 @@ const wrap = (obj: any, name: string, fn: (...args: any[]) => any) => {
     const oldFn = obj[name]
     obj[name] = function () {
       oldFn.call(this)
-      fn.call(this)
+      fn.call(this, this)
     }
   }
 }
