@@ -3,13 +3,8 @@ layout: default
 ---
 
 <div class="d-flex flex-1">
-
-  <aside class="col-3 pl-4 pt-1 bg-gray">
-    <nav>
-      <ol class="f3-light ml-4">
-      </ol>
-    </nav>
-  </aside>
+  {% assign sidebarItems = site.data.reference.children %}
+  {% include reference_sidebar.html %}
 
   <section class="col-9 px-5 f4">
     <div class="container-md">
