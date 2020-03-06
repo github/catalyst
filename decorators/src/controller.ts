@@ -6,6 +6,6 @@ interface CustomElement {
 }
 
 export function controller(classObject: CustomElement) {
-  register(classObject)
   bindEvents(classObject)
+  register(classObject)
 }
