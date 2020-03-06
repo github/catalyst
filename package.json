@@ -24,8 +24,11 @@
     "docs/"
   ],
   "scripts": {
-    "build": "tsc --build",
-    "clean": "tsc --build --clean"
+    "clean": "tsc --build --clean",
+    "build": "tsc --build && npm run build:docs",
+    "build:docs": "npm run build:docs:reference && npm run build:docs:jekyll",
+    "build:docs:jekyll": "cd docs && bundle exec jekyll build",
+    "build:docs:reference": "typedoc --json docs/_data/reference.json"
   },
   "devDependencies": {
     "tslib": "^1.10.0",
