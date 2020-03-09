@@ -1,4 +1,4 @@
-# Cayalyst
+# Catalyst
 
 Catalyst is a set of patterns and techniques for developing components within a complex application. At it's core, Catalyst simply provides a small library of functions to make developing Web Components easier.
 
