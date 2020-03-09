@@ -1,4 +1,4 @@
-import {bind} from '@catalyst/core'
+import {bind} from '@github/catalyst'
 
 const wrap = (obj: any, name: string, fn: (...args: any[]) => any) => {
   if (!obj[name]) {

@@ -17,11 +17,12 @@
     "sourceMap": true,
     "baseUrl": ".",
     "paths": {
+      "@github/catalyst": ["catalyst/src/*"],
       "@catalyst/*": ["*/src"]
     }
   },
   "references": [
-    {"path": "./core" },
+    {"path": "./catalyst" },
     {"path": "./decorators" }
   ]
 }

@@ -19,6 +19,6 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "@catalyst/core": "^1.0.0"
+    "@github/catalyst": "^1.0.0"
   }
 }

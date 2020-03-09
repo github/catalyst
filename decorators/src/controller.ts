@@ -1,4 +1,4 @@
-import {register} from '@catalyst/core'
+import {register} from '@github/catalyst'
 import {bindEvents} from './bind'
 
 interface CustomElement {

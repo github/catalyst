@@ -73,7 +73,7 @@ If you're using decorators, then the `@target` and `@targets` decorators will tu
 If you're not using decorators, then you'll need to call `findTarget(this, key)` or `findTargets(this, key)` in the getter, for example:
 
 ```js
-import {findTarget, findTargets} from '@catalyst/core'
+import {findTarget, findTargets} from '@github/catalyst'
 class MyController extends HTMLElement {
 
   get outputTarget() {

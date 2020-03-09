@@ -8,6 +8,6 @@
     "outDir": "./lib"
   },
   "references": [
-    { "path": "../core" }
+    { "path": "../catalyst" }
   ]
 }
