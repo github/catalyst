@@ -20,7 +20,6 @@
   ],
   "workspaces": [
     "catalyst/",
-    "decorators/",
     "docs/"
   ],
   "scripts": {

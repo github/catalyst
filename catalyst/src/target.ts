@@ -1,4 +1,4 @@
-import {findTarget, findTargets} from '@github/catalyst'
+import {findTarget, findTargets} from './findtarget'
 
 export function target(proto: object, key: string) {
   Object.defineProperty(

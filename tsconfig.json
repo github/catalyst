@@ -22,7 +22,6 @@
     }
   },
   "references": [
-    {"path": "./catalyst" },
-    {"path": "./decorators" }
+    {"path": "./catalyst" }
   ]
 }
