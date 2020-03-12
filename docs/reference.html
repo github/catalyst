@@ -14,25 +14,18 @@ layout: reference
     <div class="mb-3 f5">
       {% for source in export.sources %}
       Defined in: 
-      <a href="{{ site.github.repository_url }}/blob/{{ revision }}/{{ source.fileName }}#L{{ source.line }}">
+      <a href="{{ site.github.repository_url }}/blob/{{ revision }}/catalyst/src/{{ source.fileName }}#L{{ source.line }}">
         {{ source.fileName }}:{{ source.line }}
       </a>
       {% endfor %}
     </div>
+    {%- assign type = export %}
+    <pre class="highlight"><code>{%- include type.html %}</code></pre>
     {% for signature in export.signatures %}
-      {%- capture parameters %}
-        {%- for parameter in signature.parameters %}
-          {{- ''}}<span class="nx">{{ parameter.name }}</span><span class="p">:</span>&nbsp;
-          {%- assign type = parameter.type %}
-          {%- include type.html %}
-          {%- if forloop.last != true %}<span class="p">,</span> {% endif %}
-        {%- endfor %}
-      {%- endcapture %}
-      {% assign type = signature.type %}
-      <pre class="highlight"><code><span class="nf">{{ signature.name }}</span><span class="p">(</span>{{ parameters | strip_newlines }}<span class="p">):</span> {% include type.html %}</code></pre>
       {% if signature.comment %}
-        <div class="my-3">{{ signature.comment.shortText | markdownify }}</div>
+      <div class="my-3">{{ signature.comment.shortText | markdownify }} {{ signature.comment.text | markdownify }}</div>
       {% endif %}
     {% endfor %}
+
   {% endfor %}
 {% endfor %}

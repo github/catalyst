@@ -1,3 +1,8 @@
+
+interface CustomElement {
+  new(): HTMLElement
+}
+
 /**
  * Register the controller as a custom element.
  *
@@ -5,11 +10,6 @@
  *
  * Example: HelloController => hello-controller
  */
-
-interface CustomElement {
-  new(): HTMLElement
-}
-
 export function register(classObject: CustomElement) {
   const name = classObject.name.replace(/([a-zA-Z])(?=[A-Z])/g, '$1-').toLowerCase()
   if (!window.customElements.get(name)) {

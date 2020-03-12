@@ -32,7 +32,7 @@ Catalyst Components, upon creation, will search for any children with the `data-
   <div class="ml-4">
 
 ```js
-import { controller, target } from "@catalyst/ts"
+import { controller, target } from "@github/catalyst"
 
 @controller
 class HelloController extends Controller {
@@ -104,6 +104,8 @@ A Controller may emit custom events, which may be listened to by other Controlle
 Actions can always be bound to any method that is available on the Controller's prototype. If you need a method on a class that _must not_ be invoked within Actions, then you can instead use a [_class field_](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/Class_fields) or a [_private class field_](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/Class_fields#Private_fields).
 
 ```js
+import {controller} from '@github/catalyst'
+
 @controller
 class HelloController extends HTMLElement {
 
@@ -124,3 +126,15 @@ class HelloController extends HTMLElement {
 If you're using decorators, then the `@controller` decorator automatically handles binding of actions to a Controller.
 
 If you're not using decorators, then you'll need to call `bind(this)` somewhere inside of `connectedCallback()`.
+
+```
+import {bind} from '@github/catalyst'
+
+class HelloController extends HTMLElement {
+
+  connectedCallback() {
+    bind(this)
+  }
+
+}
+```

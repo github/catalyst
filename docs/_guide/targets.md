@@ -22,7 +22,7 @@ Catalyst Components are just Web Components, and so you can simply use `querySel
   <div class="ml-4">
 
 ```js
-import { target } from "@catalyst/ts"
+import { target } from "@github/catalyst"
 
 class HelloController extends Controller {
   @target outputTarget: HTMLElement

@@ -9,9 +9,31 @@
       {%- include type.html %}[]
     {%- when "union" %}
       {%- for type in type.types %}
-        {%- include type.html %}{% if forloop.last != true %} | {% endif %}
+        {%- include type.html %}{% if forloop.last != true %}&nbsp;|&nbsp;{%- endif %}
       {%- endfor %}
+    {%- when "reflection" %}
+      {%- assign type = type.declaration %}
+      {%- include type.html %}
     {%- else %}
-      {{- type | jsonify }}
+      {%- if type.signatures %}
+        {%- assign rootType = type %}
+        {%- for signature in type.signatures %}
+          {%- if signature.name != "__call" %}<span class="nf">{{ signature.name }}</span>{% endif %}
+          {{- ''}}<span class="p">(</span>
+          {%- for parameter in signature.parameters %}
+            {{- ''}}<span class="nx">{%- if parameter.flags.isRest %}...{% endif %}{{ parameter.name }}</span><span class="p">:</span>&nbsp;
+            {%- assign type = parameter.type %}
+            {%- include type.html %}
+            {%- if forloop.last != true %}<span class="p">,</span>&nbsp;{%- endif %}
+          {%- endfor %}
+          {{-''}}<span class="p">)</span>
+          {%- if rootType.name == "__type" %}&nbsp;<span class="p">=&gt;</span>&nbsp;
+          {%- else %}<span class="p">:</span>&nbsp;{% endif %}
+          {%- assign type = signature.type %}
+          {%- include type.html %}
+        {%- endfor %}
+      {%- else %}
+      <pre>{{- type | jsonify }}</pre>
+      {%- endif %}
   {%- endcase %}
 {%- endcapture %}{{- output | strip_newlines }}
