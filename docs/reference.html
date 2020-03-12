@@ -14,7 +14,7 @@ layout: reference
     <div class="mb-3 f5">
       {% for source in export.sources %}
       Defined in: 
-      <a href="{{ site.github.repository_url }}/blob/{{ revision }}/{{ source.fileName }}#L{{ source.line }}">
+      <a href="{{ site.github.repository_url }}/blob/{{ revision }}/catalyst/src/{{ source.fileName }}#L{{ source.line }}">
         {{ source.fileName }}:{{ source.line }}
       </a>
       {% endfor %}
