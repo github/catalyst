@@ -158,6 +158,9 @@
 							"flags": {
 								"isExported": true
 							},
+							"comment": {
+								"shortText": "Controller is a decorator to be used over a class that extends HTMLElement.\nIt will automatically `register()` the component in the customElement\nregistry, as well as ensuring `bind(this)` is called on `connectedCallback`,\nwrapping the classes `connectedCallback` method if needed."
+							},
 							"parameters": [
 								{
 									"id": 27,
@@ -183,7 +186,7 @@
 					"sources": [
 						{
 							"fileName": "controller.ts",
-							"line": 9,
+							"line": 15,
 							"character": 26
 						}
 					]
@@ -231,9 +234,6 @@
 					"flags": {
 						"isConst": true
 					},
-					"comment": {
-						"shortText": "Create a property on the controller instance referencing the element with a\n`data-target` element of the same name."
-					},
 					"signatures": [
 						{
 							"id": 30,
@@ -241,9 +241,6 @@
 							"kind": 4096,
 							"kindString": "Call signature",
 							"flags": {},
-							"comment": {
-								"shortText": "Create a property on the controller instance referencing the element with a\n`data-target` element of the same name."
-							},
 							"parameters": [
 								{
 									"id": 31,
@@ -277,7 +274,7 @@
 					"sources": [
 						{
 							"fileName": "findtarget.ts",
-							"line": 6,
+							"line": 1,
 							"character": 20
 						}
 					]
@@ -298,6 +295,10 @@
 							"kindString": "Call signature",
 							"flags": {
 								"isExported": true
+							},
+							"comment": {
+								"shortText": "findTarget will run `querySelectorAll` against the given controller,\nreturning any the first child that:",
+								"text": " - Matches the selector of `[data-target*=\"tag.name\"]` where tag is the\n tagName of the given HTMLElement, and `name` is the given `name` argument.\n\n - Closest ascendant of the element, that matches the tagname of the\n controller, is the specific instance of the controller itself - in other\n words it is not nested in other controllers of the same type.\n\n"
 							},
 							"parameters": [
 								{
@@ -345,7 +346,7 @@
 					"sources": [
 						{
 							"fileName": "findtarget.ts",
-							"line": 8,
+							"line": 15,
 							"character": 26
 						}
 					]
@@ -407,7 +408,7 @@
 					"sources": [
 						{
 							"fileName": "findtarget.ts",
-							"line": 15,
+							"line": 22,
 							"character": 27
 						}
 					]
@@ -465,10 +466,6 @@
 					"kind": 256,
 					"kindString": "Interface",
 					"flags": {},
-					"comment": {
-						"shortText": "Register the controller as a custom element.",
-						"text": "The classname is converted to a approriate tag name.\n\nExample: HelloController => hello-controller\n"
-					},
 					"children": [
 						{
 							"id": 7,
@@ -492,7 +489,7 @@
 							"sources": [
 								{
 									"fileName": "register.ts",
-									"line": 9,
+									"line": 2,
 									"character": 25
 								}
 							]
@@ -510,7 +507,7 @@
 					"sources": [
 						{
 							"fileName": "register.ts",
-							"line": 9,
+							"line": 2,
 							"character": 23
 						}
 					]
@@ -531,6 +528,10 @@
 							"kindString": "Call signature",
 							"flags": {
 								"isExported": true
+							},
+							"comment": {
+								"shortText": "Register the controller as a custom element.",
+								"text": "The classname is converted to a approriate tag name.\n\nExample: HelloController => hello-controller\n"
 							},
 							"parameters": [
 								{
@@ -614,6 +615,9 @@
 							"flags": {
 								"isExported": true
 							},
+							"comment": {
+								"shortText": "Target is a decorator which - when assigned to a property field on the\nclass - will override that class field, turning it into a Getter which\nreturns a call to `findTarget(this, key)` where `key` is the name of the\nproperty field. In other words, `@target foo` becomes a getter for\n`findTarget(this, 'foo')`."
+							},
 							"parameters": [
 								{
 									"id": 44,
@@ -651,7 +655,7 @@
 					"sources": [
 						{
 							"fileName": "target.ts",
-							"line": 3,
+							"line": 10,
 							"character": 22
 						}
 					]
@@ -672,6 +676,9 @@
 							"kindString": "Call signature",
 							"flags": {
 								"isExported": true
+							},
+							"comment": {
+								"shortText": "Targets is a decorator which - when assigned to a property field on the\nclass - will override that class field, turning it into a Getter which\nreturns a call to `findTargets(this, key)` where `key` is the name of the\nproperty field. In other words, `@targets foo` becomes a getter for\n`findTargets(this, 'foo')`."
 							},
 							"parameters": [
 								{
@@ -710,7 +717,7 @@
 					"sources": [
 						{
 							"fileName": "target.ts",
-							"line": 14,
+							"line": 28,
 							"character": 23
 						}
 					]
@@ -760,6 +767,10 @@
 							"kindString": "Call signature",
 							"flags": {
 								"isExported": true
+							},
+							"comment": {
+								"shortText": "A utility method which wraps a prototype method, ensuring the given function\nis also called as part of the given method name.",
+								"text": "Used in the `contoller()` decorator.\n"
 							},
 							"parameters": [
 								{
@@ -843,7 +854,7 @@
 											"sources": [
 												{
 													"fileName": "wrap.ts",
-													"line": 1,
+													"line": 7,
 													"character": 48
 												}
 											]
@@ -860,7 +871,7 @@
 					"sources": [
 						{
 							"fileName": "wrap.ts",
-							"line": 1,
+							"line": 7,
 							"character": 20
 						}
 					]
