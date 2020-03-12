@@ -25,7 +25,7 @@
   ],
   "scripts": {
     "clean": "tsc --build --clean",
-    "build": "tsc --build && npm run build:docs",
+    "build": "tsc --build && npm run build:docs:reference,
     "build:docs": "npm run build:docs:reference && npm run build:docs:jekyll",
     "build:docs:jekyll": "cd docs && bundle exec jekyll build",
     "build:docs:reference": "typedoc --json docs/_data/reference.json"
