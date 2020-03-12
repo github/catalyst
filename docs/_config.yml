@@ -21,3 +21,6 @@ defaults:
       type: guide
     values:
       layout: guide
+
+plugins:
+  - "jekyll-github-metadata"

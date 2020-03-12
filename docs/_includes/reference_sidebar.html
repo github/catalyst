@@ -1,0 +1,11 @@
+<aside class="col-3 pl-4 pt-1 bg-gray">
+  <nav>
+    <ul class="f3-light ml-4">
+      {% for item in sidebarItems %}
+      <li class="py-1">
+        <a href="#{{ item.name | slugify }}">{{ item.name | remove: '"' }}</a>
+      </li>
+      {% endfor %}
+    </ul>
+  </nav>
+</aside>

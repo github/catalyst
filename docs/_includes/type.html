@@ -1,0 +1,17 @@
+{%- capture output %}
+  {%- case type.type %}
+    {%- when "intrinsic" %}
+      {{- }}<span class="o">{{- type.name }}</span>
+    {%- when "reference" %}
+      {{- }}<span class="kc">{{- type.name }}</span>
+    {%- when "array" %}
+      {%- assign type = type.elementType %}
+      {%- include type.html %}[]
+    {%- when "union" %}
+      {%- for type in type.types %}
+        {%- include type.html %}{% if forloop.last != true %} | {% endif %}
+      {%- endfor %}
+    {%- else %}
+      {{- type | jsonify }}
+  {%- endcase %}
+{%- endcapture %}{{- output | strip_newlines }}

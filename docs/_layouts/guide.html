@@ -3,20 +3,8 @@ layout: default
 ---
 
 <div class="d-flex flex-1">
-
-  <aside class="col-3 pl-4 pt-1 bg-gray">
-    <nav>
-      <ol class="f3-light ml-4">
-        {% assign sorted = site.guide | sort: 'chapter' %}
-        {% for guide in sorted %}
-        <li class="py-1">
-          <a href="{{ site.baseurl }}{{ guide.url }}">{{ guide.title }}</a>
-          <span class="d-block text-gray-light f5">{{ guide.subtitle }}</span>
-        </li>
-        {% endfor %}
-      </ol>
-    </nav>
-  </aside>
+  {% assign sidebarItems = site.guide | sort: 'chapter' %}
+  {% include sidebar.html %}
 
   <section class="col-9 px-5 f4">
     <div class="container-md">
