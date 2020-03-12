@@ -1,5 +1,5 @@
 {
-  "name": "@catalyst/core",
+  "name": "@github/catalyst",
   "version": "1.0.0",
   "private": true,
   "description": "Helpers for creating HTML Elements as Controllers",

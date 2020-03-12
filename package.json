@@ -19,8 +19,7 @@
     "Kristján Oddsson <koddsson@gmail.com>"
   ],
   "workspaces": [
-    "core/",
-    "decorators/",
+    "catalyst/",
     "docs/"
   ],
   "scripts": {
