@@ -126,3 +126,15 @@ class HelloController extends HTMLElement {
 If you're using decorators, then the `@controller` decorator automatically handles binding of actions to a Controller.
 
 If you're not using decorators, then you'll need to call `bind(this)` somewhere inside of `connectedCallback()`.
+
+```
+import {bind} from '@github/catalyst'
+
+class HelloController extends HTMLElement {
+
+  connectedCallback() {
+    bind(this)
+  }
+
+}
+```

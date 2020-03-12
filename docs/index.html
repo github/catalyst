@@ -28,14 +28,14 @@ layout: default
     <div class="d-flex f4">
       <div class="mt-4">
         {% highlight html %}
-<div data-controller="hello">
-  <input data-target="hello.name" type="text">
+<hello-controller>
+  <input data-target="hello-controller.name" type="text">
 
-  <button data-action="click->hello#greet">
+  <button data-action="click:hello-controller#greet">
     Greet
   </button>
 
-  <span data-target="hello.output">
+  <span data-target="hello-controller.output">
   </span>
 </div> 
         {% endhighlight %}
@@ -44,15 +44,13 @@ layout: default
         {% highlight js %}
 import { controller, target } from "@github/catalyst"
 
-@register
-@bindEvents
-export default class extends Controller {
-  @target nameTarget: HTMLElement
-  @target outputTarget: HTMLElement
+@controller
+class HelloController extends Controller {
+  @target name!: HTMLElement
+  @target output!: HTMLElement
 
   greet() {
-    this.outputTarget.textContent =
-      `Hello, ${this.nameTarget.value}!`
+    this.output.textContent = `Hello, ${this.name.value}!`
   }
 }
         {% endhighlight %}
