@@ -3,7 +3,7 @@
     <ol class="f3-light ml-4">
       {% for item in sidebarItems %}
       <li class="py-1">
-        <a href="{{ site.baseurl }}{{ item.url }}">{{ item.name }}</a>
+        <a href="{{ site.baseurl }}{{ item.url }}">{{ item.title || item.name }}</a>
         {% if item.subtitle %}
         <span class="d-block text-gray-light f5">{{ item.subtitle }}</span>
         {% endif %}
