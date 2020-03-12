@@ -5,4 +5,3 @@ _site
 package-lock.json
 *.tsbuildinfo
 */lib/
-docs/_data/reference.json
