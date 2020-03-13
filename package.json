@@ -1,5 +1,7 @@
 {
   "private": true,
+  "version": "0.0.1",
+  "registryUrl": "https://npm.registry.github.com",
   "keywords": [
     "typescript",
     "javascript"
