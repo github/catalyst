@@ -6,7 +6,7 @@
  */
 export function wrap(obj: any, name: string, fn: (...args: any[]) => any) {
   if (!obj.prototype[name]) {
-    obj[name] = fn
+    obj.prototype[name] = fn
   } else {
     const oldFn = obj.prototype[name]
     obj.prototype[name] = function () {
