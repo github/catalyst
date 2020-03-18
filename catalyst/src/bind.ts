@@ -18,7 +18,7 @@ export function bind(controller: HTMLElement) {
         const methodDescriptor = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(controller), method)
         if (methodDescriptor && typeof methodDescriptor.value == 'function') {
           el.addEventListener(eventName, (event: Event) => {
-            if (event.target === el) (controller as any)[method](event)
+            (controller as any)[method](event)
           })
         }
 
