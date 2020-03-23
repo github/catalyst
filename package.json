@@ -27,9 +27,12 @@
     "build": "tsc --build && npm run build:docs:reference",
     "build:docs": "npm run build:docs:reference && npm run build:docs:jekyll",
     "build:docs:jekyll": "cd docs && bundle exec jekyll build",
-    "build:docs:reference": "typedoc --json docs/_data/reference.json"
+    "build:docs:reference": "typedoc --json docs/_data/reference.json",
+    "pretest": "npm run build",
+    "test": "mocha catalyst/test/*"
   },
   "devDependencies": {
+    "mocha": "^7.1.1",
     "tslib": "^1.10.0",
     "typedoc": "^0.16.11",
     "typescript": "^3.7.5"
