@@ -33,8 +33,15 @@
   },
   "devDependencies": {
     "mocha": "^7.1.1",
+    "prettier": "^2.0.1",
     "tslib": "^1.10.0",
     "typedoc": "^0.16.11",
     "typescript": "^3.7.5"
+  },
+  "prettier": {
+    "printWidth": 120,
+    "semi": false,
+    "singleQuote": true,
+    "bracketSpacing": false
   }
 }
