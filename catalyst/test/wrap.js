@@ -5,7 +5,7 @@ class MyController {
   connectedCallback() { }
 }
 
-describe('catalyst', function () {
+describe('wrap', function () {
   it('wraps a method that exists', function () {
     let called = false
     wrap(MyController, 'connectedCallback', () => (called = true))
