@@ -9,9 +9,9 @@ export function wrap(obj: any, name: string, fn: (...args: any[]) => any) {
     obj.prototype[name] = fn
   } else {
     const oldFn = obj.prototype[name]
-    obj.prototype[name] = function () {
-      oldFn.call(this)
-      fn.call(this, this)
+    obj.prototype[name] = function (...args: unknown[]) {
+      fn.apply(this, args)
+      oldFn.apply(this, args)
     }
   }
 }
