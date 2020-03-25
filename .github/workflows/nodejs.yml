@@ -1,0 +1,30 @@
+name: Build
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+
+jobs:
+  test-node:
+    name: Test on Node.js
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout the project
+      uses: actions/checkout@v2
+    - name: Cache node modules
+      uses: actions/cache@v1
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+    - name: Use Node.js 13.11.0
+      uses: actions/setup-node@v1
+      with:
+        node-version: 13.11.0
+    - name: Install dependencies
+      run: npm i
+    - name: Run Node.js Tests
+      run: npm run test
