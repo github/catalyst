@@ -1,0 +1,35 @@
+name: Docs Build
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  test-node:
+    name: Build Docs
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout the project
+      uses: actions/checkout@v2
+    - name: Cache node modules
+      uses: actions/cache@v1
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+    - name: Use Node.js 13.11.0
+      uses: actions/setup-node@v1
+      with:
+        node-version: 13.11.0
+    - name: Install dependencies
+      run: npm i
+    - name: Build Docs
+      run: npm run build:docs:reference
+    - run: |
+        git config --local user.email "actions@github.com"
+        git config --local user.name "${{ github.actor }}"
+        git add docs/_data/reference.json
+        git commit -m "docs: compile reference.json"
+        git push
