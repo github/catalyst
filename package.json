@@ -32,6 +32,7 @@
     "test": "mocha catalyst/test/*"
   },
   "devDependencies": {
+    "@github/prettier-config": "^0.0.4",
     "chai": "^4.2.0",
     "chai-spies": "^1.0.0",
     "mocha": "^7.1.1",
@@ -40,10 +41,5 @@
     "typedoc": "^0.16.11",
     "typescript": "^3.7.5"
   },
-  "prettier": {
-    "printWidth": 120,
-    "semi": false,
-    "singleQuote": true,
-    "bracketSpacing": false
-  }
+  "prettier": "@github/prettier-config"
 }
