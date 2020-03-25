@@ -13,7 +13,7 @@
 			"flags": {
 				"isExported": true
 			},
-			"originalName": "/Volumes/Samsung_T5/Code/catalyst/catalyst/src/bind.ts",
+			"originalName": "/home/runner/work/catalyst/catalyst/catalyst/src/bind.ts",
 			"children": [
 				{
 					"id": 2,
@@ -87,7 +87,7 @@
 			"flags": {
 				"isExported": true
 			},
-			"originalName": "/Volumes/Samsung_T5/Code/catalyst/catalyst/src/controller.ts",
+			"originalName": "/home/runner/work/catalyst/catalyst/catalyst/src/controller.ts",
 			"children": [
 				{
 					"id": 22,
@@ -224,7 +224,7 @@
 			"flags": {
 				"isExported": true
 			},
-			"originalName": "/Volumes/Samsung_T5/Code/catalyst/catalyst/src/findtarget.ts",
+			"originalName": "/home/runner/work/catalyst/catalyst/catalyst/src/findtarget.ts",
 			"children": [
 				{
 					"id": 29,
@@ -441,7 +441,7 @@
 			"flags": {
 				"isExported": true
 			},
-			"originalName": "/Volumes/Samsung_T5/Code/catalyst/catalyst/src/index.ts",
+			"originalName": "/home/runner/work/catalyst/catalyst/catalyst/src/index.ts",
 			"sources": [
 				{
 					"fileName": "index.ts",
@@ -458,7 +458,7 @@
 			"flags": {
 				"isExported": true
 			},
-			"originalName": "/Volumes/Samsung_T5/Code/catalyst/catalyst/src/register.ts",
+			"originalName": "/home/runner/work/catalyst/catalyst/catalyst/src/register.ts",
 			"children": [
 				{
 					"id": 6,
@@ -489,7 +489,7 @@
 							"sources": [
 								{
 									"fileName": "register.ts",
-									"line": 2,
+									"line": 1,
 									"character": 25
 								}
 							]
@@ -507,7 +507,7 @@
 					"sources": [
 						{
 							"fileName": "register.ts",
-							"line": 2,
+							"line": 1,
 							"character": 23
 						}
 					]
@@ -558,7 +558,7 @@
 					"sources": [
 						{
 							"fileName": "register.ts",
-							"line": 13,
+							"line": 12,
 							"character": 24
 						}
 					]
@@ -596,7 +596,7 @@
 			"flags": {
 				"isExported": true
 			},
-			"originalName": "/Volumes/Samsung_T5/Code/catalyst/catalyst/src/target.ts",
+			"originalName": "/home/runner/work/catalyst/catalyst/catalyst/src/target.ts",
 			"children": [
 				{
 					"id": 42,
@@ -717,7 +717,7 @@
 					"sources": [
 						{
 							"fileName": "target.ts",
-							"line": 28,
+							"line": 26,
 							"character": 23
 						}
 					]
@@ -749,7 +749,7 @@
 			"flags": {
 				"isExported": true
 			},
-			"originalName": "/Volumes/Samsung_T5/Code/catalyst/catalyst/src/wrap.ts",
+			"originalName": "/home/runner/work/catalyst/catalyst/catalyst/src/wrap.ts",
 			"children": [
 				{
 					"id": 13,
