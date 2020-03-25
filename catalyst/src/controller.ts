@@ -13,7 +13,7 @@ interface CustomElement {
  * wrapping the classes `connectedCallback` method if needed.
  */
 export function controller(classObject: CustomElement) {
-  wrap(classObject, 'connectedCallback', function (this: HTMLElement) {
+  wrap(classObject.prototype, 'connectedCallback', function (this: HTMLElement) {
     bind(this)
   })
   register(classObject)
