@@ -7,7 +7,7 @@ const {spy, expect} = chai
 describe('wrap', () => {
   it('wraps a method that exists', () => {
     class MyController {
-      connectedCallback() { }
+      connectedCallback() {}
     }
     spy.on(MyController.prototype, 'connectedCallback')
     const original = MyController.prototype.connectedCallback

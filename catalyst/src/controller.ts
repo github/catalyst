@@ -3,7 +3,7 @@ import {bind} from './bind'
 import {wrap} from './wrap'
 
 interface CustomElement {
-  new(): HTMLElement
+  new (): HTMLElement
 }
 
 /**

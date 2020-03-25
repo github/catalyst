@@ -8,14 +8,12 @@ import {findTarget, findTargets} from './findtarget'
  * `findTarget(this, 'foo')`.
  */
 export function target(proto: object, key: string) {
-  Object.defineProperty(
-    proto,
-    key,
-    {
-      configurable: true,
-      get: function() { return findTarget(this, key) }
+  Object.defineProperty(proto, key, {
+    configurable: true,
+    get: function () {
+      return findTarget(this, key)
     }
-  );
+  })
 }
 
 /**
@@ -26,12 +24,10 @@ export function target(proto: object, key: string) {
  * `findTargets(this, 'foo')`.
  */
 export function targets(proto: object, key: string) {
-  Object.defineProperty(
-    proto,
-    key,
-    {
-      configurable: true,
-      get: function() { return findTargets(this, key) }
+  Object.defineProperty(proto, key, {
+    configurable: true,
+    get: function () {
+      return findTargets(this, key)
     }
-  );
+  })
 }

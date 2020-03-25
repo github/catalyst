@@ -1,6 +1,5 @@
-
 interface CustomElement {
-  new(): HTMLElement
+  new (): HTMLElement
 }
 
 /**
@@ -14,7 +13,7 @@ export function register(classObject: CustomElement) {
   const name = classObject.name.replace(/([a-zA-Z])(?=[A-Z])/g, '$1-').toLowerCase()
   if (!window.customElements.get(name)) {
     // @ts-ignore
-    window[classObject.name] = classObject;
-    window.customElements.define(name, classObject);
+    window[classObject.name] = classObject
+    window.customElements.define(name, classObject)
   }
 }

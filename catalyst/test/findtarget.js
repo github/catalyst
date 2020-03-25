@@ -10,7 +10,9 @@ describe('findTarget', () => {
     closest() {}
   }
   class MyController {
-    get tagName() { return 'my-controller' }
+    get tagName() {
+      return 'my-controller'
+    }
     querySelectorAll() {}
   }
 
@@ -32,7 +34,6 @@ describe('findTarget', () => {
     expect(els[1].closest).to.have.been.called.once.with.exactly('my-controller')
     expect(target).to.equal(els[1])
   })
-
 })
 
 describe('findTargets', () => {
@@ -40,7 +41,9 @@ describe('findTargets', () => {
     closest() {}
   }
   class MyController {
-    get tagName() { return 'my-controller' }
+    get tagName() {
+      return 'my-controller'
+    }
     querySelectorAll() {}
   }
 
@@ -64,5 +67,4 @@ describe('findTargets', () => {
     expect(els[2].closest).to.have.been.called.once.with.exactly('my-controller')
     expect(targets).to.deep.equal([els[0], els[2]])
   })
-
 })

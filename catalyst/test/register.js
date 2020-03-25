@@ -8,8 +8,12 @@ describe('register', () => {
   const elements = new Map()
   global.window = {
     customElements: {
-      get(name) { return elements.get(name) },
-      define(name, value) { return elements.set(name, value) },
+      get(name) {
+        return elements.get(name)
+      },
+      define(name, value) {
+        return elements.set(name, value)
+      }
     }
   }
   let sandbox
@@ -42,5 +46,4 @@ describe('register', () => {
     register(ThisIsAnExampleOfADasherisedClassName)
     expect(window.customElements.define).to.have.been.called.with('this-is-an-example-of-a-dasherised-class-name')
   })
-
 })

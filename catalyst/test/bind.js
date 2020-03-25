@@ -11,7 +11,9 @@ describe('bind', () => {
     closest() {}
   }
   class MyController {
-    get tagName() { return 'my-controller' }
+    get tagName() {
+      return 'my-controller'
+    }
     querySelectorAll() {}
     foo() {}
   }
@@ -117,5 +119,4 @@ describe('bind', () => {
     el2.addEventListener.__spy.calls[0][1]('b')
     expect(instance.foo).to.have.been.called.twice.second.with('b')
   })
-
 })
