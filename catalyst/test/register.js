@@ -2,8 +2,7 @@ import {register} from '../lib/register.js'
 import chai from 'chai'
 import spies from 'chai-spies'
 chai.use(spies)
-const {spy} = chai
-const {expect} = chai
+const {spy, expect} = chai
 
 describe('register', () => {
   const elements = new Map()
