@@ -1,7 +1,6 @@
-import chai from 'chai'
 import {bind} from '../lib/bind.js'
+import chai from 'chai'
 import spies from 'chai-spies'
-import assert from 'assert'
 chai.use(spies)
 const {spy} = chai
 const {expect} = chai
