@@ -1,16 +1,31 @@
-import assert from 'assert'
 import {wrap} from '../lib/wrap.js'
+import chai from 'chai'
+import spies from 'chai-spies'
+chai.use(spies)
+const {spy} = chai
+const {expect} = chai
 
-class MyController {
-  connectedCallback() { }
-}
-
-describe('wrap', function () {
-  it('wraps a method that exists', function () {
-    let called = false
-    wrap(MyController, 'connectedCallback', () => (called = true))
+describe('wrap', () => {
+  it('wraps a method that exists', () => {
+    class MyController {
+      connectedCallback() { }
+    }
+    spy.on(MyController.prototype, 'connectedCallback')
+    const original = MyController.prototype.connectedCallback
+    const fn = spy()
+    wrap(MyController, 'connectedCallback', fn)
     const controller = new MyController()
-    controller.connectedCallback()
-    assert(called)
+    controller.connectedCallback('a')
+    expect(fn).to.have.been.called.once.with.exactly('a')
+    expect(original).to.have.been.called.once.with.exactly('a')
+  })
+
+  it('assigns the method that does not exist', () => {
+    class MyController {}
+    const fn = spy()
+    wrap(MyController, 'connectedCallback', fn)
+    const controller = new MyController()
+    controller.connectedCallback('a')
+    expect(fn).to.have.been.called.once.with.exactly('a')
   })
 })
