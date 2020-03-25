@@ -4,11 +4,7 @@
     "module": "ESNext",
     "esModuleInterop": true,
     "experimentalDecorators": true,
-    "lib": [
-      "es6",
-      "dom",
-      "dom.iterable"
-    ],
+    "lib": ["es6", "dom", "dom.iterable"],
     "target": "ES2020",
     "moduleResolution": "node",
     "noEmit": true,
@@ -21,7 +17,5 @@
       "@catalyst/*": ["*/src"]
     }
   },
-  "references": [
-    {"path": "./catalyst" }
-  ]
+  "references": [{"path": "./catalyst"}]
 }

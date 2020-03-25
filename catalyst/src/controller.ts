@@ -3,7 +3,7 @@ import {bind} from './bind'
 import {wrap} from './wrap'
 
 interface CustomElement {
-  new(): HTMLElement
+  new (): HTMLElement
 }
 
 /**
@@ -13,6 +13,8 @@ interface CustomElement {
  * wrapping the classes `connectedCallback` method if needed.
  */
 export function controller(classObject: CustomElement) {
-  wrap(classObject, 'connectedCallback', bind)
+  wrap(classObject.prototype, 'connectedCallback', function (this: HTMLElement) {
+    bind(this)
+  })
   register(classObject)
 }
