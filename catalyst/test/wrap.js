@@ -12,7 +12,7 @@ describe('wrap', () => {
     spy.on(MyController.prototype, 'connectedCallback')
     const original = MyController.prototype.connectedCallback
     const fn = spy()
-    wrap(MyController, 'connectedCallback', fn)
+    wrap(MyController.prototype, 'connectedCallback', fn)
     const controller = new MyController()
     controller.connectedCallback('a')
     expect(fn).to.have.been.called.once.with.exactly('a')
@@ -22,7 +22,7 @@ describe('wrap', () => {
   it('assigns the method that does not exist', () => {
     class MyController {}
     const fn = spy()
-    wrap(MyController, 'connectedCallback', fn)
+    wrap(MyController.prototype, 'connectedCallback', fn)
     const controller = new MyController()
     controller.connectedCallback('a')
     expect(fn).to.have.been.called.once.with.exactly('a')
