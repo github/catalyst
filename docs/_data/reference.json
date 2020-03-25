@@ -770,7 +770,7 @@
 							},
 							"comment": {
 								"shortText": "A utility method which wraps a prototype method, ensuring the given function\nis also called as part of the given method name.",
-								"text": "Used in the `contoller()` decorator.\n"
+								"text": "Used in the `controller()` decorator.\n"
 							},
 							"parameters": [
 								{
