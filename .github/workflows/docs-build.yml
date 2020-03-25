@@ -29,7 +29,7 @@ jobs:
       run: npm run build:docs:reference
     - run: |
         git config --local user.email "actions@github.com"
-        git config --local user.name "${{ github.actor }}"
+        git config --local user.name "Actions Auto Build"
         git add docs/_data/reference.json
         git commit -m "docs: compile reference.json"
         git push
