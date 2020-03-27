@@ -769,7 +769,7 @@
 								"isExported": true
 							},
 							"comment": {
-								"shortText": "A utility method which wraps a prototype method, ensuring the given function\nis also called as part of the given method name.",
+								"shortText": "A utility method which wraps a method on an object. If the method doesn't\nalready exist on the object, it is simply assigned. If it does exist then\nboth the new function and the existing function will be called with the same\narguments.",
 								"text": "Used in the `controller()` decorator.\n"
 							},
 							"parameters": [
@@ -854,7 +854,7 @@
 											"sources": [
 												{
 													"fileName": "wrap.ts",
-													"line": 7,
+													"line": 9,
 													"character": 48
 												}
 											]
@@ -871,7 +871,7 @@
 					"sources": [
 						{
 							"fileName": "wrap.ts",
-							"line": 7,
+							"line": 9,
 							"character": 20
 						}
 					]
