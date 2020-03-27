@@ -27,7 +27,8 @@ jobs:
       run: npm i
     - name: Build Docs
       run: npm run build:docs:reference
-    - run: |
+    - name: Commit & Push Docs Data
+      run: |
         git config --local user.email "actions@github.com"
         git config --local user.name "Actions Auto Build"
         git add docs/_data/reference.json
