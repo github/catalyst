@@ -1,6 +1,8 @@
 /**
- * A utility method which wraps a prototype method, ensuring the given function
- * is also called as part of the given method name.
+ * A utility method which wraps a method on an object. If the method doesn't
+ * already exist on the object, it is simply assigned. If it does exist then
+ * both the new function and the existing function will be called with the same
+ * arguments.
  *
  * Used in the `controller()` decorator.
  */
