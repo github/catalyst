@@ -1,6 +1,6 @@
 {
   "name": "@github/catalyst",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Helpers for creating HTML Elements as Controllers",
   "license": "MIT",
   "author": "GitHub Inc.",
