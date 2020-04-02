@@ -51,7 +51,7 @@ Remember! Actions are _automatically_ bound using the `@controller` decorator. T
 import { controller, target } from "@github/catalyst"
 
 @controller
-class HelloController extends Controller {
+class HelloController extends HTMLElement {
   @target nameTarget: HTMLElement
   @target outputTarget: HTMLElement
 
