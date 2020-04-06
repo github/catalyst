@@ -16,6 +16,7 @@ describe('bind', () => {
     }
     querySelectorAll() {}
     foo() {}
+    matches() {}
   }
 
   it('queries for Elements matching data-action*="tagname"', () => {
@@ -36,6 +37,40 @@ describe('bind', () => {
     bind(instance)
     expect(el.addEventListener).to.have.been.called.once.with('click')
     const {calls} = el.addEventListener.__spy
+    const fn = calls[0][1]
+    expect(instance.foo).to.have.not.been.called()
+    fn()
+    expect(instance.foo).to.have.been.called(1)
+  })
+
+  it('allows for the presence of `:` in an event name', () => {
+    const instance = new MyController()
+    spy.on(instance, 'foo')
+    const el = new FakeElement()
+    instance.querySelectorAll = () => [el]
+    el.closest = () => instance
+    el.getAttribute = () => 'custom:event:my-controller#foo'
+    spy.on(el, 'addEventListener')
+    bind(instance)
+    expect(el.addEventListener).to.have.been.called.once.with('custom:event')
+    const {calls} = el.addEventListener.__spy
+    const fn = calls[0][1]
+    expect(instance.foo).to.have.not.been.called()
+    fn()
+    expect(instance.foo).to.have.been.called(1)
+  })
+
+  it('binds events on the controller to itself', () => {
+    const instance = new MyController()
+    spy.on(instance, 'foo')
+    instance.matches = () => true
+    instance.getAttribute = () => 'click:my-controller#foo'
+    instance.addEventListener = () => true
+    instance.querySelectorAll = () => []
+    spy.on(instance, 'addEventListener')
+    bind(instance)
+    expect(instance.addEventListener).to.have.been.called.once.with('click')
+    const {calls} = instance.addEventListener.__spy
     const fn = calls[0][1]
     expect(instance.foo).to.have.not.been.called()
     fn()
