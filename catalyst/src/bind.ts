@@ -12,6 +12,12 @@ export function bind(controller: HTMLElement) {
     bindActionsToController(controller, el)
   }
 
+  // Also bind the controller to itself
+  if (controller.matches(actionAttributeMatcher)) {
+    bindActionsToController(controller, controller)
+  }
+}
+
 // Bind the data-action attribute of a single element to the controller
 function bindActionsToController(controller: HTMLElement, el: Element) {
   const tag = controller.tagName.toLowerCase()
