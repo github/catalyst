@@ -11,8 +11,16 @@ export function bind(controller: HTMLElement) {
     // Match the pattern of `eventName:constructor#method`.
     for (const binding of (el.getAttribute('data-action') || '').split(' ')) {
       const [rest, method] = binding.split('#')
-      const [eventName, handler] = rest.split(':')
+
+      // eventName may contain `:` so account for that
+      // by splitting by the last instance of `:`
+      const colonIndex = rest.lastIndexOf(':')
+      if (colonIndex < 0) continue
+
+      const handler = rest.slice(colonIndex + 1)
       if (handler !== tag) continue
+
+      const eventName = rest.slice(0, colonIndex)
 
       // Check the `method` is present on the prototype
       const methodDescriptor = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(controller), method)
