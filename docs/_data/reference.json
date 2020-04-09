@@ -60,6 +60,57 @@
 							"character": 20
 						}
 					]
+				},
+				{
+					"id": 5,
+					"name": "bindActionsToController",
+					"kind": 64,
+					"kindString": "Function",
+					"flags": {},
+					"signatures": [
+						{
+							"id": 6,
+							"name": "bindActionsToController",
+							"kind": 4096,
+							"kindString": "Call signature",
+							"flags": {},
+							"parameters": [
+								{
+									"id": 7,
+									"name": "controller",
+									"kind": 32768,
+									"kindString": "Parameter",
+									"flags": {},
+									"type": {
+										"type": "reference",
+										"name": "HTMLElement"
+									}
+								},
+								{
+									"id": 8,
+									"name": "el",
+									"kind": 32768,
+									"kindString": "Parameter",
+									"flags": {},
+									"type": {
+										"type": "reference",
+										"name": "Element"
+									}
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "void"
+							}
+						}
+					],
+					"sources": [
+						{
+							"fileName": "bind.ts",
+							"line": 22,
+							"character": 32
+						}
+					]
 				}
 			],
 			"groups": [
@@ -67,7 +118,8 @@
 					"title": "Functions",
 					"kind": 64,
 					"children": [
-						2
+						2,
+						5
 					]
 				}
 			],
@@ -80,7 +132,7 @@
 			]
 		},
 		{
-			"id": 21,
+			"id": 25,
 			"name": "\"controller\"",
 			"kind": 1,
 			"kindString": "External module",
@@ -90,21 +142,21 @@
 			"originalName": "/home/runner/work/catalyst/catalyst/catalyst/src/controller.ts",
 			"children": [
 				{
-					"id": 22,
+					"id": 26,
 					"name": "CustomElement",
 					"kind": 256,
 					"kindString": "Interface",
 					"flags": {},
 					"children": [
 						{
-							"id": 23,
+							"id": 27,
 							"name": "constructor",
 							"kind": 512,
 							"kindString": "Constructor",
 							"flags": {},
 							"signatures": [
 								{
-									"id": 24,
+									"id": 28,
 									"name": "new CustomElement",
 									"kind": 16384,
 									"kindString": "Constructor signature",
@@ -129,7 +181,7 @@
 							"title": "Constructors",
 							"kind": 512,
 							"children": [
-								23
+								27
 							]
 						}
 					],
@@ -142,7 +194,7 @@
 					]
 				},
 				{
-					"id": 25,
+					"id": 29,
 					"name": "controller",
 					"kind": 64,
 					"kindString": "Function",
@@ -151,7 +203,7 @@
 					},
 					"signatures": [
 						{
-							"id": 26,
+							"id": 30,
 							"name": "controller",
 							"kind": 4096,
 							"kindString": "Call signature",
@@ -163,7 +215,7 @@
 							},
 							"parameters": [
 								{
-									"id": 27,
+									"id": 31,
 									"name": "classObject",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -172,7 +224,7 @@
 									},
 									"type": {
 										"type": "reference",
-										"id": 6,
+										"id": 10,
 										"name": "CustomElement"
 									}
 								}
@@ -197,14 +249,14 @@
 					"title": "Interfaces",
 					"kind": 256,
 					"children": [
-						22
+						26
 					]
 				},
 				{
 					"title": "Functions",
 					"kind": 64,
 					"children": [
-						25
+						29
 					]
 				}
 			],
@@ -217,7 +269,7 @@
 			]
 		},
 		{
-			"id": 28,
+			"id": 32,
 			"name": "\"findtarget\"",
 			"kind": 1,
 			"kindString": "External module",
@@ -227,7 +279,7 @@
 			"originalName": "/home/runner/work/catalyst/catalyst/catalyst/src/findtarget.ts",
 			"children": [
 				{
-					"id": 29,
+					"id": 33,
 					"name": "createSelector",
 					"kind": 64,
 					"kindString": "Function",
@@ -236,14 +288,14 @@
 					},
 					"signatures": [
 						{
-							"id": 30,
+							"id": 34,
 							"name": "createSelector",
 							"kind": 4096,
 							"kindString": "Call signature",
 							"flags": {},
 							"parameters": [
 								{
-									"id": 31,
+									"id": 35,
 									"name": "receiver",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -254,7 +306,7 @@
 									}
 								},
 								{
-									"id": 32,
+									"id": 36,
 									"name": "key",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -280,7 +332,7 @@
 					]
 				},
 				{
-					"id": 33,
+					"id": 37,
 					"name": "findTarget",
 					"kind": 64,
 					"kindString": "Function",
@@ -289,7 +341,7 @@
 					},
 					"signatures": [
 						{
-							"id": 34,
+							"id": 38,
 							"name": "findTarget",
 							"kind": 4096,
 							"kindString": "Call signature",
@@ -302,7 +354,7 @@
 							},
 							"parameters": [
 								{
-									"id": 35,
+									"id": 39,
 									"name": "controller",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -315,7 +367,7 @@
 									}
 								},
 								{
-									"id": 36,
+									"id": 40,
 									"name": "name",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -352,7 +404,7 @@
 					]
 				},
 				{
-					"id": 37,
+					"id": 41,
 					"name": "findTargets",
 					"kind": 64,
 					"kindString": "Function",
@@ -361,7 +413,7 @@
 					},
 					"signatures": [
 						{
-							"id": 38,
+							"id": 42,
 							"name": "findTargets",
 							"kind": 4096,
 							"kindString": "Call signature",
@@ -370,7 +422,7 @@
 							},
 							"parameters": [
 								{
-									"id": 39,
+									"id": 43,
 									"name": "controller",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -383,7 +435,7 @@
 									}
 								},
 								{
-									"id": 40,
+									"id": 44,
 									"name": "name",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -419,9 +471,9 @@
 					"title": "Functions",
 					"kind": 64,
 					"children": [
-						29,
 						33,
-						37
+						37,
+						41
 					]
 				}
 			],
@@ -434,7 +486,7 @@
 			]
 		},
 		{
-			"id": 50,
+			"id": 54,
 			"name": "\"index\"",
 			"kind": 1,
 			"kindString": "External module",
@@ -451,7 +503,7 @@
 			]
 		},
 		{
-			"id": 5,
+			"id": 9,
 			"name": "\"register\"",
 			"kind": 1,
 			"kindString": "External module",
@@ -461,21 +513,21 @@
 			"originalName": "/home/runner/work/catalyst/catalyst/catalyst/src/register.ts",
 			"children": [
 				{
-					"id": 6,
+					"id": 10,
 					"name": "CustomElement",
 					"kind": 256,
 					"kindString": "Interface",
 					"flags": {},
 					"children": [
 						{
-							"id": 7,
+							"id": 11,
 							"name": "constructor",
 							"kind": 512,
 							"kindString": "Constructor",
 							"flags": {},
 							"signatures": [
 								{
-									"id": 8,
+									"id": 12,
 									"name": "new CustomElement",
 									"kind": 16384,
 									"kindString": "Constructor signature",
@@ -500,7 +552,7 @@
 							"title": "Constructors",
 							"kind": 512,
 							"children": [
-								7
+								11
 							]
 						}
 					],
@@ -513,7 +565,7 @@
 					]
 				},
 				{
-					"id": 9,
+					"id": 13,
 					"name": "register",
 					"kind": 64,
 					"kindString": "Function",
@@ -522,7 +574,7 @@
 					},
 					"signatures": [
 						{
-							"id": 10,
+							"id": 14,
 							"name": "register",
 							"kind": 4096,
 							"kindString": "Call signature",
@@ -535,7 +587,7 @@
 							},
 							"parameters": [
 								{
-									"id": 11,
+									"id": 15,
 									"name": "classObject",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -544,7 +596,7 @@
 									},
 									"type": {
 										"type": "reference",
-										"id": 6,
+										"id": 10,
 										"name": "CustomElement"
 									}
 								}
@@ -569,14 +621,14 @@
 					"title": "Interfaces",
 					"kind": 256,
 					"children": [
-						6
+						10
 					]
 				},
 				{
 					"title": "Functions",
 					"kind": 64,
 					"children": [
-						9
+						13
 					]
 				}
 			],
@@ -589,7 +641,7 @@
 			]
 		},
 		{
-			"id": 41,
+			"id": 45,
 			"name": "\"target\"",
 			"kind": 1,
 			"kindString": "External module",
@@ -599,7 +651,7 @@
 			"originalName": "/home/runner/work/catalyst/catalyst/catalyst/src/target.ts",
 			"children": [
 				{
-					"id": 42,
+					"id": 46,
 					"name": "target",
 					"kind": 64,
 					"kindString": "Function",
@@ -608,7 +660,7 @@
 					},
 					"signatures": [
 						{
-							"id": 43,
+							"id": 47,
 							"name": "target",
 							"kind": 4096,
 							"kindString": "Call signature",
@@ -617,68 +669,6 @@
 							},
 							"comment": {
 								"shortText": "Target is a decorator which - when assigned to a property field on the\nclass - will override that class field, turning it into a Getter which\nreturns a call to `findTarget(this, key)` where `key` is the name of the\nproperty field. In other words, `@target foo` becomes a getter for\n`findTarget(this, 'foo')`."
-							},
-							"parameters": [
-								{
-									"id": 44,
-									"name": "proto",
-									"kind": 32768,
-									"kindString": "Parameter",
-									"flags": {
-										"isExported": true
-									},
-									"type": {
-										"type": "intrinsic",
-										"name": "object"
-									}
-								},
-								{
-									"id": 45,
-									"name": "key",
-									"kind": 32768,
-									"kindString": "Parameter",
-									"flags": {
-										"isExported": true
-									},
-									"type": {
-										"type": "intrinsic",
-										"name": "string"
-									}
-								}
-							],
-							"type": {
-								"type": "intrinsic",
-								"name": "void"
-							}
-						}
-					],
-					"sources": [
-						{
-							"fileName": "target.ts",
-							"line": 10,
-							"character": 22
-						}
-					]
-				},
-				{
-					"id": 46,
-					"name": "targets",
-					"kind": 64,
-					"kindString": "Function",
-					"flags": {
-						"isExported": true
-					},
-					"signatures": [
-						{
-							"id": 47,
-							"name": "targets",
-							"kind": 4096,
-							"kindString": "Call signature",
-							"flags": {
-								"isExported": true
-							},
-							"comment": {
-								"shortText": "Targets is a decorator which - when assigned to a property field on the\nclass - will override that class field, turning it into a Getter which\nreturns a call to `findTargets(this, key)` where `key` is the name of the\nproperty field. In other words, `@targets foo` becomes a getter for\n`findTargets(this, 'foo')`."
 							},
 							"parameters": [
 								{
@@ -717,6 +707,68 @@
 					"sources": [
 						{
 							"fileName": "target.ts",
+							"line": 10,
+							"character": 22
+						}
+					]
+				},
+				{
+					"id": 50,
+					"name": "targets",
+					"kind": 64,
+					"kindString": "Function",
+					"flags": {
+						"isExported": true
+					},
+					"signatures": [
+						{
+							"id": 51,
+							"name": "targets",
+							"kind": 4096,
+							"kindString": "Call signature",
+							"flags": {
+								"isExported": true
+							},
+							"comment": {
+								"shortText": "Targets is a decorator which - when assigned to a property field on the\nclass - will override that class field, turning it into a Getter which\nreturns a call to `findTargets(this, key)` where `key` is the name of the\nproperty field. In other words, `@targets foo` becomes a getter for\n`findTargets(this, 'foo')`."
+							},
+							"parameters": [
+								{
+									"id": 52,
+									"name": "proto",
+									"kind": 32768,
+									"kindString": "Parameter",
+									"flags": {
+										"isExported": true
+									},
+									"type": {
+										"type": "intrinsic",
+										"name": "object"
+									}
+								},
+								{
+									"id": 53,
+									"name": "key",
+									"kind": 32768,
+									"kindString": "Parameter",
+									"flags": {
+										"isExported": true
+									},
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "void"
+							}
+						}
+					],
+					"sources": [
+						{
+							"fileName": "target.ts",
 							"line": 26,
 							"character": 23
 						}
@@ -728,8 +780,8 @@
 					"title": "Functions",
 					"kind": 64,
 					"children": [
-						42,
-						46
+						46,
+						50
 					]
 				}
 			],
@@ -742,7 +794,7 @@
 			]
 		},
 		{
-			"id": 12,
+			"id": 16,
 			"name": "\"wrap\"",
 			"kind": 1,
 			"kindString": "External module",
@@ -752,7 +804,7 @@
 			"originalName": "/home/runner/work/catalyst/catalyst/catalyst/src/wrap.ts",
 			"children": [
 				{
-					"id": 13,
+					"id": 17,
 					"name": "wrap",
 					"kind": 64,
 					"kindString": "Function",
@@ -761,7 +813,7 @@
 					},
 					"signatures": [
 						{
-							"id": 14,
+							"id": 18,
 							"name": "wrap",
 							"kind": 4096,
 							"kindString": "Call signature",
@@ -774,7 +826,7 @@
 							},
 							"parameters": [
 								{
-									"id": 15,
+									"id": 19,
 									"name": "obj",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -787,7 +839,7 @@
 									}
 								},
 								{
-									"id": 16,
+									"id": 20,
 									"name": "name",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -800,7 +852,7 @@
 									}
 								},
 								{
-									"id": 17,
+									"id": 21,
 									"name": "fn",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -810,7 +862,7 @@
 									"type": {
 										"type": "reflection",
 										"declaration": {
-											"id": 18,
+											"id": 22,
 											"name": "__type",
 											"kind": 65536,
 											"kindString": "Type literal",
@@ -819,7 +871,7 @@
 											},
 											"signatures": [
 												{
-													"id": 19,
+													"id": 23,
 													"name": "__call",
 													"kind": 4096,
 													"kindString": "Call signature",
@@ -828,7 +880,7 @@
 													},
 													"parameters": [
 														{
-															"id": 20,
+															"id": 24,
 															"name": "args",
 															"kind": 32768,
 															"kindString": "Parameter",
@@ -882,7 +934,7 @@
 					"title": "Functions",
 					"kind": 64,
 					"children": [
-						13
+						17
 					]
 				}
 			],
@@ -901,12 +953,12 @@
 			"kind": 1,
 			"children": [
 				1,
-				21,
-				28,
-				50,
-				5,
-				41,
-				12
+				25,
+				32,
+				54,
+				9,
+				45,
+				16
 			]
 		}
 	]
