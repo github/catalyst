@@ -35,6 +35,8 @@
     "@github/prettier-config": "^0.0.4",
     "chai": "^4.2.0",
     "chai-spies": "^1.0.0",
+    "eslint": "^7.2.0",
+    "eslint-plugin-github": "^4.0.1",
     "mocha": "^7.1.1",
     "prettier": "^2.0.1",
     "tslib": "^1.10.0",
