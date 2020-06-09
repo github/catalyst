@@ -6,7 +6,11 @@
  *
  * Used in the `controller()` decorator.
  */
-export function wrap(obj: any, name: string, fn: (...args: any[]) => any) {
+export function wrap<K extends string>(
+  obj: Record<K, (...args: unknown[]) => void>,
+  name: K,
+  fn: (...args: unknown[]) => unknown
+): void {
   if (!obj[name]) {
     obj[name] = fn
   } else {
