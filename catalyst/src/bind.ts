@@ -37,7 +37,9 @@ function bindActionsToController(controller: HTMLElement, el: Element) {
     const eventName = rest.slice(0, colonIndex)
 
     // Check the `method` is present on the prototype
-    const methodDescriptor = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(controller), method)
+    const methodDescriptor =
+      Object.getOwnPropertyDescriptor(controller, method) ||
+      Object.getOwnPropertyDescriptor(Object.getPrototypeOf(controller), method)
     if (methodDescriptor && typeof methodDescriptor.value == 'function') {
       el.addEventListener(eventName, (event: Event) => {
         methodDescriptor.value.call(controller, event)
