@@ -1,17 +1,13 @@
 import {wrap} from '../lib/wrap.js'
-import chai from 'chai'
-import spies from 'chai-spies'
-chai.use(spies)
-const {spy, expect} = chai
 
 describe('wrap', () => {
   it('wraps a method that exists', () => {
     class MyController {
       connectedCallback() {}
     }
-    spy.on(MyController.prototype, 'connectedCallback')
+    chai.spy.on(MyController.prototype, 'connectedCallback')
     const original = MyController.prototype.connectedCallback
-    const fn = spy()
+    const fn = chai.spy()
     wrap(MyController.prototype, 'connectedCallback', fn)
     const controller = new MyController()
     controller.connectedCallback('a')
@@ -21,7 +17,7 @@ describe('wrap', () => {
 
   it('assigns the method that does not exist', () => {
     class MyController {}
-    const fn = spy()
+    const fn = chai.spy()
     wrap(MyController.prototype, 'connectedCallback', fn)
     const controller = new MyController()
     controller.connectedCallback('a')
