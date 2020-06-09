@@ -30,7 +30,7 @@
     "build:docs:jekyll": "cd docs && bundle exec jekyll build",
     "build:docs:reference": "typedoc --json docs/_data/reference.json",
     "pretest": "npm run build",
-    "test": "npm run lint && mocha catalyst/test/*"
+    "test": "npm run lint && karma start catalyst/test/karma.config.cjs"
   },
   "devDependencies": {
     "@github/prettier-config": "^0.0.4",
@@ -38,6 +38,12 @@
     "chai-spies": "^1.0.0",
     "eslint": "^7.2.0",
     "eslint-plugin-github": "^4.0.1",
+    "karma": "^5.0.9",
+    "karma-chai": "^0.1.0",
+    "karma-chai-spies": "^0.1.4",
+    "karma-chrome-launcher": "^3.1.0",
+    "karma-mocha": "^2.0.1",
+    "karma-mocha-reporter": "^2.2.5",
     "mocha": "^7.1.1",
     "prettier": "^2.0.1",
     "tslib": "^1.10.0",
