@@ -1,4 +1,10 @@
-import {bind} from '../lib/bind.js'
+import {bind, listenForBind} from '../lib/bind.js'
+
+async function waitForNextAnimationFrame() {
+  return new Promise(resolve => {
+    window.requestAnimationFrame(resolve)
+  })
+}
 
 describe('bind', () => {
   class MyController extends HTMLElement {
@@ -153,5 +159,27 @@ describe('bind', () => {
     expect(instance.foo).to.have.been.called.once.with('a')
     el2.addEventListener.__spy.calls[0][1]('b')
     expect(instance.foo).to.have.been.called.twice.second.with('b')
+  })
+
+  it('re-binds actions that are denoted by HTML that is dynamically injected into the controller', async function () {
+    const instance = document.createElement('my-controller')
+    chai.spy.on(instance, 'foo')
+    root.appendChild(instance)
+
+    listenForBind(root)
+
+    const button = document.createElement('button')
+    button.setAttribute('data-action', 'click:my-controller#foo')
+
+    instance.appendChild(button)
+
+    // We need to wait for a couple of frames after injecting the HTML into to
+    // controller so that the actions have been bound to the controller.
+    await waitForNextAnimationFrame()
+    await waitForNextAnimationFrame()
+
+    button.click()
+
+    expect(instance.foo).to.have.been.called.exactly(1)
   })
 })
