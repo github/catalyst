@@ -142,14 +142,24 @@ If you're using decorators, then the `@controller` decorator automatically handl
 
 If you're not using decorators, then you'll need to call `bind(this)` somewhere inside of `connectedCallback()`.
 
-```
+```js
 import {bind} from '@github/catalyst'
 
 class HelloController extends HTMLElement {
-
   connectedCallback() {
     bind(this)
   }
-
 }
+```
+
+### Binding dynamically added actions
+
+Catalyst doesn't bind actions that are dynamically injected into controllers. If you need to dynamically inject actions you can use the `listenForBind` function to set up a observer that will bind actions when they are added to a controller.
+
+You can provide the element you'd like to observe as a first argument and the number of items to process in a batch as a second argument. Those arguments default to `document` and `30` respectively.
+
+```js
+import {listenForBind} from '@github/catalyst'
+
+listenForBind(document, 30)
 ```
