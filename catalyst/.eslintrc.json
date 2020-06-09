@@ -1,0 +1,13 @@
+{
+  "root": true,
+  "plugins": ["github"],
+  "extends": ["plugin:github/recommended", "plugin:github/typescript", "plugin:github/browser"],
+  "overrides": [
+    {
+      "files": "test/*",
+      "env": {
+        "mocha": true
+      }
+    }
+  ]
+}

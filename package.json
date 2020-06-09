@@ -24,12 +24,13 @@
   ],
   "scripts": {
     "clean": "tsc --build --clean",
+    "lint": "eslint ./catalyst/src/* ./catalyst/test/*",
     "build": "tsc --build",
     "build:docs": "npm run build:docs:reference && npm run build:docs:jekyll",
     "build:docs:jekyll": "cd docs && bundle exec jekyll build",
     "build:docs:reference": "typedoc --json docs/_data/reference.json",
     "pretest": "npm run build",
-    "test": "mocha catalyst/test/*"
+    "test": "npm run lint && mocha catalyst/test/*"
   },
   "devDependencies": {
     "@github/prettier-config": "^0.0.4",
