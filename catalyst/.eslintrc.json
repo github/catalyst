@@ -12,8 +12,17 @@
       "rules": {
         "@typescript-eslint/no-empty-function": "off"
       },
+      "globals": {
+        "chai": false,
+        "expect": false
+      },
       "env": {
-        "mocha": true,
+        "mocha": true
+      }
+    },
+    {
+      "files": "*.cjs",
+      "env": {
         "node": true
       }
     }
