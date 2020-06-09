@@ -1,5 +1,3 @@
-const createSelector = (receiver: Element, key: string) => `[data-target*="${receiver.tagName.toLowerCase()}.${key}"]`
-
 /**
  * findTarget will run `querySelectorAll` against the given controller,
  * returning any the first child that:
@@ -12,14 +10,14 @@ const createSelector = (receiver: Element, key: string) => `[data-target*="${rec
  *  words it is not nested in other controllers of the same type.
  *
  */
-export function findTarget(controller: HTMLElement, name: string) {
+export function findTarget(controller: HTMLElement, name: string): Element | undefined {
   const tag = controller.tagName.toLowerCase()
   for (const el of controller.querySelectorAll(`[data-target*="${tag}.${name}"]`)) {
     if (el.closest(tag) === controller) return el
   }
 }
 
-export function findTargets(controller: HTMLElement, name: string) {
+export function findTargets(controller: HTMLElement, name: string): Element[] {
   const tag = controller.tagName.toLowerCase()
   const targets = []
   for (const el of controller.querySelectorAll(`[data-target*="${tag}.${name}"]`)) {

@@ -9,10 +9,9 @@ interface CustomElement {
  *
  * Example: HelloController => hello-controller
  */
-export function register(classObject: CustomElement) {
+export function register(classObject: CustomElement): void {
   const name = classObject.name.replace(/([a-zA-Z])(?=[A-Z])/g, '$1-').toLowerCase()
   if (!window.customElements.get(name)) {
-    // @ts-ignore
     window[classObject.name] = classObject
     window.customElements.define(name, classObject)
   }

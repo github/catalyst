@@ -2,11 +2,19 @@
   "root": true,
   "plugins": ["github"],
   "extends": ["plugin:github/recommended", "plugin:github/typescript", "plugin:github/browser"],
+  "rules": {
+    "no-invalid-this": "off",
+    "@typescript-eslint/no-invalid-this": ["error"]
+  },
   "overrides": [
     {
       "files": "test/*",
+      "rules": {
+        "@typescript-eslint/no-empty-function": "off"
+      },
       "env": {
-        "mocha": true
+        "mocha": true,
+        "node": true
       }
     }
   ]

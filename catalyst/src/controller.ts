@@ -12,7 +12,7 @@ interface CustomElement {
  * registry, as well as ensuring `bind(this)` is called on `connectedCallback`,
  * wrapping the classes `connectedCallback` method if needed.
  */
-export function controller(classObject: CustomElement) {
+export function controller(classObject: CustomElement): void {
   wrap(classObject.prototype, 'connectedCallback', function (this: HTMLElement) {
     bind(this)
   })

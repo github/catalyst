@@ -2,7 +2,7 @@
  * Bind `[data-action]` elements from the DOM to their actions.
  *
  */
-export function bind(controller: HTMLElement) {
+export function bind(controller: HTMLElement): void {
   const tag = controller.tagName.toLowerCase()
   const actionAttributeMatcher = `[data-action*=":${tag}#"]`
 
@@ -40,7 +40,7 @@ function bindActionsToController(controller: HTMLElement, el: Element) {
     const methodDescriptor = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(controller), method)
     if (methodDescriptor && typeof methodDescriptor.value == 'function') {
       el.addEventListener(eventName, (event: Event) => {
-        ;(controller as any)[method](event)
+        methodDescriptor.value.call(controller, event)
       })
     }
   }
