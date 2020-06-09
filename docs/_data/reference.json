@@ -132,7 +132,7 @@
 			]
 		},
 		{
-			"id": 25,
+			"id": 29,
 			"name": "\"controller\"",
 			"kind": 1,
 			"kindString": "External module",
@@ -142,21 +142,21 @@
 			"originalName": "/home/runner/work/catalyst/catalyst/catalyst/src/controller.ts",
 			"children": [
 				{
-					"id": 26,
+					"id": 30,
 					"name": "CustomElement",
 					"kind": 256,
 					"kindString": "Interface",
 					"flags": {},
 					"children": [
 						{
-							"id": 27,
+							"id": 31,
 							"name": "constructor",
 							"kind": 512,
 							"kindString": "Constructor",
 							"flags": {},
 							"signatures": [
 								{
-									"id": 28,
+									"id": 32,
 									"name": "new CustomElement",
 									"kind": 16384,
 									"kindString": "Constructor signature",
@@ -181,7 +181,7 @@
 							"title": "Constructors",
 							"kind": 512,
 							"children": [
-								27
+								31
 							]
 						}
 					],
@@ -194,7 +194,7 @@
 					]
 				},
 				{
-					"id": 29,
+					"id": 33,
 					"name": "controller",
 					"kind": 64,
 					"kindString": "Function",
@@ -203,7 +203,7 @@
 					},
 					"signatures": [
 						{
-							"id": 30,
+							"id": 34,
 							"name": "controller",
 							"kind": 4096,
 							"kindString": "Call signature",
@@ -215,7 +215,7 @@
 							},
 							"parameters": [
 								{
-									"id": 31,
+									"id": 35,
 									"name": "classObject",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -249,14 +249,14 @@
 					"title": "Interfaces",
 					"kind": 256,
 					"children": [
-						26
+						30
 					]
 				},
 				{
 					"title": "Functions",
 					"kind": 64,
 					"children": [
-						29
+						33
 					]
 				}
 			],
@@ -269,7 +269,7 @@
 			]
 		},
 		{
-			"id": 32,
+			"id": 36,
 			"name": "\"findtarget\"",
 			"kind": 1,
 			"kindString": "External module",
@@ -278,59 +278,6 @@
 			},
 			"originalName": "/home/runner/work/catalyst/catalyst/catalyst/src/findtarget.ts",
 			"children": [
-				{
-					"id": 33,
-					"name": "createSelector",
-					"kind": 64,
-					"kindString": "Function",
-					"flags": {
-						"isConst": true
-					},
-					"signatures": [
-						{
-							"id": 34,
-							"name": "createSelector",
-							"kind": 4096,
-							"kindString": "Call signature",
-							"flags": {},
-							"parameters": [
-								{
-									"id": 35,
-									"name": "receiver",
-									"kind": 32768,
-									"kindString": "Parameter",
-									"flags": {},
-									"type": {
-										"type": "reference",
-										"name": "Element"
-									}
-								},
-								{
-									"id": 36,
-									"name": "key",
-									"kind": 32768,
-									"kindString": "Parameter",
-									"flags": {},
-									"type": {
-										"type": "intrinsic",
-										"name": "string"
-									}
-								}
-							],
-							"type": {
-								"type": "intrinsic",
-								"name": "string"
-							}
-						}
-					],
-					"sources": [
-						{
-							"fileName": "findtarget.ts",
-							"line": 1,
-							"character": 20
-						}
-					]
-				},
 				{
 					"id": 37,
 					"name": "findTarget",
@@ -384,12 +331,12 @@
 								"type": "union",
 								"types": [
 									{
-										"type": "intrinsic",
-										"name": "undefined"
-									},
-									{
 										"type": "reference",
 										"name": "Element"
+									},
+									{
+										"type": "intrinsic",
+										"name": "undefined"
 									}
 								]
 							}
@@ -398,7 +345,7 @@
 					"sources": [
 						{
 							"fileName": "findtarget.ts",
-							"line": 15,
+							"line": 13,
 							"character": 26
 						}
 					]
@@ -460,7 +407,7 @@
 					"sources": [
 						{
 							"fileName": "findtarget.ts",
-							"line": 22,
+							"line": 20,
 							"character": 27
 						}
 					]
@@ -471,7 +418,6 @@
 					"title": "Functions",
 					"kind": 64,
 					"children": [
-						33,
 						37,
 						41
 					]
@@ -486,7 +432,7 @@
 			]
 		},
 		{
-			"id": 54,
+			"id": 56,
 			"name": "\"index\"",
 			"kind": 1,
 			"kindString": "External module",
@@ -670,9 +616,24 @@
 							"comment": {
 								"shortText": "Target is a decorator which - when assigned to a property field on the\nclass - will override that class field, turning it into a Getter which\nreturns a call to `findTarget(this, key)` where `key` is the name of the\nproperty field. In other words, `@target foo` becomes a getter for\n`findTarget(this, 'foo')`."
 							},
-							"parameters": [
+							"typeParameter": [
 								{
 									"id": 48,
+									"name": "K",
+									"kind": 131072,
+									"kindString": "Type parameter",
+									"flags": {
+										"isExported": true
+									},
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								}
+							],
+							"parameters": [
+								{
+									"id": 49,
 									"name": "proto",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -680,12 +641,26 @@
 										"isExported": true
 									},
 									"type": {
-										"type": "intrinsic",
-										"name": "object"
+										"type": "reference",
+										"typeArguments": [
+											{
+												"type": "typeParameter",
+												"name": "K",
+												"constraint": {
+													"type": "intrinsic",
+													"name": "string"
+												}
+											},
+											{
+												"type": "intrinsic",
+												"name": "unknown"
+											}
+										],
+										"name": "Record"
 									}
 								},
 								{
-									"id": 49,
+									"id": 50,
 									"name": "key",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -693,8 +668,12 @@
 										"isExported": true
 									},
 									"type": {
-										"type": "intrinsic",
-										"name": "string"
+										"type": "typeParameter",
+										"name": "K",
+										"constraint": {
+											"type": "intrinsic",
+											"name": "string"
+										}
 									}
 								}
 							],
@@ -713,7 +692,7 @@
 					]
 				},
 				{
-					"id": 50,
+					"id": 51,
 					"name": "targets",
 					"kind": 64,
 					"kindString": "Function",
@@ -722,7 +701,7 @@
 					},
 					"signatures": [
 						{
-							"id": 51,
+							"id": 52,
 							"name": "targets",
 							"kind": 4096,
 							"kindString": "Call signature",
@@ -732,9 +711,24 @@
 							"comment": {
 								"shortText": "Targets is a decorator which - when assigned to a property field on the\nclass - will override that class field, turning it into a Getter which\nreturns a call to `findTargets(this, key)` where `key` is the name of the\nproperty field. In other words, `@targets foo` becomes a getter for\n`findTargets(this, 'foo')`."
 							},
+							"typeParameter": [
+								{
+									"id": 53,
+									"name": "K",
+									"kind": 131072,
+									"kindString": "Type parameter",
+									"flags": {
+										"isExported": true
+									},
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								}
+							],
 							"parameters": [
 								{
-									"id": 52,
+									"id": 54,
 									"name": "proto",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -742,12 +736,26 @@
 										"isExported": true
 									},
 									"type": {
-										"type": "intrinsic",
-										"name": "object"
+										"type": "reference",
+										"typeArguments": [
+											{
+												"type": "typeParameter",
+												"name": "K",
+												"constraint": {
+													"type": "intrinsic",
+													"name": "string"
+												}
+											},
+											{
+												"type": "intrinsic",
+												"name": "unknown"
+											}
+										],
+										"name": "Record"
 									}
 								},
 								{
-									"id": 53,
+									"id": 55,
 									"name": "key",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -755,8 +763,12 @@
 										"isExported": true
 									},
 									"type": {
-										"type": "intrinsic",
-										"name": "string"
+										"type": "typeParameter",
+										"name": "K",
+										"constraint": {
+											"type": "intrinsic",
+											"name": "string"
+										}
 									}
 								}
 							],
@@ -781,7 +793,7 @@
 					"kind": 64,
 					"children": [
 						46,
-						50
+						51
 					]
 				}
 			],
@@ -824,25 +836,12 @@
 								"shortText": "A utility method which wraps a method on an object. If the method doesn't\nalready exist on the object, it is simply assigned. If it does exist then\nboth the new function and the existing function will be called with the same\narguments.",
 								"text": "Used in the `controller()` decorator.\n"
 							},
-							"parameters": [
+							"typeParameter": [
 								{
 									"id": 19,
-									"name": "obj",
-									"kind": 32768,
-									"kindString": "Parameter",
-									"flags": {
-										"isExported": true
-									},
-									"type": {
-										"type": "intrinsic",
-										"name": "any"
-									}
-								},
-								{
-									"id": 20,
-									"name": "name",
-									"kind": 32768,
-									"kindString": "Parameter",
+									"name": "K",
+									"kind": 131072,
+									"kindString": "Type parameter",
 									"flags": {
 										"isExported": true
 									},
@@ -850,9 +849,104 @@
 										"type": "intrinsic",
 										"name": "string"
 									}
+								}
+							],
+							"parameters": [
+								{
+									"id": 20,
+									"name": "obj",
+									"kind": 32768,
+									"kindString": "Parameter",
+									"flags": {
+										"isExported": true
+									},
+									"type": {
+										"type": "reference",
+										"typeArguments": [
+											{
+												"type": "typeParameter",
+												"name": "K",
+												"constraint": {
+													"type": "intrinsic",
+													"name": "string"
+												}
+											},
+											{
+												"type": "reflection",
+												"declaration": {
+													"id": 21,
+													"name": "__type",
+													"kind": 65536,
+													"kindString": "Type literal",
+													"flags": {
+														"isExported": true
+													},
+													"signatures": [
+														{
+															"id": 22,
+															"name": "__call",
+															"kind": 4096,
+															"kindString": "Call signature",
+															"flags": {
+																"isExported": true
+															},
+															"parameters": [
+																{
+																	"id": 23,
+																	"name": "args",
+																	"kind": 32768,
+																	"kindString": "Parameter",
+																	"flags": {
+																		"isExported": true,
+																		"isRest": true
+																	},
+																	"type": {
+																		"type": "array",
+																		"elementType": {
+																			"type": "intrinsic",
+																			"name": "unknown"
+																		}
+																	}
+																}
+															],
+															"type": {
+																"type": "intrinsic",
+																"name": "void"
+															}
+														}
+													],
+													"sources": [
+														{
+															"fileName": "wrap.ts",
+															"line": 10,
+															"character": 16
+														}
+													]
+												}
+											}
+										],
+										"name": "Record"
+									}
 								},
 								{
-									"id": 21,
+									"id": 24,
+									"name": "name",
+									"kind": 32768,
+									"kindString": "Parameter",
+									"flags": {
+										"isExported": true
+									},
+									"type": {
+										"type": "typeParameter",
+										"name": "K",
+										"constraint": {
+											"type": "intrinsic",
+											"name": "string"
+										}
+									}
+								},
+								{
+									"id": 25,
 									"name": "fn",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -862,7 +956,7 @@
 									"type": {
 										"type": "reflection",
 										"declaration": {
-											"id": 22,
+											"id": 26,
 											"name": "__type",
 											"kind": 65536,
 											"kindString": "Type literal",
@@ -871,7 +965,7 @@
 											},
 											"signatures": [
 												{
-													"id": 23,
+													"id": 27,
 													"name": "__call",
 													"kind": 4096,
 													"kindString": "Call signature",
@@ -880,7 +974,7 @@
 													},
 													"parameters": [
 														{
-															"id": 24,
+															"id": 28,
 															"name": "args",
 															"kind": 32768,
 															"kindString": "Parameter",
@@ -892,22 +986,22 @@
 																"type": "array",
 																"elementType": {
 																	"type": "intrinsic",
-																	"name": "any"
+																	"name": "unknown"
 																}
 															}
 														}
 													],
 													"type": {
 														"type": "intrinsic",
-														"name": "any"
+														"name": "unknown"
 													}
 												}
 											],
 											"sources": [
 												{
 													"fileName": "wrap.ts",
-													"line": 9,
-													"character": 48
+													"line": 12,
+													"character": 5
 												}
 											]
 										}
@@ -953,9 +1047,9 @@
 			"kind": 1,
 			"children": [
 				1,
-				25,
-				32,
-				54,
+				29,
+				36,
+				56,
 				9,
 				45,
 				16
