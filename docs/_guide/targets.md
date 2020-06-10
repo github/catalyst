@@ -91,7 +91,7 @@ Elements can be referenced as multiple targets, and targets may be referenced mu
 import { controller, targets } from "@github/catalyst"
 
 @controller
-class HelloController extends Controller {
+class HelloController extends HTMLElement {
   @targets readCheckbox!: HTMLElement
   @targets writeCheckbox!: HTMLElement
 
