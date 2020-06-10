@@ -52,6 +52,19 @@ describe('findTarget', () => {
 
     expect(foundElement).to.equal(exactMatch)
   })
+
+  it('returns targets when there are mutliple target values', () => {
+    const instance = document.createElement('my-controller')
+
+    const el = document.createElement('div')
+    el.setAttribute('data-target', 'my-controller.barfoo my-controller.foobar')
+
+    instance.appendChild(el)
+
+    const foundElement = findTarget(instance, 'foobar')
+
+    expect(foundElement).to.equal(el)
+  })
 })
 
 describe('findTargets', () => {
