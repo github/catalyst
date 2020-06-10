@@ -67,7 +67,7 @@ describe('findTarget', () => {
     expect(foundElement1).to.equal(el)
     expect(foundElement2).to.equal(el)
   })
-  
+
   it('returns targets when there are mutliple target values with different controllers', () => {
     const instance = document.createElement('my-controller')
 
