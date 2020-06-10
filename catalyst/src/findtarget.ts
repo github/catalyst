@@ -2,7 +2,7 @@
  * findTarget will run `querySelectorAll` against the given controller,
  * returning any the first child that:
  *
- *  - Matches the selector of `[data-target="tag.name"]` where tag is the
+ *  - Matches the selector of `[data-target~="tag.name"]` where tag is the
  *  tagName of the given HTMLElement, and `name` is the given `name` argument.
  *
  *  - Closest ascendant of the element, that matches the tagname of the
