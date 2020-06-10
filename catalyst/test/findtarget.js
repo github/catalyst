@@ -61,9 +61,26 @@ describe('findTarget', () => {
 
     instance.appendChild(el)
 
-    const foundElement = findTarget(instance, 'foobar')
+    const foundElement1 = findTarget(instance, 'foobar')
+    const foundElement2 = findTarget(instance, 'barfoo')
 
-    expect(foundElement).to.equal(el)
+    expect(foundElement1).to.equal(el)
+    expect(foundElement2).to.equal(el)
+  })
+  
+  it('returns targets when there are mutliple target values with different controllers', () => {
+    const instance = document.createElement('my-controller')
+
+    const el = document.createElement('div')
+    el.setAttribute('data-target', 'other-controller.barfoo my-controller.foobar')
+
+    instance.appendChild(el)
+
+    const foundElement1 = findTarget(instance, 'foobar')
+    const foundElement2 = findTarget(instance, 'barfoo')
+
+    expect(foundElement1).to.equal(el)
+    expect(foundElement2).to.equal(null)
   })
 })
 
