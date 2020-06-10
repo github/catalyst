@@ -297,7 +297,7 @@
 							},
 							"comment": {
 								"shortText": "findTarget will run `querySelectorAll` against the given controller,\nreturning any the first child that:",
-								"text": " - Matches the selector of `[data-target*=\"tag.name\"]` where tag is the\n tagName of the given HTMLElement, and `name` is the given `name` argument.\n\n - Closest ascendant of the element, that matches the tagname of the\n controller, is the specific instance of the controller itself - in other\n words it is not nested in other controllers of the same type.\n\n"
+								"text": " - Matches the selector of `[data-target~=\"tag.name\"]` where tag is the\n tagName of the given HTMLElement, and `name` is the given `name` argument.\n\n - Closest ascendant of the element, that matches the tagname of the\n controller, is the specific instance of the controller itself - in other\n words it is not nested in other controllers of the same type.\n\n"
 							},
 							"parameters": [
 								{
