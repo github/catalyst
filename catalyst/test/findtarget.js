@@ -7,6 +7,17 @@ if (!window.customElements.get('my-controller')) {
 }
 
 describe('findTarget', () => {
+  let root
+
+  beforeEach(() => {
+    root = document.createElement('div')
+    document.body.appendChild(root)
+  })
+
+  afterEach(() => {
+    root.remove()
+  })
+
   it('calls querySelectorAll with the controller name and target name', () => {
     const instance = new MyController()
     chai.spy.on(instance, 'querySelectorAll', () => [])
@@ -24,6 +35,22 @@ describe('findTarget', () => {
     expect(els[0].closest).to.have.been.called.once.with.exactly('my-controller')
     expect(els[1].closest).to.have.been.called.once.with.exactly('my-controller')
     expect(target).to.equal(els[1])
+  })
+
+  it('returns the first element that has the exact target name', () => {
+    const instance = document.createElement('my-controller')
+
+    const notExactMatch = document.createElement('div')
+    notExactMatch.setAttribute('data-target', 'my-controller.foobar')
+    const exactMatch = document.createElement('div')
+    exactMatch.setAttribute('data-target', 'my-controller.foo')
+
+    instance.appendChild(notExactMatch)
+    instance.appendChild(exactMatch)
+
+    const foundElement = findTarget(instance, 'foo')
+
+    expect(foundElement).to.equal(exactMatch)
   })
 })
 
