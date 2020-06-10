@@ -80,7 +80,7 @@ describe('findTarget', () => {
     const foundElement2 = findTarget(instance, 'barfoo')
 
     expect(foundElement1).to.equal(el)
-    expect(foundElement2).to.equal(null)
+    expect(foundElement2).to.equal(undefined)
   })
 })
 
