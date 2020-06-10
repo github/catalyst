@@ -22,7 +22,7 @@ describe('findTarget', () => {
     const instance = new MyController()
     chai.spy.on(instance, 'querySelectorAll', () => [])
     findTarget(instance, 'foo')
-    expect(instance.querySelectorAll).to.have.been.called.once.with.exactly('[data-target="my-controller.foo"]')
+    expect(instance.querySelectorAll).to.have.been.called.once.with.exactly('[data-target~="my-controller.foo"]')
   })
 
   it('returns the first element where closest tag is the controller', () => {
@@ -72,7 +72,7 @@ describe('findTargets', () => {
     const instance = new MyController()
     chai.spy.on(instance, 'querySelectorAll', () => [])
     findTargets(instance, 'foo')
-    expect(instance.querySelectorAll).to.have.been.called.once.with.exactly('[data-target="my-controller.foo"]')
+    expect(instance.querySelectorAll).to.have.been.called.once.with.exactly('[data-target~="my-controller.foo"]')
   })
 
   it('returns all elements where closest tag is the controller', () => {
