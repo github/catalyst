@@ -1,16 +1,12 @@
 import {findTarget, findTargets} from '../lib/findtarget.js'
 
-describe('findTarget', () => {
-  class FakeElement {
-    closest() {}
-  }
-  class MyController {
-    get tagName() {
-      return 'my-controller'
-    }
-    querySelectorAll() {}
-  }
+class MyController extends HTMLElement {}
+if (!window.customElements.get('my-controller')) {
+  window.MyController = MyController
+  window.customElements.define('my-controller', MyController)
+}
 
+describe('findTarget', () => {
   it('calls querySelectorAll with the controller name and target name', () => {
     const instance = new MyController()
     chai.spy.on(instance, 'querySelectorAll', () => [])
@@ -19,7 +15,7 @@ describe('findTarget', () => {
   })
 
   it('returns first element where closest tag is the controller', () => {
-    const els = [new FakeElement(), new FakeElement()]
+    const els = [document.createElement('div'), document.createElement('div')]
     const instance = new MyController()
     chai.spy.on(instance, 'querySelectorAll', () => els)
     chai.spy.on(els[0], 'closest', () => null)
@@ -32,16 +28,6 @@ describe('findTarget', () => {
 })
 
 describe('findTargets', () => {
-  class FakeElement {
-    closest() {}
-  }
-  class MyController {
-    get tagName() {
-      return 'my-controller'
-    }
-    querySelectorAll() {}
-  }
-
   it('calls querySelectorAll with the controller name and target name', () => {
     const instance = new MyController()
     chai.spy.on(instance, 'querySelectorAll', () => [])
@@ -50,7 +36,7 @@ describe('findTargets', () => {
   })
 
   it('returns all elements where closest tag is the controller', () => {
-    const els = [new FakeElement(), new FakeElement(), new FakeElement()]
+    const els = [document.createElement('div'), document.createElement('div'), document.createElement('div')]
     const instance = new MyController()
     chai.spy.on(instance, 'querySelectorAll', () => els)
     chai.spy.on(els[0], 'closest', () => instance)
