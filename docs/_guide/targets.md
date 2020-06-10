@@ -29,7 +29,7 @@ To create a Target, use the `@target` decorator on a class field, and add the ma
 import { controller, target } from "@github/catalyst"
 
 @controller
-class HelloController extends Controller {
+class HelloController extends HTMLElement {
   @target outputTarget!: HTMLElement
 
   greet() {
