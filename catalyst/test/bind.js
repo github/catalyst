@@ -1,11 +1,6 @@
 import {bind} from '../lib/bind.js'
 
 describe('bind', () => {
-  class FakeElement {
-    addEventListener() {}
-    getAttribute() {}
-    closest() {}
-  }
   class MyController {
     get tagName() {
       return 'my-controller'
@@ -25,7 +20,7 @@ describe('bind', () => {
   it('binds events on elements based on their data-action attribute', () => {
     const instance = new MyController()
     chai.spy.on(instance, 'foo')
-    const el = new FakeElement()
+    const el = document.createElement('div')
     instance.querySelectorAll = () => [el]
     el.closest = () => instance
     el.getAttribute = () => 'click:my-controller#foo'
@@ -42,7 +37,7 @@ describe('bind', () => {
   it('allows for the presence of `:` in an event name', () => {
     const instance = new MyController()
     chai.spy.on(instance, 'foo')
-    const el = new FakeElement()
+    const el = document.createElement('div')
     instance.querySelectorAll = () => [el]
     el.closest = () => instance
     el.getAttribute = () => 'custom:event:my-controller#foo'
@@ -76,7 +71,7 @@ describe('bind', () => {
   it('does not bind elements whose closest selector is not this controller', () => {
     const instance = new MyController()
     chai.spy.on(instance, 'foo')
-    const el = new FakeElement()
+    const el = document.createElement('div')
     instance.querySelectorAll = () => [el]
     el.closest = () => null
     el.getAttribute = () => 'click:my-controller#foo'
@@ -88,7 +83,7 @@ describe('bind', () => {
   it('does not bind elements whose data-action does not match controller tagname', () => {
     const instance = new MyController()
     chai.spy.on(instance, 'foo')
-    const el = new FakeElement()
+    const el = document.createElement('div')
     instance.querySelectorAll = () => [el]
     el.closest = () => null
     el.getAttribute = () => 'click:other-controller#foo'
@@ -100,7 +95,7 @@ describe('bind', () => {
   it('does not bind methods that dont exist', () => {
     const instance = new MyController()
     chai.spy.on(instance, 'foo')
-    const el = new FakeElement()
+    const el = document.createElement('div')
     instance.querySelectorAll = () => [el]
     el.closest = () => instance
     el.getAttribute = () => 'click:my-controller#frob'
@@ -112,7 +107,7 @@ describe('bind', () => {
   it('can bind multiple event types', () => {
     const instance = new MyController()
     chai.spy.on(instance, 'foo')
-    const el = new FakeElement()
+    const el = document.createElement('div')
     instance.querySelectorAll = () => [el]
     el.closest = () => instance
     el.getAttribute = () => 'click:my-controller#foo submit:my-controller#foo'
@@ -132,8 +127,8 @@ describe('bind', () => {
   it('can bind multiple elements to the same event', () => {
     const instance = new MyController()
     chai.spy.on(instance, 'foo')
-    const el1 = new FakeElement()
-    const el2 = new FakeElement()
+    const el1 = document.createElement('div')
+    const el2 = document.createElement('div')
     instance.querySelectorAll = () => [el1, el2]
     el1.closest = () => instance
     el2.closest = () => instance
