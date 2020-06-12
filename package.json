@@ -28,7 +28,7 @@
     "build:docs:jekyll": "cd docs && bundle exec jekyll build",
     "build:docs:reference": "typedoc --json docs/_data/reference.json",
     "clean": "tsc --build --clean",
-    "lint": "eslint ./src/* ./test/*",
+    "lint": "eslint .",
     "pretest": "npm run build"
   },
   "prettier": "@github/prettier-config",
