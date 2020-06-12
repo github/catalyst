@@ -1,9 +1,7 @@
 {
-  "private": true,
-  "keywords": [
-    "typescript",
-    "javascript"
-  ],
+  "name": "@github/catalyst",
+  "version": "0.0.7",
+  "description": "Helpers for creating HTML Elements as Controllers",
   "homepage": "https://github.github.io/catalyst",
   "bugs": {
     "url": "https://github.com/github/catalyst/issues"
@@ -18,20 +16,22 @@
     "Keith Cirkel (https://keithcirkel.co.uk/)",
     "Kristján Oddsson <koddsson@gmail.com>"
   ],
-  "workspaces": [
-    "catalyst/",
-    "docs/"
+  "type": "module",
+  "main": "lib/index.js",
+  "module": "lib/index.js",
+  "files": [
+    "lib"
   ],
   "scripts": {
-    "clean": "tsc --build --clean",
-    "lint": "eslint ./catalyst/src/* ./catalyst/test/*",
     "build": "tsc --build",
     "build:docs": "npm run build:docs:reference && npm run build:docs:jekyll",
     "build:docs:jekyll": "cd docs && bundle exec jekyll build",
     "build:docs:reference": "typedoc --json docs/_data/reference.json",
-    "pretest": "npm run build",
-    "test": "npm run lint && karma start catalyst/test/karma.config.cjs"
+    "clean": "tsc --build --clean",
+    "lint": "eslint ./src/* ./test/*",
+    "pretest": "npm run build"
   },
+  "prettier": "@github/prettier-config",
   "devDependencies": {
     "@github/prettier-config": "^0.0.4",
     "chai": "^4.2.0",
@@ -45,10 +45,11 @@
     "karma-mocha": "^2.0.1",
     "karma-mocha-reporter": "^2.2.5",
     "mocha": "^7.1.1",
-    "prettier": "^2.0.1",
     "tslib": "^1.10.0",
     "typedoc": "^0.16.11",
     "typescript": "^3.7.5"
   },
-  "prettier": "@github/prettier-config"
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
+  }
 }
