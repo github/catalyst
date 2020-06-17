@@ -85,7 +85,7 @@ Multiple actions can be bound to multiple events, methods, and controllers. For 
       data-action="
         input:hello-world#validate
         blur:hello-world#validate
-        focus:analytics-tracking#hover
+        focus:analytics-tracking#focus
       "
       type="text"
     >
@@ -105,32 +105,34 @@ Multiple actions can be bound to multiple events, methods, and controllers. For 
 
 ### Custom Events
 
-A Controller may emit custom events, which may be listened to by other Controllers using the same Actions Syntax. There is no extra syntax needed for this. For example a `lazy-load` Controller may dispatch a `loaded` event, once its contents are loaded, and other controllers can listen to this event:
+A Controller may emit custom events, which may be listened to by other Controllers using the same Actions Syntax. There is no extra syntax needed for this. For example a `lazy-loader` Controller might dispatch a `loaded` event, once its contents are loaded, and other controllers can listen to this event:
 
 ```html
 <hover-card disabled>
-  <lazy-load data-url="/user/1" data-action="loaded:hover-card#enable">
+  <lazy-loader data-url="/user/1" data-action="loaded:hover-card#enable">
     <loading-spinner>
-  </lazy-load>
+  </lazy-loader>
 </hover-card>
 ```
-
-### Private Methods
-
-Actions can always be bound to any method that is available on the Controller's prototype. If you need a method on a class that _must not_ be invoked within Actions, then you can instead use a [_class field_](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/Class_fields) or a [_private class field_](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/Class_fields#Private_fields).
 
 ```js
 import {controller} from '@github/catalyst'
 
 @controller
-class HelloWorldElement extends HTMLElement {
+class LazyLoader extends HTMLElement {
 
-  hidden = () => {
-    console.log('data-action cannot call this hidden method, but other JavaScript can!')
+  connectedCallback() {
+    this.innerHTML = await (await fetch(this.dataset.url)).text()
+    this.dispatchEvent(new CustomEvent('loaded'))
   }
 
-  #reallyHidden = () => {
-    console.log('data-action cannot call this hidden method, neither can other JavaScript!')
+}
+
+@controller
+class HoverCard extenda HTMLElement {
+
+  enable() {
+    this.disabled = false
   }
 
 }

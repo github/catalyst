@@ -3,9 +3,9 @@ chapter: 5
 subtitle: Querying Descendants
 ---
 
-One of the three [core patterns](/guide/introduction#three-core-concepts-observe-listen-query) is Querying. In Catalyst, Targets are the preferred way to query. Target use `querySelectorAll` under the hood, but make it a lot simpler to work with.
+One of the three [core patterns](/guide/introduction#three-core-concepts-observe-listen-query) is Querying. In Catalyst, Targets are the preferred way to query. Targets use `querySelectorAll` under the hood, but in a way that makes it a lot simpler to work with.
 
-Catalyst Components are really just Web Components, so you could simply use `querySelector` or `querySelectorAll` to select descendants of the element. Targets avoid some of the problems of `querySelector`; they provide a more consistent interface and handle nesting intuitively. Targets are also a little more ergonomic to reuse in a class. We'd recommend using Targets over `querySelector` wherever you can.
+Catalyst Components are really just Web Components, so you could simply use `querySelector` or `querySelectorAll` to select descendants of the element. Targets avoid some of the problems of `querySelector`; they provide a more consistent interface, avoid coupling CSS classes or HTML tag names to JS, and they handle subtle issues like nested components. Targets are also a little more ergonomic to reuse in a class. We'd recommend using Targets over `querySelector` wherever you can.
 
 To create a Target, use the `@target` decorator on a class field, and add the matching `data-target` attribute to your HTML, like so:
 
@@ -66,7 +66,7 @@ Remember! There are two decorators available, `@target` which fetches only one e
   </div>
 </div>
 
-The `@target` decorator will only ever return _one_ element, just like `querySelector`. If you want to get multiple Targets, you need the `@targets` decorator which works almost identically, but it'll return an _array_ of _N_ elements.
+The `@target` decorator will only ever return _one_ element, just like `querySelector`. If you want to get multiple Targets, you need the `@targets` decorator which works almost identically, but it'll return an _array_ of elements. To put this into types: `@target` returns `Element|undefined` while `@targets` returns `Array<Element>`
 
 Elements can be referenced as multiple targets, and targets may be referenced multiple times within the HTML:
 
@@ -74,12 +74,12 @@ Elements can be referenced as multiple targets, and targets may be referenced mu
 <team-members>
   <user-list>
     <user-settings data-target="user-list.user">
-      <input type="checkbox" data-target="team-members.readCheckbox">
-      <input type="checkbox" data-target="team-members.writeCheckbox">
+      <input type="checkbox" data-target="team-members.read user-settings.read">
+      <input type="checkbox" data-target="team-members.write user-settings.write">
     </user-settings>
     <user-settings data-target="user-list.user">
-      <input type="checkbox" data-target="team-members.readCheckbox">
-      <input type="checkbox" data-target="team-members.writeCheckbox">
+      <input type="checkbox" data-target="team-members.read user-settings.read">
+      <input type="checkbox" data-target="team-members.write user-settings.write">
     </user-settings>
   </user-list>
 </team-members>
@@ -88,16 +88,26 @@ Elements can be referenced as multiple targets, and targets may be referenced mu
 <br>
 
 ```js
-import { controller, targets } from "@github/catalyst"
+import { controller, target, targets } from "@github/catalyst"
 
 @controller
-class HelloWorldElement extends HTMLElement {
-  @targets readCheckbox!: HTMLElement
-  @targets writeCheckbox!: HTMLElement
+class UserSettingsElement extends HTMLElement {
+  @target read!: HTMLInputElement
+  @target write!: HTMLInputElement
 
-  validate() {
+  valid() {
     // One checkbox must be checked!
-    return this.readCheckbox.length > 0 && this.writeCheckbox.length > 0
+    return this.read.checked || this.write.checked
+  }
+}
+
+@controller
+class UserListElement extends HTMLElement {
+  @targets user!: HTMLElement
+
+  valid() {
+    // Every user must be valid!
+    return this.user.every(user => user.valid())
   }
 }
 ```
@@ -106,7 +116,7 @@ class HelloWorldElement extends HTMLElement {
 
 If you're using decorators, then the `@target` and `@targets` decorators will turn the decorated properties into getters.
 
-If you're not using decorators, then you'll need to call `findTarget(this, key)` or `findTargets(this, key)` in the getter, for example:
+If you're not using decorators, then you'll need to make a `getter`, and call `findTarget(this, key)` or `findTargets(this, key)` in the getter, for example:
 
 ```js
 import {findTarget, findTargets} from '@github/catalyst'
