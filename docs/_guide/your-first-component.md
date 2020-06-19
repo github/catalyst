@@ -41,9 +41,9 @@ class MyController extends HTMLElement {
 ```
 <br>
 
-Catalyst will automatically "dasherize" the class name. All capital letters get lowercased and dash separated.
+Catalyst will automatically convert the classes name; removing the trailing `Element` suffix and lowercasing all capital letters, separating them with a dash.
 
-By convention, Catalyst controllers end in `Controller`, but it's not required.
+By convention, Catalyst controllers end in `Element`, and Catalyst will strip this for the tag name, but suffixing `Element` is not required. All examples in this guide use `Element` suffixed names.
 
 #### What about without Decorators?
 
