@@ -1,21 +1,18 @@
 {
+  "include": ["src"],
   "compilerOptions": {
-    "strict": true,
-    "module": "ESNext",
+    "baseUrl": ".",
+    "declaration": true,
+    "declarationMap": true,
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "lib": ["es6", "dom", "dom.iterable"],
-    "target": "ES2020",
+    "module": "ESNext",
     "moduleResolution": "node",
-    "noEmit": true,
-    "declaration": true,
-    "declarationMap": true,
+    "noEmit": false,
+    "outDir": "./lib",
     "sourceMap": true,
-    "baseUrl": ".",
-    "paths": {
-      "@github/catalyst": ["catalyst/src/*"],
-      "@catalyst/*": ["*/src"]
-    }
-  },
-  "references": [{"path": "./catalyst"}]
+    "strict": true,
+    "target": "ES2020"
+  }
 }
