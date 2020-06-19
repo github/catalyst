@@ -28,16 +28,16 @@ layout: default
     <div class="d-flex f4">
       <div class="mt-4">
         {% highlight html %}
-<hello-controller>
-  <input data-target="hello-controller.name" type="text">
+<hello-world>
+  <input data-target="hello-world.name" type="text">
 
-  <button data-action="click:hello-controller#greet">
+  <button data-action="click:hello-world#greet">
     Greet
   </button>
 
-  <span data-target="hello-controller.output">
+  <span data-target="hello-world.output">
   </span>
-</hello-controller> 
+</hello-world> 
         {% endhighlight %}
       </div>
       <div class="">
@@ -45,7 +45,7 @@ layout: default
 import { controller, target } from "@github/catalyst"
 
 @controller
-class HelloController extends HTMLElement {
+class HelloWorldElement extends HTMLElement {
   @target name!: HTMLElement
   @target output!: HTMLElement
 

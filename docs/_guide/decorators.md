@@ -15,15 +15,15 @@ Catalyst comes with the `@controller` decorator. This gets put on top of the cla
 
 ```js
 @controller
-class MyController extends HTMLElement {}
+class HelloWorldElement extends HTMLElement {}
 ```
 
 ### Class Field Decorators
 
-Catalyst comes with the `@target` and `@targets` decorators for more [read about Targets](/guide/targets). These get added on top or to the left of the field name, like so:
+Catalyst comes with the `@target` and `@targets` decorators (for more on these [read the Targets guide section](/guide/targets)). These get added on top or to the left of the field name, like so:
 
 ```js
-class MyController extends HTMLElement {
+class HelloWorldElement extends HTMLElement {
 
   @target something
   
@@ -43,7 +43,7 @@ Catalyst doesn't currently ship with any method decorators, but you might see th
 
 
 ```js
-class MyController extends HTMLElement {
+class HelloWorldElement extends HTMLElement {
 
   @log
   submit() {
@@ -59,12 +59,14 @@ class MyController extends HTMLElement {
 }
 ```
 
-### Function Call Decorators
+### Function Calling Decorators
 
-Some decorators are customisable - they get called with additional arguments, just like a function call. An example of this is the `@debounce` decorator in the [`@github/mini-throttle`](https://github.com/github/mini-throttle) package:
+You might see some decorators that look like function calls, and that's because they are! Some decorators allow for customisation; calling with additional arguments. Decorators that expect to be called are generally not interchangeable with the non-call variant, a decorators documentation should tell you how to use it.
+
+Catalyst doesn't ship with any decorators that can be called like a function; but an example of one can be found in the `@debounce` decorator in the [`@github/mini-throttle`](https://github.com/github/mini-throttle) package:
 
 ```js
-class MyController extends HTMLElement {
+class HelloWorldElement extends HTMLElement {
 
   @debounce(100)
   handleInput() {
