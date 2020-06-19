@@ -6,14 +6,14 @@ chapter: 2
 Custom Elements allow you to create reusable components that you can declare in HTML, and [progressively enhance](https://en.wikipedia.org/wiki/Progressive_enhancement) within JavaScript. Custom Elements must named with a `-` in the HTML name, and the JS class must `extend HTMLElement`. When the browser connects each element class instance to the DOM node, `connectedCallback` is fired - this is where you can change parts of the element. Here's a basic example:
 
 ```html
-<my-controller></my-controller>
+<hello-world></hello-world>
 <script>
-class MyController extends HTMLElement {
+class HelloWorldElement extends HTMLElement {
   connectedCallback() {
     this.innerHTML = 'Hello World!'
   }
 }
-window.customElements.register('my-controller', MyController)
+window.customElements.register('hello-world', HelloWorldElement)
 </script>
 ```
 <br>
@@ -31,13 +31,13 @@ Catalyst saves you writing some of this boilerplate, by automatically calling th
 
 ```js
 @controller
-class MyController extends HTMLElement {
+class HelloWorldElement extends HTMLElement {
   connectedCallback() {
     this.innerHTML = 'Hello World!'
   }
 }
 // No longer need this:
-// window.customElements.register('my-controller', MyController)
+// window.customElements.register('hello-world', HelloWorldElement)
 ```
 <br>
 
@@ -51,7 +51,7 @@ If you don't want to use decorators, you can simply wrap the class in a call to 
 
 ```js
 controller(
-  class MyController extends HTMLElement {
+  class HelloWorldElement extends HTMLElement {
     //...
   }
 )

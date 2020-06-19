@@ -15,7 +15,7 @@ Catalyst comes with the `@controller` decorator. This gets put on top of the cla
 
 ```js
 @controller
-class MyController extends HTMLElement {}
+class HelloWorldElement extends HTMLElement {}
 ```
 
 ### Class Field Decorators
@@ -23,7 +23,7 @@ class MyController extends HTMLElement {}
 Catalyst comes with the `@target` and `@targets` decorators for more [read about Targets](/guide/targets). These get added on top or to the left of the field name, like so:
 
 ```js
-class MyController extends HTMLElement {
+class HelloWorldElement extends HTMLElement {
 
   @target something
   
@@ -43,7 +43,7 @@ Catalyst doesn't currently ship with any method decorators, but you might see th
 
 
 ```js
-class MyController extends HTMLElement {
+class HelloWorldElement extends HTMLElement {
 
   @log
   submit() {
@@ -64,7 +64,7 @@ class MyController extends HTMLElement {
 Some decorators are customisable - they get called with additional arguments, just like a function call. An example of this is the `@debounce` decorator in the [`@github/mini-throttle`](https://github.com/github/mini-throttle) package:
 
 ```js
-class MyController extends HTMLElement {
+class HelloWorldElement extends HTMLElement {
 
   @debounce(100)
   handleInput() {

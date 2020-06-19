@@ -27,21 +27,21 @@ Remember! Actions are _automatically_ bound using the `@controller` decorator. T
   <div class="">
 
 ```html
-<hello-controller>
+<hello-world>
   <input
-    data-target="hello-controller.name"
+    data-target="hello-world.name"
     type="text"
   >
 
   <button
-    data-action="click:hello-controller#greet">
+    data-action="click:hello-world#greet">
     Greet
   </button>
 
   <span
-    data-target="hello-controller.output">
+    data-target="hello-world.output">
   </span>
-</div>
+</hello-world>
 ```
 
   </div>
@@ -51,7 +51,7 @@ Remember! Actions are _automatically_ bound using the `@controller` decorator. T
 import { controller, target } from "@github/catalyst"
 
 @controller
-class HelloController extends HTMLElement {
+class HelloWorldElement extends HTMLElement {
   @target nameTarget: HTMLElement
   @target outputTarget: HTMLElement
 
@@ -78,40 +78,40 @@ The actions syntax follows a pattern of `event:controller#method`.
 Multiple actions can be bound to multiple events, methods, and controllers. For example:
 
 ```html
-<analytics-controller>
-  <hello-controller>
+<analytics-tracking>
+  <hello-world>
     <input
-      data-target="hello-controller.name"
+      data-target="hello-world.name"
       data-action="
-        input:hello-controller#validate
-        blur:hello-controller#validate
-        focus:analytics-controller#hover
+        input:hello-world#validate
+        blur:hello-world#validate
+        focus:analytics-tracking#hover
       "
       type="text"
     >
 
     <button
       data-action="
-        click:hello-controller#greet
-        click:analytics-controller#click
-        hover:analytics-controller#hover
+        click:hello-world#greet
+        click:analytics-tracking#click
+        hover:analytics-tracking#hover
       "
     >
       Greet
     </button>
-  </hello-controller>
-</analytics-controller>
+  </hello-world>
+</analytics-tracking>
 ```
 
 ### Custom Events
 
-A Controller may emit custom events, which may be listened to by other Controllers using the same Actions Syntax. There is no extra syntax needed for this. For example a `lazy-controller` may dispatch a `loaded` event, once its contents are loaded, and other controllers can listen to this event:
+A Controller may emit custom events, which may be listened to by other Controllers using the same Actions Syntax. There is no extra syntax needed for this. For example a `lazy-load` Controller may dispatch a `loaded` event, once its contents are loaded, and other controllers can listen to this event:
 
 ```html
 <hover-card disabled>
-  <lazy-controller data-url="/user/1" data-action="loaded:hover-card#enable">
+  <lazy-load data-url="/user/1" data-action="loaded:hover-card#enable">
     <loading-spinner>
-  </lazy-controller>
+  </lazy-load>
 </hover-card>
 ```
 
@@ -123,7 +123,7 @@ Actions can always be bound to any method that is available on the Controller's 
 import {controller} from '@github/catalyst'
 
 @controller
-class HelloController extends HTMLElement {
+class HelloWorldElement extends HTMLElement {
 
   hidden = () => {
     console.log('data-action cannot call this hidden method, but other JavaScript can!')
@@ -145,7 +145,7 @@ If you're not using decorators, then you'll need to call `bind(this)` somewhere 
 ```
 import {bind} from '@github/catalyst'
 
-class HelloController extends HTMLElement {
+class HelloWorldElement extends HTMLElement {
 
   connectedCallback() {
     bind(this)

@@ -15,11 +15,11 @@ To create a Target, use the `@target` decorator on a class field, and add the ma
   <div>
 
 ```html
-<hello-controller>
+<hello-world>
   <span
-    data-target="hello-controller.output">
+    data-target="hello-world.output">
   </span>
-</div>
+</hello-world>
 ```
 
   </div>
@@ -29,7 +29,7 @@ To create a Target, use the `@target` decorator on a class field, and add the ma
 import { controller, target } from "@github/catalyst"
 
 @controller
-class HelloController extends HTMLElement {
+class HelloWorldElement extends HTMLElement {
   @target outputTarget!: HTMLElement
 
   greet() {
@@ -71,18 +71,18 @@ The `@target` decorator will only ever return _one_ element, just like `querySel
 Elements can be referenced as multiple targets, and targets may be referenced multiple times within the HTML:
 
 ```html
-<teammembers-controller>
-  <userlist-controller>
-    <user-controller data-target="userlist-controller.user">
-      <input type="checkbox" data-target="teammembers-controller.readCheckbox">
-      <input type="checkbox" data-target="teammembers-controller.writeCheckbox">
-    </user-controller>
-    <user-controller data-target="userlist-controller.user">
-      <input type="checkbox" data-target="teammembers-controller.readCheckbox">
-      <input type="checkbox" data-target="teammembers-controller.writeCheckbox">
-    </user-controller>
-  </userlist-controller>
-</teammembers-controller>
+<team-members>
+  <user-list>
+    <user-settings data-target="user-list.user">
+      <input type="checkbox" data-target="team-members.readCheckbox">
+      <input type="checkbox" data-target="team-members.writeCheckbox">
+    </user-settings>
+    <user-settings data-target="user-list.user">
+      <input type="checkbox" data-target="team-members.readCheckbox">
+      <input type="checkbox" data-target="team-members.writeCheckbox">
+    </user-settings>
+  </user-list>
+</team-members>
 ```
 
 <br>
@@ -91,7 +91,7 @@ Elements can be referenced as multiple targets, and targets may be referenced mu
 import { controller, targets } from "@github/catalyst"
 
 @controller
-class HelloController extends HTMLElement {
+class HelloWorldElement extends HTMLElement {
   @targets readCheckbox!: HTMLElement
   @targets writeCheckbox!: HTMLElement
 
@@ -110,7 +110,7 @@ If you're not using decorators, then you'll need to call `findTarget(this, key)`
 
 ```js
 import {findTarget, findTargets} from '@github/catalyst'
-class MyController extends HTMLElement {
+class HelloWorldElement extends HTMLElement {
 
   get outputTarget() {
     return findTarget(this, 'outputTarget')
