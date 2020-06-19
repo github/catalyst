@@ -28,8 +28,9 @@
     "build:docs:jekyll": "cd docs && bundle exec jekyll build",
     "build:docs:reference": "typedoc --json docs/_data/reference.json",
     "clean": "tsc --build --clean",
-    "lint": "eslint .",
-    "pretest": "npm run build"
+    "lint": "eslint . --ignore-path .gitignore",
+    "pretest": "npm run build",
+    "test": "npm run lint && karma start test/karma.config.cjs"
   },
   "prettier": "@github/prettier-config",
   "devDependencies": {
