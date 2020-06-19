@@ -13,7 +13,7 @@
 			"flags": {
 				"isExported": true
 			},
-			"originalName": "/home/runner/work/catalyst/catalyst/catalyst/src/bind.ts",
+			"originalName": "/home/runner/work/catalyst/catalyst/src/bind.ts",
 			"children": [
 				{
 					"id": 2,
@@ -139,7 +139,7 @@
 			"flags": {
 				"isExported": true
 			},
-			"originalName": "/home/runner/work/catalyst/catalyst/catalyst/src/controller.ts",
+			"originalName": "/home/runner/work/catalyst/catalyst/src/controller.ts",
 			"children": [
 				{
 					"id": 30,
@@ -276,7 +276,7 @@
 			"flags": {
 				"isExported": true
 			},
-			"originalName": "/home/runner/work/catalyst/catalyst/catalyst/src/findtarget.ts",
+			"originalName": "/home/runner/work/catalyst/catalyst/src/findtarget.ts",
 			"children": [
 				{
 					"id": 37,
@@ -439,7 +439,7 @@
 			"flags": {
 				"isExported": true
 			},
-			"originalName": "/home/runner/work/catalyst/catalyst/catalyst/src/index.ts",
+			"originalName": "/home/runner/work/catalyst/catalyst/src/index.ts",
 			"sources": [
 				{
 					"fileName": "index.ts",
@@ -456,7 +456,7 @@
 			"flags": {
 				"isExported": true
 			},
-			"originalName": "/home/runner/work/catalyst/catalyst/catalyst/src/register.ts",
+			"originalName": "/home/runner/work/catalyst/catalyst/src/register.ts",
 			"children": [
 				{
 					"id": 10,
@@ -594,7 +594,7 @@
 			"flags": {
 				"isExported": true
 			},
-			"originalName": "/home/runner/work/catalyst/catalyst/catalyst/src/target.ts",
+			"originalName": "/home/runner/work/catalyst/catalyst/src/target.ts",
 			"children": [
 				{
 					"id": 46,
@@ -813,7 +813,7 @@
 			"flags": {
 				"isExported": true
 			},
-			"originalName": "/home/runner/work/catalyst/catalyst/catalyst/src/wrap.ts",
+			"originalName": "/home/runner/work/catalyst/catalyst/src/wrap.ts",
 			"children": [
 				{
 					"id": 17,
