@@ -30,7 +30,7 @@
     "clean": "tsc --build --clean",
     "lint": "eslint . --ignore-path .gitignore",
     "pretest": "npm run build",
-    "test": "npm run lint && karma start test/karma.config.cjs",
+    "test": "npm run lint && karma start test/karma.config.cjs"
   },
   "prettier": "@github/prettier-config",
   "devDependencies": {
