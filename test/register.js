@@ -27,4 +27,10 @@ describe('register', () => {
       ThisIsAnExampleOfADasherisedClassName
     )
   })
+
+  it('automatically drops the `Element` suffix', () => {
+    class ASuffixedElement {}
+    register(ASuffixedElement)
+    expect(window.customElements.get('a-suffixed')).to.equal(ASuffixedElement)
+  })
 })
