@@ -21,11 +21,17 @@ describe('register', () => {
   })
 
   it('dasherises class names', () => {
-    class ThisIsAnExampleOfADasherisedClassName {}
-    register(ThisIsAnExampleOfADasherisedClassName)
-    expect(window.customElements.get('this-is-an-example-of-a-dasherised-class-name')).to.equal(
-      ThisIsAnExampleOfADasherisedClassName
+    class ThisIsAnExampleOfDasherisedClassNames {}
+    register(ThisIsAnExampleOfDasherisedClassNames)
+    expect(window.customElements.get('this-is-an-example-of-dasherised-class-names')).to.equal(
+      ThisIsAnExampleOfDasherisedClassNames
     )
+  })
+
+  it('will intuitively dasherize acryonyms', () => {
+    class URLBar {}
+    register(URLBar)
+    expect(window.customElements.get('url-bar')).to.equal(URLBar)
   })
 
   it('automatically drops the `Element` suffix', () => {
