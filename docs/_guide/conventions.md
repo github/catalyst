@@ -16,7 +16,7 @@ class UserListElement extends HTMLElement {}
 
 ### The best class-names are two word descriptions
 
-Custom elements are required to have a `-` inside the tag name. Catalyst's `@controller` will derive the tag name from the class name - and so as such the class name needs to have at least two capital letters, or to put it another way, it needs to consist of two words. It might be tempting to "brand" your component or otherwise add some kind of name space as one of the words - for example `paper-dropdown` or `iron-image`. We believe it's best to avoid branding your elements like this, and instead use this as an opportunity to describe what it does in two words. Some examples:
+Custom elements are required to have a `-` inside the tag name. Catalyst's `@controller` will derive the tag name from the class name - and so as such the class name needs to have at least two capital letters, or to put it another way, it needs to consist of two words. The element name should describe what it does succinctly in two words. Some examples:
 
  - `theme-picker` (`class ThemePickerElement`)
  - `markdown-toolbar` (`class MarkdownToolbarElement`)
