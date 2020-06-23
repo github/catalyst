@@ -105,7 +105,6 @@ class UserSettingsElement extends HTMLElement {
   <user-settings
     data-action="loading:user-profile#disable">
   </user-settings>
-  <button >
 </user-profile>
 ```
 
@@ -191,10 +190,10 @@ We find it very common for developers to return to habits and use `querySelector
 {{ discouraged }}
 
 ```typescript
-class UserList {
+class UserListElement extends HTMLElement {
   showAdmins() {
     // Just need to get admins here...
-    for(const user of this.querySelector('[data-is-admin]')) {
+    for (const user of this.querySelector('[data-is-admin]')) {
       user.hidden = false
     }
   }
@@ -205,11 +204,11 @@ class UserList {
 
 ```typescript
 class UserList {
-  @targets admins!: Element[],
+  @targets admins!: HTMLElement[]
 
   showAdmins() {
     // Just need to get admins here...
-    for(const user of this.admins) {
+    for (const user of this.admins) {
       user.hidden = false
     }
   }
@@ -229,7 +228,7 @@ For example let's say we have a list of filter checkboxes and checking the "all"
 ```typescript
 @controller
 class UserFilter {
-  @targets filters!: Element[]
+  @targets filters!: HTMLInputElement[]
 
   get allFilter() {
     return this.filters.find(el => el.matches('[data-filter="all"]'))
@@ -249,18 +248,18 @@ class UserFilter {
 
 ```html
 <user-list>
-  <input type="checkbox"
+  <label><input type="checkbox"
     data-action="change:user-list.filter"
     data-target="user-list.filters"
-    data-filter="all">Show all</button>
-  <input type="checkbox"
+    data-filter="all">Show all</label>
+  <label><input type="checkbox"
     data-action="change:user-list.filter"
     data-target="user-list.filters"
-    data-filter="new">New Users</button>
-  <input type="checkbox"
+    data-filter="new">New Users</label>
+  <label><input type="checkbox"
     data-action="change:user-list.filter"
     data-target="user-list.filters"
-    data-filter="admin">Admins</button>
+    data-filter="admin">Admins</label>
   <!-- ... --->
 </user-filter>
 ```
@@ -272,12 +271,12 @@ While this works well, it could be more easily solved with targets:
 ```typescript
 @controller
 class UserFilter {
-  @targets filters!: Element[]
-  @target allFilter!: Element
+  @targets filters!: HTMLInputElement[]
+  @target allFilter!: HTMLInputElement
 
   filter(event: Event) {
     if (event.target === this.allFilter) {
-      for(const filter of this.filters) {
+      for (const filter of this.filters) {
         if (filter !== this.allFilter) filter.checked = false
       }
     }
@@ -289,19 +288,18 @@ class UserFilter {
 
 ```html
 <user-filter>
-  <input type="checkbox"
+  <label><input type="checkbox"
     data-action="change:user-list.filter"
     data-target="user-list.filters user-list.allFilter"
-    data-filter="all">Show all</button>
-  <input type="checkbox"
+    data-filter="all">Show all</label>
+  <label><input type="checkbox"
     data-action="change:user-list.filter"
     data-target="user-list.filters"
-    data-filter="new">New Users</button>
-  <input type="checkbox"
+    data-filter="new">New Users</label>
+  <label><input type="checkbox"
     data-action="change:user-list.filter"
     data-target="user-list.filters"
-    data-filter="admin">Admins</button>
+    data-filter="admin">Admins</label>
   <!-- ... --->
 </user-filter>
 ```
-
