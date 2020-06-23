@@ -32,7 +32,7 @@ class FuzzySearchElement extends HTMLElement {
 
 ### Aborting Network Requests
 
-When making network requests using `fetch`, based on user input, you can cancel old requests as new ones come in, this is useful for performance as well as UI responsiveness, as old requests that aren't cancelled might complete later than newer ones causing the UI to jump around. Aborting network requests requires you to use [`AbortController`](https://developer.mozilla.org/en-US/docs/Web/API/AbortController) (a web platform feature).
+When making network requests using `fetch`, based on user input, you can cancel old requests as new ones come in. This is useful for performance as well as UI responsiveness, as old requests that aren't cancelled might complete later than newer ones, and causing the UI to jump around. Aborting network requests requires you to use [`AbortController`](https://developer.mozilla.org/en-US/docs/Web/API/AbortController) (a web platform feature).
 
 ```typescript
 @controller
