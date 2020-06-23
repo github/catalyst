@@ -11,7 +11,7 @@ interface CustomElement {
  */
 export function register(classObject: CustomElement): void {
   const name = classObject.name
-    .replace(/([A-Z][a-z])/g, '-$1')
+    .replace(/([A-Z]($|[a-z]))/g, '-$1')
     .replace(/(^-|-Element$)/, '')
     .toLowerCase()
   if (!window.customElements.get(name)) {

@@ -34,6 +34,12 @@ describe('register', () => {
     expect(window.customElements.get('url-bar')).to.equal(URLBar)
   })
 
+  it('dasherizes cap suffixed names correctly', () => {
+    class ClipX {}
+    register(ClipX)
+    expect(window.customElements.get('clip-x')).to.equal(ClipX)
+  })
+
   it('automatically drops the `Element` suffix', () => {
     class ASuffixedElement {}
     register(ASuffixedElement)
