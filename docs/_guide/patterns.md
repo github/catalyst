@@ -10,7 +10,7 @@ Here are a few common patterns which we've avoided introducing into the Catalyst
 
 ### Debouncing or Throttling events
 
-Often times you'll want to do something computationally intensive (or network intensive) based on a user event. It's worth throttling the amount of times a function can be called for these events, to prevent saturation of the CPU or network. For this we can use the "debounce" or "throttle" patterns. We recommend using the [`@github/mini-throttle`](https://github.com/github/mini-throttle) library for this, which provides convenient decorators to put on methods which will add throttling to them:
+Often times you'll want to do something computationally intensive (or network intensive) based on a user event. It's worth throttling the amount of times a function can be called for these events, to prevent saturation of the CPU or network. For this we can use the "debounce" or "throttle" patterns. We recommend using the [`@github/mini-throttle`](https://github.com/github/mini-throttle) library for this, which provides throttling decorators for methods:
 
 ```typescript
 import {controller} from '@github/catalyst'
