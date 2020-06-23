@@ -41,8 +41,8 @@ describe('register', () => {
   })
 
   it('automatically drops the `Element` suffix', () => {
-    class ASuffixedElement {}
-    register(ASuffixedElement)
-    expect(window.customElements.get('a-suffixed')).to.equal(ASuffixedElement)
+    class AutoCompleteElement {}
+    register(AutoCompleteElement)
+    expect(window.customElements.get('auto-complete')).to.equal(AutoCompleteElement)
   })
 })
