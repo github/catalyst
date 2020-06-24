@@ -4,7 +4,6 @@ describe('findTarget', () => {
   window.customElements.define('find-target-test-element', class extends HTMLElement {})
 
   let root
-
   beforeEach(() => {
     root = document.createElement('div')
     document.body.appendChild(root)
