@@ -56,11 +56,21 @@ function bindActionsToController(controller: HTMLElement, el: Element) {
   }
 }
 
+interface Subscription {
+  closed: boolean
+  unsubscribe(): void
+}
+
 /**
  * Set up observer that will make sure any actions that are dynamically
  * injected into `el` will be bound to it's controller.
+ *
+ * This returns a Subscription object which you can call `unsubscribe()` on to
+ * stop further live updates.
  */
-export function listenForBind(el = document, batchSize = 30): void {
+export function listenForBind(el = document, batchSize = 30): Subscription {
+  let closed = false
+
   const observer = new MutationObserver(mutations => {
     const queue = new Set<Element>()
     for (const mutation of mutations) {
@@ -77,6 +87,16 @@ export function listenForBind(el = document, batchSize = 30): void {
   })
 
   observer.observe(el, {childList: true, subtree: true})
+
+  return {
+    get closed() {
+      return closed
+    },
+    unsubscribe() {
+      closed = true
+      observer.disconnect()
+    }
+  }
 }
 
 function processQueue(queue: Set<Element>, batchSize: number) {

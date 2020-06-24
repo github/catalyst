@@ -156,25 +156,37 @@ describe('bind', () => {
     expect(instance.foo).to.have.been.called.twice.second.with('b')
   })
 
-  it('re-binds actions that are denoted by HTML that is dynamically injected into the controller', async function () {
-    const instance = document.createElement('bind-test-controller')
-    chai.spy.on(instance, 'foo')
-    root.appendChild(instance)
+  describe('listenForBind', () => {
+    it('re-binds actions that are denoted by HTML that is dynamically injected into the controller', async function () {
+      const instance = document.createElement('bind-test-controller')
+      chai.spy.on(instance, 'foo')
+      root.appendChild(instance)
+      listenForBind(root)
+      const button = document.createElement('button')
+      button.setAttribute('data-action', 'click:bind-test-controller#foo')
+      instance.appendChild(button)
+      // We need to wait for a couple of frames after injecting the HTML into to
+      // controller so that the actions have been bound to the controller.
+      await waitForNextAnimationFrame()
+      await waitForNextAnimationFrame()
+      button.click()
+      expect(instance.foo).to.have.been.called.exactly(1)
+    })
 
-    listenForBind(root)
-
-    const button = document.createElement('button')
-    button.setAttribute('data-action', 'click:bind-test-controller#foo')
-
-    instance.appendChild(button)
-
-    // We need to wait for a couple of frames after injecting the HTML into to
-    // controller so that the actions have been bound to the controller.
-    await waitForNextAnimationFrame()
-    await waitForNextAnimationFrame()
-
-    button.click()
-
-    expect(instance.foo).to.have.been.called.exactly(1)
+    it('will not re-bind actions after unsubscribe() is called', async function () {
+      const instance = document.createElement('bind-test-controller')
+      chai.spy.on(instance, 'foo')
+      root.appendChild(instance)
+      listenForBind(root).unsubscribe()
+      const button = document.createElement('button')
+      button.setAttribute('data-action', 'click:bind-test-controller#foo')
+      instance.appendChild(button)
+      // We need to wait for a couple of frames after injecting the HTML into to
+      // controller so that the actions have been bound to the controller.
+      await waitForNextAnimationFrame()
+      await waitForNextAnimationFrame()
+      button.click()
+      expect(instance.foo).to.have.been.called.exactly(0)
+    })
   })
 })
