@@ -3,7 +3,7 @@ chapter: 5
 subtitle: Querying Descendants
 ---
 
-One of the three [core patterns](/guide/introduction#three-core-concepts-observe-listen-query) is Querying. In Catalyst, Targets are the preferred way to query. Targets use `querySelectorAll` under the hood, but in a way that makes it a lot simpler to work with.
+One of the three [core patterns](/guide/introduction#three-core-concepts-observe-listen-query) is Querying. In Catalyst, Targets are the preferred way to query. Targets use `querySelector` under the hood, but in a way that makes it a lot simpler to work with.
 
 Catalyst Components are really just Web Components, so you could simply use `querySelector` or `querySelectorAll` to select descendants of the element. Targets avoid some of the problems of `querySelector`; they provide a more consistent interface, avoid coupling CSS classes or HTML tag names to JS, and they handle subtle issues like nested components. Targets are also a little more ergonomic to reuse in a class. We'd recommend using Targets over `querySelector` wherever you can.
 
@@ -111,6 +111,15 @@ class UserListElement extends HTMLElement {
   }
 }
 ```
+
+### Target Vs Targets
+
+To clarify the difference between `@target` and `@targets` here is a handy table:
+
+| Decorator  | Equivalent Native Method | Selector           | Returns          | 
+|:-----------|:-------------------------|:-------------------|:-----------------|
+| `@target`  | `querySelector`          | `data-target="*"`  | `Element`        | 
+| `@targets` | `querySelectorAll`       | `data-target="*"`  | `Array<Element>` | 
 
 ### What about without Decorators?
 
