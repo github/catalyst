@@ -1,9 +1,11 @@
+const bound = new Set<string>()
 /*
  * Bind `[data-action]` elements from the DOM to their actions.
  *
  */
 export function bind(controller: HTMLElement): void {
   const tag = controller.tagName.toLowerCase()
+  bound.add(tag)
   const actionAttributeMatcher = `[data-action*=":${tag}#"]`
 
   for (const el of controller.querySelectorAll(actionAttributeMatcher)) {
@@ -103,6 +105,7 @@ function processQueue(queue: Set<Element>, batchSize: number) {
   let counter = batchSize
   for (const el of queue) {
     for (const [eventName, controllerTag, methodName] of getActions(el)) {
+      if (!bound.has(controllerTag)) continue
       const controller = el.closest(controllerTag)
       if (!(controller instanceof HTMLElement)) continue
 
