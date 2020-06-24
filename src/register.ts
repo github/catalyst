@@ -11,8 +11,8 @@ interface CustomElement {
  */
 export function register(classObject: CustomElement): void {
   const name = classObject.name
-    .replace(/([a-zA-Z])(?=[A-Z])/g, '$1-')
-    .replace(/-Element$/, '')
+    .replace(/([A-Z]($|[a-z]))/g, '-$1')
+    .replace(/(^-|-Element$)/g, '')
     .toLowerCase()
   if (!window.customElements.get(name)) {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
