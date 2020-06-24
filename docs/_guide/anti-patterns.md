@@ -250,15 +250,15 @@ class UserFilter {
 <user-list>
   <label><input type="checkbox"
     data-action="change:user-list.filter"
-    data-target="user-list.filters"
+    data-targets="user-list.filters"
     data-filter="all">Show all</label>
   <label><input type="checkbox"
     data-action="change:user-list.filter"
-    data-target="user-list.filters"
+    data-targets="user-list.filters"
     data-filter="new">New Users</label>
   <label><input type="checkbox"
     data-action="change:user-list.filter"
-    data-target="user-list.filters"
+    data-targets="user-list.filters"
     data-filter="admin">Admins</label>
   <!-- ... --->
 </user-filter>
@@ -290,15 +290,16 @@ class UserFilter {
 <user-filter>
   <label><input type="checkbox"
     data-action="change:user-list.filter"
-    data-target="user-list.filters user-list.allFilter"
+    data-target="user-list.allFilter"
+    data-targets="user-list.filters"
     data-filter="all">Show all</label>
   <label><input type="checkbox"
     data-action="change:user-list.filter"
-    data-target="user-list.filters"
+    data-targets="user-list.filters"
     data-filter="new">New Users</label>
   <label><input type="checkbox"
     data-action="change:user-list.filter"
-    data-target="user-list.filters"
+    data-targets="user-list.filters"
     data-filter="admin">Admins</label>
   <!-- ... --->
 </user-filter>

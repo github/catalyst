@@ -66,20 +66,20 @@ Remember! There are two decorators available, `@target` which fetches only one e
   </div>
 </div>
 
-The `@target` decorator will only ever return _one_ element, just like `querySelector`. If you want to get multiple Targets, you need the `@targets` decorator which works almost identically, but it'll return an _array_ of elements. To put this into types: `@target` returns `Element|undefined` while `@targets` returns `Array<Element>`
+The `@target` decorator will only ever return _one_ element, just like `querySelector`. If you want to get multiple Targets, you need the `@targets` decorator which works almost the same, but returns an Array of elements, and it searches the `data-targets` attribute (not `data-target`). To put this into types: `@target` returns `Element|undefined` while `@targets` returns `Array<Element>`
 
 Elements can be referenced as multiple targets, and targets may be referenced multiple times within the HTML:
 
 ```html
 <team-members>
   <user-list>
-    <user-settings data-target="user-list.user">
-      <input type="checkbox" data-target="team-members.read user-settings.read">
-      <input type="checkbox" data-target="team-members.write user-settings.write">
+    <user-settings data-targets="user-list.users">
+      <input type="checkbox" data-targets="team-members.reads user-settings.reads">
+      <input type="checkbox" data-targets="team-members.writes user-settings.writes">
     </user-settings>
-    <user-settings data-target="user-list.user">
-      <input type="checkbox" data-target="team-members.read user-settings.read">
-      <input type="checkbox" data-target="team-members.write user-settings.write">
+    <user-settings data-targets="user-list.users">
+      <input type="checkbox" data-targets="team-members.reads user-settings.reads">
+      <input type="checkbox" data-targets="team-members.writes user-settings.writes">
     </user-settings>
   </user-list>
 </team-members>
@@ -119,7 +119,7 @@ To clarify the difference between `@target` and `@targets` here is a handy table
 | Decorator  | Equivalent Native Method | Selector           | Returns          | 
 |:-----------|:-------------------------|:-------------------|:-----------------|
 | `@target`  | `querySelector`          | `data-target="*"`  | `Element`        | 
-| `@targets` | `querySelectorAll`       | `data-target="*"`  | `Array<Element>` | 
+| `@targets` | `querySelectorAll`       | `data-targets="*"` | `Array<Element>` | 
 
 ### What about without Decorators?
 

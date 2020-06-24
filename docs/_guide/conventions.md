@@ -35,3 +35,7 @@ Be careful not to go too short! We'd recommend avoiding contracting words such a
 ### Method names should describe what they do
 
 A good method name, much like a good class name, describes what it does, not how it was invoked. While methods can be given any name, names like `onClick` are best avoided, overly generic names like `toggle` should also be avoided. Just like class names it is a good idea to ask "how" and "what", so for example `showAdmins`, `filterUsers`, `updateURL`.
+
+### `@target` should use singular naming, while `@targets` should use plural
+
+To help differentiate the two `@target`/`@targets` decorators, the properties should be named with respective to their cardinality. That is to say, if you're using an `@target` decorator, then the name should be singular (e.g. `user`, `field`) while the `@targets` decorator should be coupled with plural property names (e.g. `users`, `fields`).
