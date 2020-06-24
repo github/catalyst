@@ -117,23 +117,43 @@ class UserSettingsElement extends HTMLElement {
 When naming a method, you should avoid naming it something that already exists on the `HTMLElement` prototype; as doing so can lead to surprising behaviors. Test out the form below to see what method names are allowed or not:
 
 <form>
-  <h4>I want my method to be called...</h4>
-
-  <input class="js-methodname-shadow-test mb-4">
+  <label>
+    <h4>I want my method to be called...</h4>
+    <input class="js-methodname-shadow-test mb-4">
+  </label>
   <div hidden class="js-methodname-shadow-bad-input text-red">
     {{ octx }} This name would shadow <code></code>, you'll need to pick a different name
+  </div>
+  <div hidden class="js-methodname-shadow-warn-input text-orange-light">
+    {{ octx }} While this name is allowed, it's not ideal because <span></span>. You should consider a different name.
   </div>
   <div hidden class="js-methodname-shadow-good-input text-green">
     {{ octick }} This is a good name for a method!
   </div>
   <script>
+    const warnings = {
+      'new': 'it has a special meaning in JS',
+      'super': 'it has a special meaning in JS',
+      'prototype': 'it has a special meaning in JS',
+      'requestSubmit': 'it is a proposed new feature',
+    }
     document.querySelector('.js-methodname-shadow-test').addEventListener('input', () => {
       const name = event.target.value
       const goodEl = document.querySelector('.js-methodname-shadow-good-input')
       const badEl = document.querySelector('.js-methodname-shadow-bad-input')
-      goodEl.hidden = (name in HTMLElement.prototype)
-      badEl.hidden = !(name in HTMLElement.prototype)
-      if (name in HTMLElement.prototype) {
+      const warnEl = document.querySelector('.js-methodname-shadow-warn-input')
+      let warning = warnings[name]
+      if (name !== name.toLowerCase() && name.toLowerCase() in HTMLElement.prototype) {
+        warning = `it is too similar to \`${name.toLowerCase()}\` which already exists`
+      } else if (name.startsWith('on') && !(name in HTMLElement.prototype)) {
+        warning = 'starting with `on` suggests a coupling between the event and the method (see below)'
+      }
+      goodEl.hidden = warning || (name in HTMLElement.prototype)
+      warnEl.hidden = !warning 
+      badEl.hidden = warning || !(name in HTMLElement.prototype)
+      if (warning) {
+        warnEl.querySelector('span').textContent = warning
+      } else if (name in HTMLElement.prototype) {
         let proto = HTMLElement.prototype
         while(proto !== null) {
           if (proto.hasOwnProperty(name)) break
