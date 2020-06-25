@@ -3,7 +3,7 @@ chapter: 5
 subtitle: Querying Descendants
 ---
 
-One of the three [core patterns](/guide/introduction#three-core-concepts-observe-listen-query) is Querying. In Catalyst, Targets are the preferred way to query. Targets use `querySelectorAll` under the hood, but in a way that makes it a lot simpler to work with.
+One of the three [core patterns](/guide/introduction#three-core-concepts-observe-listen-query) is Querying. In Catalyst, Targets are the preferred way to query. Targets use `querySelector` under the hood, but in a way that makes it a lot simpler to work with.
 
 Catalyst Components are really just Web Components, so you could simply use `querySelector` or `querySelectorAll` to select descendants of the element. Targets avoid some of the problems of `querySelector`; they provide a more consistent interface, avoid coupling CSS classes or HTML tag names to JS, and they handle subtle issues like nested components. Targets are also a little more ergonomic to reuse in a class. We'd recommend using Targets over `querySelector` wherever you can.
 
@@ -61,25 +61,25 @@ The target syntax follows a pattern of `controller.target`.
   </span>
   <div class="p-3">
 
-Remember! There are two decorators available, `@target` which fetches only one element, and `@targets` which fetches multiple. This is the only difference, but it's an important one.
+Remember! There are two decorators available, `@target` which fetches only one `data-target` element, and `@targets` which fetches multiple `data-targets` elements!
 
   </div>
 </div>
 
-The `@target` decorator will only ever return _one_ element, just like `querySelector`. If you want to get multiple Targets, you need the `@targets` decorator which works almost identically, but it'll return an _array_ of elements. To put this into types: `@target` returns `Element|undefined` while `@targets` returns `Array<Element>`
+The `@target` decorator will only ever return _one_ element, just like `querySelector`. If you want to get multiple Targets, you need the `@targets` decorator which works almost the same, but returns an Array of elements, and it searches the `data-targets` attribute (not `data-target`). 
 
 Elements can be referenced as multiple targets, and targets may be referenced multiple times within the HTML:
 
 ```html
 <team-members>
   <user-list>
-    <user-settings data-target="user-list.user">
-      <input type="checkbox" data-target="team-members.read user-settings.read">
-      <input type="checkbox" data-target="team-members.write user-settings.write">
+    <user-settings data-targets="user-list.users">
+      <input type="checkbox" data-targets="team-members.reads user-settings.reads">
+      <input type="checkbox" data-targets="team-members.writes user-settings.writes">
     </user-settings>
-    <user-settings data-target="user-list.user">
-      <input type="checkbox" data-target="team-members.read user-settings.read">
-      <input type="checkbox" data-target="team-members.write user-settings.write">
+    <user-settings data-targets="user-list.users">
+      <input type="checkbox" data-targets="team-members.reads user-settings.reads">
+      <input type="checkbox" data-targets="team-members.writes user-settings.writes">
     </user-settings>
   </user-list>
 </team-members>
@@ -111,6 +111,15 @@ class UserListElement extends HTMLElement {
   }
 }
 ```
+
+### Target Vs Targets
+
+To clarify the difference between `@target` and `@targets` here is a handy table:
+
+| Decorator  | Equivalent Native Method | Selector           | Returns          | 
+|:-----------|:-------------------------|:-------------------|:-----------------|
+| `@target`  | `querySelector`          | `data-target="*"`  | `Element`        | 
+| `@targets` | `querySelectorAll`       | `data-targets="*"` | `Array<Element>` | 
 
 ### What about without Decorators?
 
