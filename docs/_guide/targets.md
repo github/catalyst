@@ -66,7 +66,7 @@ Remember! There are two decorators available, `@target` which fetches only one e
   </div>
 </div>
 
-The `@target` decorator will only ever return _one_ element, just like `querySelector`. If you want to get multiple Targets, you need the `@targets` decorator which works almost the same, but returns an Array of elements, and it searches the `data-targets` attribute (not `data-target`). To put this into types: `@target` returns `Element|undefined` while `@targets` returns `Array<Element>`
+The `@target` decorator will only ever return _one_ element, just like `querySelector`. If you want to get multiple Targets, you need the `@targets` decorator which works almost the same, but returns an Array of elements, and it searches the `data-targets` attribute (not `data-target`). 
 
 Elements can be referenced as multiple targets, and targets may be referenced multiple times within the HTML:
 
