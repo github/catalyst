@@ -61,7 +61,7 @@ The target syntax follows a pattern of `controller.target`.
   </span>
   <div class="p-3">
 
-Remember! There are two decorators available, `@target` which fetches only one element, and `@targets` which fetches multiple. This is the only difference, but it's an important one.
+Remember! There are two decorators available, `@target` which fetches only one `data-target` element, and `@targets` which fetches multiple `data-targets` elements!
 
   </div>
 </div>
