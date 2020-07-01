@@ -41,13 +41,10 @@ function handleEvent(event: Event) {
   if (!el.hasAttribute('data-action')) return
   for (const [eventName, tagName, methodName] of getActions(el)) {
     if (eventName !== event.type) continue
-    const controller = el.closest(tagName)
-    if (!controller) continue
-    const methodDescriptor =
-      Object.getOwnPropertyDescriptor(controller, methodName) ||
-      Object.getOwnPropertyDescriptor(Object.getPrototypeOf(controller), methodName)
-    if (methodDescriptor && typeof methodDescriptor.value == 'function') {
-      methodDescriptor.value.call(controller, event)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const controller = el.closest(tagName) as any
+    if (controller && methodName in controller && typeof controller[methodName] === 'function') {
+      controller[methodName](event)
     }
   }
 }
