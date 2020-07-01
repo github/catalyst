@@ -108,15 +108,10 @@ const animationFrame = () => new Promise(resolve => requestAnimationFrame(resolv
 
 async function processQueue(queue: Set<Element>, batchSize: number) {
   await animationFrame()
-  let counter = batchSize
+  let counter = 0
   for (const el of queue) {
     bindActionsToController(el)
     queue.delete(el)
-    counter -= 1
-    if (counter === 0) break
-  }
-  if (queue.size !== 0) {
-    await animationFrame()
-    processQueue(queue, batchSize)
+    if ((counter += 1) % batchSize) await animationFrame()
   }
 }
