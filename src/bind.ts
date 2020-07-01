@@ -35,6 +35,8 @@ function* getActions(el: Element): Generator<[string, string, string]> {
   }
 }
 
+const registeredEvents: WeakMap<Element, Set<string>> = new WeakMap()
+
 function handleEvent(event: Event) {
   const el = event.currentTarget
   if (!(el instanceof Element)) return
@@ -42,6 +44,7 @@ function handleEvent(event: Event) {
   for (const [eventName, tagName, methodName] of getActions(el)) {
     if (eventName !== event.type) continue
     const controller = el.closest(tagName)
+    if (!controller) continue
     const methodDescriptor =
       Object.getOwnPropertyDescriptor(controller, methodName) ||
       Object.getOwnPropertyDescriptor(Object.getPrototypeOf(controller), methodName)
@@ -51,7 +54,6 @@ function handleEvent(event: Event) {
   }
 }
 
-const registeredEvents: WeakMap<Element, Set<string>> = new WeakMap()
 // Bind the data-action attribute of a single element to the controller
 function bindActionsToController(el: Element) {
   for (const [eventName, tagName] of getActions(el)) {
@@ -87,12 +89,18 @@ export function listenForBind(el: Node = document, batchSize = 30): Subscription
           if (!(node instanceof Element)) continue
           queue.add(node)
         }
+      } else if (
+        mutation.type === 'attributes' &&
+        mutation.attributeName === 'data-action' &&
+        mutation.target instanceof Element
+      ) {
+        queue.add(mutation.target)
       }
     }
     if (queue.size) processQueue(queue, batchSize)
   })
 
-  observer.observe(el, {childList: true, subtree: true})
+  observer.observe(el, {attributes: true, attributeFilter: ['data-action'], childList: true, subtree: true})
 
   return {
     get closed() {

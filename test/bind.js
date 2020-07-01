@@ -129,6 +129,21 @@ describe('bind', () => {
     expect(instance.foo).to.have.been.called.exactly(2)
   })
 
+  it('will not fire if the binding attribute is removed', () => {
+    const instance = document.createElement('bind-test-element')
+    chai.spy.on(instance, 'foo')
+    const el1 = document.createElement('div')
+    el1.setAttribute('data-action', 'click:bind-test-element#foo')
+    instance.appendChild(el1)
+    bind(instance)
+    expect(instance.foo).to.have.not.been.called()
+    el1.click()
+    expect(instance.foo).to.have.been.called.exactly(1)
+    el1.setAttribute('data-action', 'click:other-element#foo')
+    el1.click()
+    expect(instance.foo).to.have.been.called.exactly(1)
+  })
+
   describe('listenForBind', () => {
     it('re-binds actions that are denoted by HTML that is dynamically injected into the controller', async function () {
       const instance = document.createElement('bind-test-element')
@@ -191,6 +206,25 @@ describe('bind', () => {
       await waitForNextAnimationFrame()
       button.click()
       expect(instance.foo).to.have.been.called.exactly(0)
+    })
+
+    it('will rebind elements if the attribute changes', async function () {
+      const instance = document.createElement('bind-test-element')
+      chai.spy.on(instance, 'foo')
+      root.appendChild(instance)
+      const button = document.createElement('button')
+      button.setAttribute('data-action', 'submit:bind-test-element#foo')
+      instance.appendChild(button)
+      bind(instance)
+      listenForBind(root)
+      await waitForNextAnimationFrame()
+      button.click()
+      expect(instance.foo).to.have.been.called.exactly(0)
+      button.setAttribute('data-action', 'click:bind-test-element#foo')
+      await waitForNextAnimationFrame()
+      await waitForNextAnimationFrame()
+      button.click()
+      expect(instance.foo).to.have.been.called.exactly(1)
     })
   })
 })
