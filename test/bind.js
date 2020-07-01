@@ -201,9 +201,6 @@ describe('bind', () => {
       const button = document.createElement('button')
       button.setAttribute('data-action', 'click:bind-test-element#foo')
       instance.appendChild(button)
-      // We need to wait for a couple of frames after injecting the HTML into to
-      // controller so that the actions have been bound to the controller.
-      await waitForNextAnimationFrame()
       await waitForNextAnimationFrame()
       button.click()
       expect(instance.foo).to.have.been.called.exactly(0)
@@ -218,9 +215,6 @@ describe('bind', () => {
       const button = document.createElement('button')
       button.setAttribute('data-action', 'click:bind-test-not-element#foo')
       instance.appendChild(button)
-      // We need to wait for a couple of frames after injecting the HTML into to
-      // controller so that the actions have been bound to the controller.
-      await waitForNextAnimationFrame()
       await waitForNextAnimationFrame()
       button.click()
       expect(instance.foo).to.have.been.called.exactly(0)
