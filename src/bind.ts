@@ -104,7 +104,9 @@ export function listenForBind(el: Node = document, batchSize = 30): Subscription
   }
 }
 
-function processQueue(queue: Set<Element>, batchSize: number) {
+const animationFrame = () => new Promise(resolve => requestAnimationFrame(resolve))
+
+async function processQueue(queue: Set<Element>, batchSize: number) {
   let counter = batchSize
   for (const el of queue) {
     bindActionsToController(el)
@@ -113,6 +115,7 @@ function processQueue(queue: Set<Element>, batchSize: number) {
     if (counter === 0) break
   }
   if (queue.size !== 0) {
-    requestAnimationFrame(() => processQueue(queue, batchSize))
+    await animationFrame()
+    processQueue(queue, batchSize)
   }
 }
