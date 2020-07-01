@@ -88,7 +88,7 @@ export function listenForBind(el: Node = document, batchSize = 30): Subscription
         }
       }
     }
-    if (queue.size) requestAnimationFrame(() => processQueue(queue, batchSize))
+    if (queue.size) processQueue(queue, batchSize)
   })
 
   observer.observe(el, {childList: true, subtree: true})
@@ -107,6 +107,7 @@ export function listenForBind(el: Node = document, batchSize = 30): Subscription
 const animationFrame = () => new Promise(resolve => requestAnimationFrame(resolve))
 
 async function processQueue(queue: Set<Element>, batchSize: number) {
+  await animationFrame()
   let counter = batchSize
   for (const el of queue) {
     bindActionsToController(el)
