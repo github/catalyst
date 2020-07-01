@@ -82,6 +82,9 @@ export function listenForBind(el: Node = document, batchSize = 30): Subscription
           if (node.hasAttribute('data-action')) {
             queue.add(node)
           }
+          for (const child of node.querySelectorAll('[data-action]')) {
+            queue.add(child)
+          }
         }
       }
     }
