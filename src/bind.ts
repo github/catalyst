@@ -11,7 +11,7 @@ export function bind(controller: HTMLElement): void {
   for (const el of controller.querySelectorAll(actionAttributeMatcher)) {
     // Ignore nested elements
     if (el.closest(tag) !== controller) continue
-    bindActionsToController(controller, el)
+    bindActionsToController(el, controller)
   }
 
   // Also bind the controller to itself
@@ -48,13 +48,13 @@ function bindActionToController(controller: HTMLElement, el: Element, methodName
 }
 
 // Bind the data-action attribute of a single element to the controller
-function bindActionsToController(controller: HTMLElement, el: Element) {
-  const tag = controller.tagName.toLowerCase()
-
+function bindActionsToController(el: Element, controller: Element | null = null) {
   for (const [eventName, tagName, methodName] of getActions(el)) {
-    if (tagName === tag) {
-      bindActionToController(controller, el, methodName, eventName)
-    }
+    if (!bound.has(tagName)) continue
+    if (!controller) controller = el.closest(tagName)
+    if (!(controller instanceof HTMLElement)) continue
+    if (controller.tagName.toLowerCase() !== tagName.toLowerCase()) continue
+    bindActionToController(controller, el, methodName, eventName)
   }
 }
 
@@ -107,15 +107,8 @@ export function listenForBind(el: Node = document, batchSize = 30): Subscription
 function processQueue(queue: Set<Element>, batchSize: number) {
   let counter = batchSize
   for (const el of queue) {
-    for (const [eventName, controllerTag, methodName] of getActions(el)) {
-      if (!bound.has(controllerTag)) continue
-      const controller = el.closest(controllerTag)
-      if (!(controller instanceof HTMLElement)) continue
-
-      bindActionToController(controller, el, methodName, eventName)
-    }
+    bindActionsToController(el)
     queue.delete(el)
-
     counter -= 1
     if (counter === 0) break
   }
