@@ -11,12 +11,12 @@ export function bind(controller: HTMLElement): void {
   for (const el of controller.querySelectorAll(actionAttributeMatcher)) {
     // Ignore nested elements
     if (el.closest(tag) !== controller) continue
-    bindActionsToController(el)
+    bindActions(el)
   }
 
   // Also bind the controller to itself
   if (controller.matches(actionAttributeMatcher)) {
-    bindActionsToController(controller)
+    bindActions(controller)
   }
 }
 
@@ -54,8 +54,7 @@ function handleEvent(event: Event) {
   }
 }
 
-// Bind the data-action attribute of a single element to the controller
-function bindActionsToController(el: Element) {
+function bindActions(el: Element) {
   for (const [eventName, tagName] of getActions(el)) {
     if (!bound.has(tagName)) continue
     const bindings = registeredEvents.get(el) || new Set()
@@ -120,12 +119,12 @@ async function processQueue(queue: Set<Element>, batchSize: number) {
   let counter = 0
   for (const el of queue) {
     if (el.hasAttribute('data-action')) {
-      bindActionsToController(el)
+      bindActions(el)
       queue.delete(el)
       if ((counter += 1) % batchSize === 0) await animationFrame()
     }
     for (const child of el.querySelectorAll('[data-action]')) {
-      bindActionsToController(child)
+      bindActions(child)
       if ((counter += 1) % batchSize === 0) await animationFrame()
     }
   }
