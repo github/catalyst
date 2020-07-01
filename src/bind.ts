@@ -11,12 +11,12 @@ export function bind(controller: HTMLElement): void {
   for (const el of controller.querySelectorAll(actionAttributeMatcher)) {
     // Ignore nested elements
     if (el.closest(tag) !== controller) continue
-    bindActionsToController(el, controller)
+    bindActionsToController(el)
   }
 
   // Also bind the controller to itself
   if (controller.matches(actionAttributeMatcher)) {
-    bindActionsToController(controller, controller)
+    bindActionsToController(controller)
   }
 }
 
@@ -35,26 +35,32 @@ function* getActions(el: Element): Generator<[string, string, string]> {
   }
 }
 
-function bindActionToController(controller: HTMLElement, el: Element, methodName: string, eventName: string) {
-  // Check the `method` is present on the prototype
-  const methodDescriptor =
-    Object.getOwnPropertyDescriptor(controller, methodName) ||
-    Object.getOwnPropertyDescriptor(Object.getPrototypeOf(controller), methodName)
-  if (methodDescriptor && typeof methodDescriptor.value == 'function') {
-    el.addEventListener(eventName, (event: Event) => {
+function handleEvent(event: Event) {
+  const el = event.currentTarget
+  if (!(el instanceof Element)) return
+  if (!el.hasAttribute('data-action')) return
+  for (const [eventName, tagName, methodName] of getActions(el)) {
+    if (eventName !== event.type) continue
+    const controller = el.closest(tagName)
+    const methodDescriptor =
+      Object.getOwnPropertyDescriptor(controller, methodName) ||
+      Object.getOwnPropertyDescriptor(Object.getPrototypeOf(controller), methodName)
+    if (methodDescriptor && typeof methodDescriptor.value == 'function') {
       methodDescriptor.value.call(controller, event)
-    })
+    }
   }
 }
 
+const registeredEvents: WeakMap<Element, Set<string>> = new WeakMap()
 // Bind the data-action attribute of a single element to the controller
-function bindActionsToController(el: Element, controller: Element | null = null) {
-  for (const [eventName, tagName, methodName] of getActions(el)) {
+function bindActionsToController(el: Element) {
+  for (const [eventName, tagName] of getActions(el)) {
     if (!bound.has(tagName)) continue
-    if (!controller) controller = el.closest(tagName)
-    if (!(controller instanceof HTMLElement)) continue
-    if (controller.tagName.toLowerCase() !== tagName.toLowerCase()) continue
-    bindActionToController(controller, el, methodName, eventName)
+    const bindings = registeredEvents.get(el) || new Set()
+    if (bindings.has(eventName)) continue
+    el.addEventListener(eventName, handleEvent)
+    bindings.add(eventName)
+    registeredEvents.set(el, bindings)
   }
 }
 
