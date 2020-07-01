@@ -9,8 +9,6 @@ export function bind(controller: HTMLElement): void {
   const actionAttributeMatcher = `[data-action*=":${tag}#"]`
 
   for (const el of controller.querySelectorAll(actionAttributeMatcher)) {
-    // Ignore nested elements
-    if (el.closest(tag) !== controller) continue
     bindActions(el)
   }
 
