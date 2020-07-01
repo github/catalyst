@@ -79,12 +79,7 @@ export function listenForBind(el: Node = document, batchSize = 30): Subscription
       if (mutation.type === 'childList' && mutation.addedNodes.length) {
         for (const node of mutation.addedNodes) {
           if (!(node instanceof Element)) continue
-          if (node.hasAttribute('data-action')) {
-            queue.add(node)
-          }
-          for (const child of node.querySelectorAll('[data-action]')) {
-            queue.add(child)
-          }
+          queue.add(node)
         }
       }
     }
@@ -110,8 +105,14 @@ async function processQueue(queue: Set<Element>, batchSize: number) {
   await animationFrame()
   let counter = 0
   for (const el of queue) {
-    bindActionsToController(el)
-    queue.delete(el)
-    if ((counter += 1) % batchSize) await animationFrame()
+    if (el.hasAttribute('data-action')) {
+      bindActionsToController(el)
+      queue.delete(el)
+      if ((counter += 1) % batchSize === 0) await animationFrame()
+    }
+    for (const child of el.querySelectorAll('[data-action]')) {
+      bindActionsToController(child)
+      if ((counter += 1) % batchSize === 0) await animationFrame()
+    }
   }
 }
