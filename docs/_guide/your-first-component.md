@@ -42,7 +42,7 @@ Remember! A class name _must_ include at least two CamelCased words (not includi
 
 ### What does `@controller` do?
 
-Catalyst components are really just "Custom Elements", they're doing all the heavy lifting. Custom Elements allow you to create reusable components that you can declare in HTML, and [progressively enhance](https://en.wikipedia.org/wiki/Progressive_enhancement) within JavaScript. Custom Elements must named with a `-` in the HTML name, and the JS class must `extend HTMLElement`. When the browser connects each element class instance to the DOM node, `connectedCallback` is fired - this is where you can change parts of the element. Here's a basic example:
+Catalyst components are really just "Custom Elements", they're doing all the heavy lifting. Custom Elements allow you to create reusable components that you can declare in HTML, and [progressively enhance](https://en.wikipedia.org/wiki/Progressive_enhancement) within JavaScript. Custom Elements must be named with a `-` in the tag name, and the JS class must `extends HTMLElement`. When the browser connects each element class instance to the DOM node, `connectedCallback` is fired - this is where you can change parts of the element. Here's a basic example:
 
 ```html
 <hello-world></hello-world>
