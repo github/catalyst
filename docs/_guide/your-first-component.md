@@ -8,14 +8,13 @@ chapter: 2
 Catalyst's `@controller` decorator lets you create Custom Elements with virtually no boilerplate, by automatically calling `customElements.register`, and by adding ["Actions"](/guide/actions) and ["Targets"](/guide/targets) features described later. Using TypeScript (with `decorators` support enabled), simply add `@controller` to the top of your class:
 
 ```js
+import {controller} from '@github/catalyst'
 @controller
 class HelloWorldElement extends HTMLElement {
   connectedCallback() {
     this.innerHTML = 'Hello World!'
   }
 }
-// This happens automatically within `@controller`
-// window.customElements.register('hello-world', HelloWorldElement)
 ```
 <br>
 
@@ -42,18 +41,23 @@ Remember! A class name _must_ include at least two CamelCased words (not includi
 
 ### What does `@controller` do?
 
-Catalyst components are really just "Custom Elements", they're doing all the heavy lifting. Custom Elements allow you to create reusable components that you can declare in HTML, and [progressively enhance](https://en.wikipedia.org/wiki/Progressive_enhancement) within JavaScript. Custom Elements must be named with a `-` in the tag name, and the JS class must `extends HTMLElement`. When the browser connects each element class instance to the DOM node, `connectedCallback` is fired - this is where you can change parts of the element. Here's a basic example:
+The `@controller` decorator doesn't do all that much. Catalyst components are just "Custom Elements" under the hood, and the `@controller` decorator saves you writing some boilerplate that you'd otherwise have to write by hand. Specifically the `@controller` decorator:
 
-```html
-<hello-world></hello-world>
-<script>
+ - Derives a tag name based on your class name, removing the trailing `Element` suffix and lowercasing all capital letters, separating them with a dash.
+ - Calls `window.customElements.register` with your class, and the newly tag name.
+ - Injects a call to `bind(this)` inside of the `connectedCallback()` of your class; this ensures that as your element connects it picks up any `data-action` handlers. See [actions](/guide/actions) for more on this.
+ 
+You can opt to do this all manaully. For example here's the above `HelloWorldElement`, written without the `@controller` annotation:
+
+```js
+import {bind} from '@github/catalyst'
 class HelloWorldElement extends HTMLElement {
   connectedCallback() {
+    bind(this)
     this.innerHTML = 'Hello World!'
   }
 }
 window.customElements.register('hello-world', HelloWorldElement)
-</script>
 ```
 
 The Catalyst version isn't all that different, it's just that we have the `@controller` decorator to save on some of the boilerplate.
