@@ -17,6 +17,110 @@
 			"children": [
 				{
 					"id": 2,
+					"name": "Subscription",
+					"kind": 256,
+					"kindString": "Interface",
+					"flags": {},
+					"children": [
+						{
+							"id": 3,
+							"name": "closed",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {},
+							"sources": [
+								{
+									"fileName": "bind.ts",
+									"line": 62,
+									"character": 8
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "boolean"
+							}
+						},
+						{
+							"id": 4,
+							"name": "unsubscribe",
+							"kind": 2048,
+							"kindString": "Method",
+							"flags": {},
+							"signatures": [
+								{
+									"id": 5,
+									"name": "unsubscribe",
+									"kind": 4096,
+									"kindString": "Call signature",
+									"flags": {},
+									"type": {
+										"type": "intrinsic",
+										"name": "void"
+									}
+								}
+							],
+							"sources": [
+								{
+									"fileName": "bind.ts",
+									"line": 63,
+									"character": 13
+								}
+							]
+						}
+					],
+					"groups": [
+						{
+							"title": "Properties",
+							"kind": 1024,
+							"children": [
+								3
+							]
+						},
+						{
+							"title": "Methods",
+							"kind": 2048,
+							"children": [
+								4
+							]
+						}
+					],
+					"sources": [
+						{
+							"fileName": "bind.ts",
+							"line": 61,
+							"character": 22
+						}
+					]
+				},
+				{
+					"id": 6,
+					"name": "bound",
+					"kind": 32,
+					"kindString": "Variable",
+					"flags": {
+						"isConst": true
+					},
+					"sources": [
+						{
+							"fileName": "bind.ts",
+							"line": 1,
+							"character": 11
+						}
+					],
+					"type": {
+						"type": "reference",
+						"typeArguments": [
+							{
+								"type": "intrinsic",
+								"name": "string"
+							}
+						],
+						"name": "Set"
+					},
+					"defaultValue": "new Set<string>()"
+				},
+				{
+					"id": 7,
 					"name": "bind",
 					"kind": 64,
 					"kindString": "Function",
@@ -25,7 +129,7 @@
 					},
 					"signatures": [
 						{
-							"id": 3,
+							"id": 8,
 							"name": "bind",
 							"kind": 4096,
 							"kindString": "Call signature",
@@ -34,7 +138,7 @@
 							},
 							"parameters": [
 								{
-									"id": 4,
+									"id": 9,
 									"name": "controller",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -56,27 +160,27 @@
 					"sources": [
 						{
 							"fileName": "bind.ts",
-							"line": 5,
+							"line": 6,
 							"character": 20
 						}
 					]
 				},
 				{
-					"id": 5,
-					"name": "bindActionsToController",
+					"id": 13,
+					"name": "bindActionToController",
 					"kind": 64,
 					"kindString": "Function",
 					"flags": {},
 					"signatures": [
 						{
-							"id": 6,
-							"name": "bindActionsToController",
+							"id": 14,
+							"name": "bindActionToController",
 							"kind": 4096,
 							"kindString": "Call signature",
 							"flags": {},
 							"parameters": [
 								{
-									"id": 7,
+									"id": 15,
 									"name": "controller",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -87,7 +191,80 @@
 									}
 								},
 								{
-									"id": 8,
+									"id": 16,
+									"name": "el",
+									"kind": 32768,
+									"kindString": "Parameter",
+									"flags": {},
+									"type": {
+										"type": "reference",
+										"name": "Element"
+									}
+								},
+								{
+									"id": 17,
+									"name": "methodName",
+									"kind": 32768,
+									"kindString": "Parameter",
+									"flags": {},
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								},
+								{
+									"id": 18,
+									"name": "eventName",
+									"kind": 32768,
+									"kindString": "Parameter",
+									"flags": {},
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "void"
+							}
+						}
+					],
+					"sources": [
+						{
+							"fileName": "bind.ts",
+							"line": 38,
+							"character": 31
+						}
+					]
+				},
+				{
+					"id": 19,
+					"name": "bindActionsToController",
+					"kind": 64,
+					"kindString": "Function",
+					"flags": {},
+					"signatures": [
+						{
+							"id": 20,
+							"name": "bindActionsToController",
+							"kind": 4096,
+							"kindString": "Call signature",
+							"flags": {},
+							"parameters": [
+								{
+									"id": 21,
+									"name": "controller",
+									"kind": 32768,
+									"kindString": "Parameter",
+									"flags": {},
+									"type": {
+										"type": "reference",
+										"name": "HTMLElement"
+									}
+								},
+								{
+									"id": 22,
 									"name": "el",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -107,19 +284,219 @@
 					"sources": [
 						{
 							"fileName": "bind.ts",
-							"line": 22,
+							"line": 51,
 							"character": 32
+						}
+					]
+				},
+				{
+					"id": 10,
+					"name": "getActions",
+					"kind": 64,
+					"kindString": "Function",
+					"flags": {},
+					"signatures": [
+						{
+							"id": 11,
+							"name": "getActions",
+							"kind": 4096,
+							"kindString": "Call signature",
+							"flags": {},
+							"parameters": [
+								{
+									"id": 12,
+									"name": "el",
+									"kind": 32768,
+									"kindString": "Parameter",
+									"flags": {},
+									"type": {
+										"type": "reference",
+										"name": "Element"
+									}
+								}
+							],
+							"type": {
+								"type": "reference",
+								"typeArguments": [
+									{
+										"type": "tuple",
+										"elements": [
+											{
+												"type": "intrinsic",
+												"name": "string"
+											},
+											{
+												"type": "intrinsic",
+												"name": "string"
+											},
+											{
+												"type": "intrinsic",
+												"name": "string"
+											}
+										]
+									}
+								],
+								"name": "Generator"
+							}
+						}
+					],
+					"sources": [
+						{
+							"fileName": "bind.ts",
+							"line": 24,
+							"character": 20
+						}
+					]
+				},
+				{
+					"id": 23,
+					"name": "listenForBind",
+					"kind": 64,
+					"kindString": "Function",
+					"flags": {
+						"isExported": true
+					},
+					"signatures": [
+						{
+							"id": 24,
+							"name": "listenForBind",
+							"kind": 4096,
+							"kindString": "Call signature",
+							"flags": {
+								"isExported": true
+							},
+							"comment": {
+								"shortText": "Set up observer that will make sure any actions that are dynamically\ninjected into `el` will be bound to it's controller.",
+								"text": "This returns a Subscription object which you can call `unsubscribe()` on to\nstop further live updates.\n"
+							},
+							"parameters": [
+								{
+									"id": 25,
+									"name": "el",
+									"kind": 32768,
+									"kindString": "Parameter",
+									"flags": {
+										"isExported": true
+									},
+									"type": {
+										"type": "reference",
+										"name": "Document"
+									},
+									"defaultValue": "document"
+								},
+								{
+									"id": 26,
+									"name": "batchSize",
+									"kind": 32768,
+									"kindString": "Parameter",
+									"flags": {
+										"isExported": true
+									},
+									"type": {
+										"type": "intrinsic",
+										"name": "number"
+									},
+									"defaultValue": "30"
+								}
+							],
+							"type": {
+								"type": "reference",
+								"id": 2,
+								"name": "Subscription"
+							}
+						}
+					],
+					"sources": [
+						{
+							"fileName": "bind.ts",
+							"line": 73,
+							"character": 29
+						}
+					]
+				},
+				{
+					"id": 27,
+					"name": "processQueue",
+					"kind": 64,
+					"kindString": "Function",
+					"flags": {},
+					"signatures": [
+						{
+							"id": 28,
+							"name": "processQueue",
+							"kind": 4096,
+							"kindString": "Call signature",
+							"flags": {},
+							"parameters": [
+								{
+									"id": 29,
+									"name": "queue",
+									"kind": 32768,
+									"kindString": "Parameter",
+									"flags": {},
+									"type": {
+										"type": "reference",
+										"typeArguments": [
+											{
+												"type": "reference",
+												"name": "Element"
+											}
+										],
+										"name": "Set"
+									}
+								},
+								{
+									"id": 30,
+									"name": "batchSize",
+									"kind": 32768,
+									"kindString": "Parameter",
+									"flags": {},
+									"type": {
+										"type": "intrinsic",
+										"name": "number"
+									}
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "void"
+							}
+						}
+					],
+					"sources": [
+						{
+							"fileName": "bind.ts",
+							"line": 104,
+							"character": 21
 						}
 					]
 				}
 			],
 			"groups": [
 				{
+					"title": "Interfaces",
+					"kind": 256,
+					"children": [
+						2
+					]
+				},
+				{
+					"title": "Variables",
+					"kind": 32,
+					"children": [
+						6
+					]
+				},
+				{
 					"title": "Functions",
 					"kind": 64,
 					"children": [
-						2,
-						5
+						7,
+						13,
+						19,
+						10,
+						23,
+						27
 					]
 				}
 			],
@@ -132,7 +509,7 @@
 			]
 		},
 		{
-			"id": 29,
+			"id": 51,
 			"name": "\"controller\"",
 			"kind": 1,
 			"kindString": "External module",
@@ -142,21 +519,21 @@
 			"originalName": "/home/runner/work/catalyst/catalyst/src/controller.ts",
 			"children": [
 				{
-					"id": 30,
+					"id": 52,
 					"name": "CustomElement",
 					"kind": 256,
 					"kindString": "Interface",
 					"flags": {},
 					"children": [
 						{
-							"id": 31,
+							"id": 53,
 							"name": "constructor",
 							"kind": 512,
 							"kindString": "Constructor",
 							"flags": {},
 							"signatures": [
 								{
-									"id": 32,
+									"id": 54,
 									"name": "new CustomElement",
 									"kind": 16384,
 									"kindString": "Constructor signature",
@@ -181,7 +558,7 @@
 							"title": "Constructors",
 							"kind": 512,
 							"children": [
-								31
+								53
 							]
 						}
 					],
@@ -194,7 +571,7 @@
 					]
 				},
 				{
-					"id": 33,
+					"id": 55,
 					"name": "controller",
 					"kind": 64,
 					"kindString": "Function",
@@ -203,7 +580,7 @@
 					},
 					"signatures": [
 						{
-							"id": 34,
+							"id": 56,
 							"name": "controller",
 							"kind": 4096,
 							"kindString": "Call signature",
@@ -215,7 +592,7 @@
 							},
 							"parameters": [
 								{
-									"id": 35,
+									"id": 57,
 									"name": "classObject",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -224,7 +601,7 @@
 									},
 									"type": {
 										"type": "reference",
-										"id": 10,
+										"id": 32,
 										"name": "CustomElement"
 									}
 								}
@@ -249,14 +626,14 @@
 					"title": "Interfaces",
 					"kind": 256,
 					"children": [
-						30
+						52
 					]
 				},
 				{
 					"title": "Functions",
 					"kind": 64,
 					"children": [
-						33
+						55
 					]
 				}
 			],
@@ -269,7 +646,7 @@
 			]
 		},
 		{
-			"id": 36,
+			"id": 58,
 			"name": "\"findtarget\"",
 			"kind": 1,
 			"kindString": "External module",
@@ -279,7 +656,7 @@
 			"originalName": "/home/runner/work/catalyst/catalyst/src/findtarget.ts",
 			"children": [
 				{
-					"id": 37,
+					"id": 59,
 					"name": "findTarget",
 					"kind": 64,
 					"kindString": "Function",
@@ -288,7 +665,7 @@
 					},
 					"signatures": [
 						{
-							"id": 38,
+							"id": 60,
 							"name": "findTarget",
 							"kind": 4096,
 							"kindString": "Call signature",
@@ -301,7 +678,7 @@
 							},
 							"parameters": [
 								{
-									"id": 39,
+									"id": 61,
 									"name": "controller",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -314,7 +691,7 @@
 									}
 								},
 								{
-									"id": 40,
+									"id": 62,
 									"name": "name",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -351,7 +728,7 @@
 					]
 				},
 				{
-					"id": 41,
+					"id": 63,
 					"name": "findTargets",
 					"kind": 64,
 					"kindString": "Function",
@@ -360,7 +737,7 @@
 					},
 					"signatures": [
 						{
-							"id": 42,
+							"id": 64,
 							"name": "findTargets",
 							"kind": 4096,
 							"kindString": "Call signature",
@@ -369,7 +746,7 @@
 							},
 							"parameters": [
 								{
-									"id": 43,
+									"id": 65,
 									"name": "controller",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -382,7 +759,7 @@
 									}
 								},
 								{
-									"id": 44,
+									"id": 66,
 									"name": "name",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -418,8 +795,8 @@
 					"title": "Functions",
 					"kind": 64,
 					"children": [
-						37,
-						41
+						59,
+						63
 					]
 				}
 			],
@@ -432,7 +809,7 @@
 			]
 		},
 		{
-			"id": 56,
+			"id": 78,
 			"name": "\"index\"",
 			"kind": 1,
 			"kindString": "External module",
@@ -449,7 +826,7 @@
 			]
 		},
 		{
-			"id": 9,
+			"id": 31,
 			"name": "\"register\"",
 			"kind": 1,
 			"kindString": "External module",
@@ -459,21 +836,21 @@
 			"originalName": "/home/runner/work/catalyst/catalyst/src/register.ts",
 			"children": [
 				{
-					"id": 10,
+					"id": 32,
 					"name": "CustomElement",
 					"kind": 256,
 					"kindString": "Interface",
 					"flags": {},
 					"children": [
 						{
-							"id": 11,
+							"id": 33,
 							"name": "constructor",
 							"kind": 512,
 							"kindString": "Constructor",
 							"flags": {},
 							"signatures": [
 								{
-									"id": 12,
+									"id": 34,
 									"name": "new CustomElement",
 									"kind": 16384,
 									"kindString": "Constructor signature",
@@ -498,7 +875,7 @@
 							"title": "Constructors",
 							"kind": 512,
 							"children": [
-								11
+								33
 							]
 						}
 					],
@@ -511,7 +888,7 @@
 					]
 				},
 				{
-					"id": 13,
+					"id": 35,
 					"name": "register",
 					"kind": 64,
 					"kindString": "Function",
@@ -520,7 +897,7 @@
 					},
 					"signatures": [
 						{
-							"id": 14,
+							"id": 36,
 							"name": "register",
 							"kind": 4096,
 							"kindString": "Call signature",
@@ -533,7 +910,7 @@
 							},
 							"parameters": [
 								{
-									"id": 15,
+									"id": 37,
 									"name": "classObject",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -542,7 +919,7 @@
 									},
 									"type": {
 										"type": "reference",
-										"id": 10,
+										"id": 32,
 										"name": "CustomElement"
 									}
 								}
@@ -567,14 +944,14 @@
 					"title": "Interfaces",
 					"kind": 256,
 					"children": [
-						10
+						32
 					]
 				},
 				{
 					"title": "Functions",
 					"kind": 64,
 					"children": [
-						13
+						35
 					]
 				}
 			],
@@ -587,7 +964,7 @@
 			]
 		},
 		{
-			"id": 45,
+			"id": 67,
 			"name": "\"target\"",
 			"kind": 1,
 			"kindString": "External module",
@@ -597,7 +974,7 @@
 			"originalName": "/home/runner/work/catalyst/catalyst/src/target.ts",
 			"children": [
 				{
-					"id": 46,
+					"id": 68,
 					"name": "target",
 					"kind": 64,
 					"kindString": "Function",
@@ -606,7 +983,7 @@
 					},
 					"signatures": [
 						{
-							"id": 47,
+							"id": 69,
 							"name": "target",
 							"kind": 4096,
 							"kindString": "Call signature",
@@ -618,7 +995,7 @@
 							},
 							"typeParameter": [
 								{
-									"id": 48,
+									"id": 70,
 									"name": "K",
 									"kind": 131072,
 									"kindString": "Type parameter",
@@ -633,7 +1010,7 @@
 							],
 							"parameters": [
 								{
-									"id": 49,
+									"id": 71,
 									"name": "proto",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -660,7 +1037,7 @@
 									}
 								},
 								{
-									"id": 50,
+									"id": 72,
 									"name": "key",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -692,7 +1069,7 @@
 					]
 				},
 				{
-					"id": 51,
+					"id": 73,
 					"name": "targets",
 					"kind": 64,
 					"kindString": "Function",
@@ -701,7 +1078,7 @@
 					},
 					"signatures": [
 						{
-							"id": 52,
+							"id": 74,
 							"name": "targets",
 							"kind": 4096,
 							"kindString": "Call signature",
@@ -713,7 +1090,7 @@
 							},
 							"typeParameter": [
 								{
-									"id": 53,
+									"id": 75,
 									"name": "K",
 									"kind": 131072,
 									"kindString": "Type parameter",
@@ -728,7 +1105,7 @@
 							],
 							"parameters": [
 								{
-									"id": 54,
+									"id": 76,
 									"name": "proto",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -755,7 +1132,7 @@
 									}
 								},
 								{
-									"id": 55,
+									"id": 77,
 									"name": "key",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -792,8 +1169,8 @@
 					"title": "Functions",
 					"kind": 64,
 					"children": [
-						46,
-						51
+						68,
+						73
 					]
 				}
 			],
@@ -806,7 +1183,7 @@
 			]
 		},
 		{
-			"id": 16,
+			"id": 38,
 			"name": "\"wrap\"",
 			"kind": 1,
 			"kindString": "External module",
@@ -816,7 +1193,7 @@
 			"originalName": "/home/runner/work/catalyst/catalyst/src/wrap.ts",
 			"children": [
 				{
-					"id": 17,
+					"id": 39,
 					"name": "wrap",
 					"kind": 64,
 					"kindString": "Function",
@@ -825,7 +1202,7 @@
 					},
 					"signatures": [
 						{
-							"id": 18,
+							"id": 40,
 							"name": "wrap",
 							"kind": 4096,
 							"kindString": "Call signature",
@@ -838,7 +1215,7 @@
 							},
 							"typeParameter": [
 								{
-									"id": 19,
+									"id": 41,
 									"name": "K",
 									"kind": 131072,
 									"kindString": "Type parameter",
@@ -853,7 +1230,7 @@
 							],
 							"parameters": [
 								{
-									"id": 20,
+									"id": 42,
 									"name": "obj",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -874,7 +1251,7 @@
 											{
 												"type": "reflection",
 												"declaration": {
-													"id": 21,
+													"id": 43,
 													"name": "__type",
 													"kind": 65536,
 													"kindString": "Type literal",
@@ -883,7 +1260,7 @@
 													},
 													"signatures": [
 														{
-															"id": 22,
+															"id": 44,
 															"name": "__call",
 															"kind": 4096,
 															"kindString": "Call signature",
@@ -892,7 +1269,7 @@
 															},
 															"parameters": [
 																{
-																	"id": 23,
+																	"id": 45,
 																	"name": "args",
 																	"kind": 32768,
 																	"kindString": "Parameter",
@@ -929,7 +1306,7 @@
 									}
 								},
 								{
-									"id": 24,
+									"id": 46,
 									"name": "name",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -946,7 +1323,7 @@
 									}
 								},
 								{
-									"id": 25,
+									"id": 47,
 									"name": "fn",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -956,7 +1333,7 @@
 									"type": {
 										"type": "reflection",
 										"declaration": {
-											"id": 26,
+											"id": 48,
 											"name": "__type",
 											"kind": 65536,
 											"kindString": "Type literal",
@@ -965,7 +1342,7 @@
 											},
 											"signatures": [
 												{
-													"id": 27,
+													"id": 49,
 													"name": "__call",
 													"kind": 4096,
 													"kindString": "Call signature",
@@ -974,7 +1351,7 @@
 													},
 													"parameters": [
 														{
-															"id": 28,
+															"id": 50,
 															"name": "args",
 															"kind": 32768,
 															"kindString": "Parameter",
@@ -1028,7 +1405,7 @@
 					"title": "Functions",
 					"kind": 64,
 					"children": [
-						17
+						39
 					]
 				}
 			],
@@ -1047,12 +1424,12 @@
 			"kind": 1,
 			"children": [
 				1,
-				29,
-				36,
-				56,
-				9,
-				45,
-				16
+				51,
+				58,
+				78,
+				31,
+				67,
+				38
 			]
 		}
 	]

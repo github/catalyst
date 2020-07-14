@@ -4,7 +4,6 @@ describe('findTarget', () => {
   window.customElements.define('find-target-test-element', class extends HTMLElement {})
 
   let root
-
   beforeEach(() => {
     root = document.createElement('div')
     document.body.appendChild(root)
@@ -88,7 +87,7 @@ describe('findTargets', () => {
     chai.spy.on(instance, 'querySelectorAll', () => [])
     findTargets(instance, 'foo')
     expect(instance.querySelectorAll).to.have.been.called.once.with.exactly(
-      '[data-target~="find-target-test-element.foo"]'
+      '[data-targets~="find-target-test-element.foo"]'
     )
   })
 

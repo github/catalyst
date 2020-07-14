@@ -21,16 +21,28 @@ describe('register', () => {
   })
 
   it('dasherises class names', () => {
-    class ThisIsAnExampleOfADasherisedClassName {}
-    register(ThisIsAnExampleOfADasherisedClassName)
-    expect(window.customElements.get('this-is-an-example-of-a-dasherised-class-name')).to.equal(
-      ThisIsAnExampleOfADasherisedClassName
+    class ThisIsAnExampleOfDasherisedClassNames {}
+    register(ThisIsAnExampleOfDasherisedClassNames)
+    expect(window.customElements.get('this-is-an-example-of-dasherised-class-names')).to.equal(
+      ThisIsAnExampleOfDasherisedClassNames
     )
   })
 
+  it('will intuitively dasherize acryonyms', () => {
+    class URLBar {}
+    register(URLBar)
+    expect(window.customElements.get('url-bar')).to.equal(URLBar)
+  })
+
+  it('dasherizes cap suffixed names correctly', () => {
+    class ClipX {}
+    register(ClipX)
+    expect(window.customElements.get('clip-x')).to.equal(ClipX)
+  })
+
   it('automatically drops the `Element` suffix', () => {
-    class ASuffixedElement {}
-    register(ASuffixedElement)
-    expect(window.customElements.get('a-suffixed')).to.equal(ASuffixedElement)
+    class AutoCompleteElement {}
+    register(AutoCompleteElement)
+    expect(window.customElements.get('auto-complete')).to.equal(AutoCompleteElement)
   })
 })
