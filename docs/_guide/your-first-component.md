@@ -20,7 +20,7 @@ class HelloWorldElement extends HTMLElement {
 
 Catalyst will automatically convert the classes name; removing the trailing `Element` suffix and lowercasing all capital letters, separating them with a dash.
 
-By convention, Catalyst controllers end in `Element`, and Catalyst will strip this for the tag name, but the  `Element` suffix is not required - just convention. All examples in this guide use `Element` suffixed names.
+By convention Catalyst controllers end in `Element`; Catalyst will omit this when generating a tag name. The `Element` suffix is _not_ required - just convention. All examples in this guide use `Element` suffixed names.
 
 <div class="d-flex border rounded-1 my-3 box-shadow-medium">
   <span class="d-flex bg-blue text-white rounded-left-1 p-3">
@@ -44,10 +44,10 @@ Remember! A class name _must_ include at least two CamelCased words (not includi
 The `@controller` decorator doesn't do all that much. Catalyst components are just "Custom Elements" under the hood, and the `@controller` decorator saves you writing some boilerplate that you'd otherwise have to write by hand. Specifically the `@controller` decorator:
 
  - Derives a tag name based on your class name, removing the trailing `Element` suffix and lowercasing all capital letters, separating them with a dash.
- - Calls `window.customElements.register` with your class, and the newly tag name.
+ - Calls `window.customElements.register` with the newly derived tag name and your class.
  - Injects a call to `bind(this)` inside of the `connectedCallback()` of your class; this ensures that as your element connects it picks up any `data-action` handlers. See [actions](/guide/actions) for more on this.
  
-You can opt to do this all manaully. For example here's the above `HelloWorldElement`, written without the `@controller` annotation:
+You can do all of this manually; for example here's the above `HelloWorldElement`, written without the `@controller` annotation:
 
 ```js
 import {bind} from '@github/catalyst'
