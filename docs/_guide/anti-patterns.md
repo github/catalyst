@@ -3,9 +3,10 @@ chapter: 9
 subtitle: Anti Patterns
 ---
 
-{% capture discouraged %}<h4 class="text-red"><svg class="octicon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill-rule="evenodd" d="M1 12C1 5.925 5.925 1 12 1s11 4.925 11 11-4.925 11-11 11S1 18.075 1 12zm8.036-4.024a.75.75 0 00-1.06 1.06L10.939 12l-2.963 2.963a.75.75 0 101.06 1.06L12 13.06l2.963 2.964a.75.75 0 001.061-1.06L13.061 12l2.963-2.964a.75.75 0 10-1.06-1.06L12 10.939 9.036 7.976z"></path></svg> Discouraged</h4>{% endcapture %}
-
-{% capture encouraged %}<h4 class="text-green"><svg class="octicon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill-rule="evenodd" d="M1 12C1 5.925 5.925 1 12 1s11 4.925 11 11-4.925 11-11 11S1 18.075 1 12zm16.28-2.72a.75.75 0 00-1.06-1.06l-5.97 5.97-2.47-2.47a.75.75 0 00-1.06 1.06l3 3a.75.75 0 001.06 0l6.5-6.5z"></path></svg> Encouraged</h4>{% endcapture %}
+{% capture octx %}<svg class="octicon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill-rule="evenodd" d="M1 12C1 5.925 5.925 1 12 1s11 4.925 11 11-4.925 11-11 11S1 18.075 1 12zm8.036-4.024a.75.75 0 00-1.06 1.06L10.939 12l-2.963 2.963a.75.75 0 101.06 1.06L12 13.06l2.963 2.964a.75.75 0 001.061-1.06L13.061 12l2.963-2.964a.75.75 0 10-1.06-1.06L12 10.939 9.036 7.976z"></path></svg>{% endcapture %}
+{% capture octick %}<svg class="octicon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill-rule="evenodd" d="M1 12C1 5.925 5.925 1 12 1s11 4.925 11 11-4.925 11-11 11S1 18.075 1 12zm16.28-2.72a.75.75 0 00-1.06-1.06l-5.97 5.97-2.47-2.47a.75.75 0 00-1.06 1.06l3 3a.75.75 0 001.06 0l6.5-6.5z"></path></svg>{% endcapture %}
+{% capture discouraged %}<h4 class="text-red">{{ octx }} Discouraged</h4>{% endcapture %}
+{% capture encouraged %}<h4 class="text-green">{{ octick }} Encouraged</h4>{% endcapture %}
 
 Here are a few common anti-patterns which we've discovered as developers have used Catalyst. We consider these anti-patterns as they're best avoided, because of surprising edge-cases, or simply because there are easier ways to achieve the same goals.
 
@@ -110,6 +111,59 @@ class UserSettingsElement extends HTMLElement {
 
   </div>
 </div>
+
+### Avoid shadowing method names
+
+When naming a method, you should avoid naming it something that already exists on the `HTMLElement` prototype; as doing so can lead to surprising behaviors. Test out the form below to see what method names are allowed or not:
+
+<form>
+  <label>
+    <h4>I want my method to be called...</h4>
+    <input class="js-methodname-shadow-test mb-4">
+  </label>
+  <div hidden class="js-methodname-shadow-bad-input text-red">
+    {{ octx }} This name would shadow <code></code>, you'll need to pick a different name
+  </div>
+  <div hidden class="js-methodname-shadow-warn-input text-orange-light">
+    {{ octx }} While this name is allowed, it's not ideal because <span></span>. You should consider a different name.
+  </div>
+  <div hidden class="js-methodname-shadow-good-input text-green">
+    {{ octick }} This is a good name for a method!
+  </div>
+  <script>
+    const warnings = {
+      'new': 'it has a special meaning in JS',
+      'super': 'it has a special meaning in JS',
+      'prototype': 'it has a special meaning in JS',
+      'requestSubmit': 'it is a proposed new feature',
+    }
+    document.querySelector('.js-methodname-shadow-test').addEventListener('input', () => {
+      const name = event.target.value
+      const goodEl = document.querySelector('.js-methodname-shadow-good-input')
+      const badEl = document.querySelector('.js-methodname-shadow-bad-input')
+      const warnEl = document.querySelector('.js-methodname-shadow-warn-input')
+      let warning = warnings[name]
+      if (name !== name.toLowerCase() && name.toLowerCase() in HTMLElement.prototype) {
+        warning = `it is too similar to \`${name.toLowerCase()}\` which already exists`
+      } else if (name.startsWith('on') && !(name in HTMLElement.prototype)) {
+        warning = 'starting with `on` suggests a coupling between the event and the method (see below)'
+      }
+      goodEl.hidden = warning || (name in HTMLElement.prototype)
+      warnEl.hidden = !warning 
+      badEl.hidden = warning || !(name in HTMLElement.prototype)
+      if (warning) {
+        warnEl.querySelector('span').textContent = warning
+      } else if (name in HTMLElement.prototype) {
+        let proto = HTMLElement.prototype
+        while(proto !== null) {
+          if (proto.hasOwnProperty(name)) break
+          proto = Object.getPrototypeOf(proto)
+        }
+        badEl.querySelector('code').textContent = `${proto.constructor.name}.prototype.${name}`
+      }
+    })
+  </script>
+</form>
 
 ### Avoid naming methods after events, e.g. `onClick`
 
@@ -250,15 +304,15 @@ class UserFilter {
 <user-list>
   <label><input type="checkbox"
     data-action="change:user-list.filter"
-    data-target="user-list.filters"
+    data-targets="user-list.filters"
     data-filter="all">Show all</label>
   <label><input type="checkbox"
     data-action="change:user-list.filter"
-    data-target="user-list.filters"
+    data-targets="user-list.filters"
     data-filter="new">New Users</label>
   <label><input type="checkbox"
     data-action="change:user-list.filter"
-    data-target="user-list.filters"
+    data-targets="user-list.filters"
     data-filter="admin">Admins</label>
   <!-- ... --->
 </user-filter>
@@ -290,15 +344,16 @@ class UserFilter {
 <user-filter>
   <label><input type="checkbox"
     data-action="change:user-list.filter"
-    data-target="user-list.filters user-list.allFilter"
+    data-target="user-list.allFilter"
+    data-targets="user-list.filters"
     data-filter="all">Show all</label>
   <label><input type="checkbox"
     data-action="change:user-list.filter"
-    data-target="user-list.filters"
+    data-targets="user-list.filters"
     data-filter="new">New Users</label>
   <label><input type="checkbox"
     data-action="change:user-list.filter"
-    data-target="user-list.filters"
+    data-targets="user-list.filters"
     data-filter="admin">Admins</label>
   <!-- ... --->
 </user-filter>
