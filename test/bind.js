@@ -162,7 +162,7 @@ describe('bind', () => {
       expect(instance.foo).to.have.been.called.exactly(0)
     })
 
-    it('will not re-bind elements that havent already had `bind()` called', async function () {
+    it('will not bind elements that havent already had `bind()` called', async function () {
       customElements.define('bind-test-not-element', class BindTestNotController extends HTMLElement {})
       const instance = document.createElement('bind-test-not-element')
       chai.spy.on(instance, 'foo')
@@ -177,6 +177,29 @@ describe('bind', () => {
       await waitForNextAnimationFrame()
       button.click()
       expect(instance.foo).to.have.been.called.exactly(0)
+    })
+
+    it.only('will not re-bind elements that just had `bind()` called', async function () {
+      customElements.define(
+        'bind-test-not-element',
+        class BindTestNotController extends HTMLElement {
+          connectedCallback() {
+            bind(this)
+          }
+        }
+      )
+      const instance = document.createElement('bind-test-not-element')
+      chai.spy.on(instance, 'foo')
+      listenForBind(root)
+      const button = document.createElement('button')
+      button.setAttribute('data-action', 'click:bind-test-not-element#foo')
+      instance.appendChild(button)
+      root.appendChild(instance)
+      // wait for processQueue
+      await waitForNextAnimationFrame()
+      await waitForNextAnimationFrame()
+      button.click()
+      expect(instance.foo).to.have.been.called.exactly(1)
     })
   })
 
