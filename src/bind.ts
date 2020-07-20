@@ -70,28 +70,17 @@ function getActionMethodName(action: string): string {
   return action.slice(action.lastIndexOf('#') + 1)
 }
 
-// ControllerEventHandler is a global event handler that dispatches events to
-// controllers. We use a global event handler over bindings functions because
-// this is far more performant; creating functions for each `addEventListener`
-// would be very costly for CPU performance (and memory), while registering a
-// single handler for every event keeps things relatively performant.
+// Bind a single function to all events to avoid anonymous closure performance penalty.
 function handleEvent(event: Event) {
   const el = event.currentTarget
   if (!(el instanceof Element)) return
   for (const action of (el.getAttribute('data-action') || '').split(' ')) {
-    // We want to dispatch this event, only to the subscribers; we filter by
-    // event.type to find which actions should fire
-    const eventType = getActionEventName(action)
-    if (event.type !== eventType) continue
-    // We need to find the closest controller to dispatch the event to.
+    if (event.type !== getActionEventName(action)) continue
     const tagName = getActionControllerName(action)
-    // The controller should be "well known" in that `bind()` should have
-    // been called on it.
+    // Dispatch only to Catalyst elements.
     if (!controllers.has(tagName)) continue
     const controller = el.closest(tagName) as Element & Record<string, (ev: Event) => unknown>
     if (!controller) continue
-    // Finally we need to get the right method to call on the controller.
-    // The method also needs to exist!
     const method = getActionMethodName(action)
     if (typeof controller[method] === 'function') {
       controller[method](event)
