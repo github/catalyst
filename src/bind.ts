@@ -99,17 +99,8 @@ function handleEvent(event: Event) {
   }
 }
 
-const bindings = new WeakMap<Element, Set<string>>()
 function bindActions(el: Element) {
-  if (!bindings.has(el)) {
-    bindings.set(el, new Set())
-  }
-  const elementBindings = bindings.get(el)!
   for (const action of (el.getAttribute('data-action') || '').split(' ')) {
-    const event = getActionEventName(action)
-    if (!elementBindings.has(event)) {
-      el.addEventListener(event, handleEvent)
-    }
-    elementBindings.add(event)
+    el.addEventListener(getActionEventName(action), handleEvent)
   }
 }
