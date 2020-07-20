@@ -174,18 +174,18 @@ describe('bind', () => {
 
     it('will not re-bind elements that just had `bind()` called', async function () {
       customElements.define(
-        'bind-test-not-element',
+        'bind-test-not-rebind-element',
         class BindTestNotController extends HTMLElement {
           connectedCallback() {
             bind(this)
           }
         }
       )
-      const instance = document.createElement('bind-test-not-element')
+      const instance = document.createElement('bind-test-not-rebind-element')
       chai.spy.on(instance, 'foo')
       listenForBind(root)
       const button = document.createElement('button')
-      button.setAttribute('data-action', 'click:bind-test-not-element#foo')
+      button.setAttribute('data-action', 'click:bind-test-not-rebind-element#foo')
       instance.appendChild(button)
       root.appendChild(instance)
       // wait for processQueue
