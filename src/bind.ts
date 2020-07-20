@@ -72,15 +72,15 @@ function handleEvent(event: Event) {
 }
 
 type Binding = {type: string; tag: string; method: string}
-function bindings(el: Element): Binding[] {
-  return (el.getAttribute('data-action') || '').split(' ').map(action => {
+function* bindings(el: Element): Iterable<Binding> {
+  for (const action of (el.getAttribute('data-action') || '').split(' ')) {
     const eventSep = action.lastIndexOf(':')
     const methodSep = action.lastIndexOf('#')
     const type = action.slice(0, eventSep)
     const tag = action.slice(eventSep + 1, methodSep)
     const method = action.slice(methodSep + 1)
-    return {type, tag, method}
-  })
+    yield {type, tag, method}
+  }
 }
 
 function bindActions(el: Element) {
