@@ -70,7 +70,7 @@ interface Subscription {
  * This returns a Subscription object which you can call `unsubscribe()` on to
  * stop further live updates.
  */
-export function listenForBind(el = document, batchSize = 30): Subscription {
+export function listenForBind(el: Node = document, batchSize = 30): Subscription {
   let closed = false
 
   const observer = new MutationObserver(mutations => {
