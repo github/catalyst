@@ -206,4 +206,24 @@ describe('bind', () => {
       expect(instance.foo).to.have.been.called.exactly(0)
     })
   })
+
+  it('re-binds actions deeply in the HTML', async function () {
+    const instance = document.createElement('bind-test-element')
+    chai.spy.on(instance, 'foo')
+    root.appendChild(instance)
+    listenForBind(root)
+    instance.innerHTML = `
+        <div>
+          <div>
+            <button data-action="click:bind-test-element#foo">
+          </div>
+        </div>
+      `
+    // We need to wait for a couple of frames after injecting the HTML into to
+    // controller so that the actions have been bound to the controller.
+    await waitForNextAnimationFrame()
+    await waitForNextAnimationFrame()
+    instance.querySelector('button').click()
+    expect(instance.foo).to.have.been.called.exactly(1)
+  })
 })
