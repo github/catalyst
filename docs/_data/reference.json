@@ -380,7 +380,7 @@
 									},
 									"type": {
 										"type": "reference",
-										"name": "Document"
+										"name": "Node"
 									},
 									"defaultValue": "document"
 								},
