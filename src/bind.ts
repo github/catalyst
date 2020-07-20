@@ -60,8 +60,7 @@ function bindElements(root: Element) {
 
 // Bind a single function to all events to avoid anonymous closure performance penalty.
 function handleEvent(event: Event) {
-  const el = event.currentTarget
-  if (!(el instanceof Element)) return
+  const el = event.currentTarget as Element
   for (const binding of bindings(el)) {
     if (event.type === binding.type && controllers.has(binding.tag)) {
       const controller = el.closest(binding.tag) as Element & Record<string, (ev: Event) => unknown>
