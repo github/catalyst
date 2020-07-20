@@ -63,12 +63,11 @@ function handleEvent(event: Event) {
   const el = event.currentTarget
   if (!(el instanceof Element)) return
   for (const binding of bindings(el)) {
-    // Dispatch only to Catalyst elements.
-    if (event.type !== binding.type || !controllers.has(binding.tag)) continue
-    const controller = el.closest(binding.tag) as Element & Record<string, (ev: Event) => unknown>
-    if (!controller) continue
-    if (typeof controller[binding.method] === 'function') {
-      controller[binding.method](event)
+    if (event.type === binding.type && controllers.has(binding.tag)) {
+      const controller = el.closest(binding.tag) as Element & Record<string, (ev: Event) => unknown>
+      if (controller && typeof controller[binding.method] === 'function') {
+        controller[binding.method](event)
+      }
     }
   }
 }
