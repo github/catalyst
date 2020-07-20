@@ -179,7 +179,7 @@ describe('bind', () => {
       expect(instance.foo).to.have.been.called.exactly(0)
     })
 
-    it.only('will not re-bind elements that just had `bind()` called', async function () {
+    it('will not re-bind elements that just had `bind()` called', async function () {
       customElements.define(
         'bind-test-not-element',
         class BindTestNotController extends HTMLElement {
