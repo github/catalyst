@@ -6,7 +6,7 @@ const controllers = new Set<string>()
  */
 export function bind(controller: HTMLElement): void {
   controllers.add(controller.tagName.toLowerCase())
-  findElementsToBind(controller)
+  bindElements(controller)
 }
 
 /**
@@ -25,7 +25,7 @@ export function listenForBind(el: Node = document): Subscription {
       } else if (mutation.type === 'childList' && mutation.addedNodes.length) {
         for (const node of mutation.addedNodes) {
           if (node instanceof Element) {
-            findElementsToBind(node)
+            bindElements(node)
           }
         }
       }
@@ -48,7 +48,7 @@ interface Subscription {
   unsubscribe(): void
 }
 
-function findElementsToBind(root: Element) {
+function bindElements(root: Element) {
   for (const el of root.querySelectorAll('[data-action]')) {
     bindActions(el)
   }
