@@ -58,38 +58,35 @@ function bindElements(root: Element) {
   }
 }
 
-function getActionEventName(action: string): string {
-  return action.slice(0, action.lastIndexOf(':'))
-}
-
-function getActionControllerName(action: string): string {
-  return action.slice(action.lastIndexOf(':') + 1, action.lastIndexOf('#'))
-}
-
-function getActionMethodName(action: string): string {
-  return action.slice(action.lastIndexOf('#') + 1)
-}
-
 // Bind a single function to all events to avoid anonymous closure performance penalty.
 function handleEvent(event: Event) {
   const el = event.currentTarget
   if (!(el instanceof Element)) return
-  for (const action of (el.getAttribute('data-action') || '').split(' ')) {
-    if (event.type !== getActionEventName(action)) continue
-    const tagName = getActionControllerName(action)
+  for (const binding of bindings(el)) {
     // Dispatch only to Catalyst elements.
-    if (!controllers.has(tagName)) continue
-    const controller = el.closest(tagName) as Element & Record<string, (ev: Event) => unknown>
+    if (event.type !== binding.type || !controllers.has(binding.tag)) continue
+    const controller = el.closest(binding.tag) as Element & Record<string, (ev: Event) => unknown>
     if (!controller) continue
-    const method = getActionMethodName(action)
-    if (typeof controller[method] === 'function') {
-      controller[method](event)
+    if (typeof controller[binding.method] === 'function') {
+      controller[binding.method](event)
     }
   }
 }
 
+type Binding = {type: string; tag: string; method: string}
+function bindings(el: Element): Binding[] {
+  return (el.getAttribute('data-action') || '').split(' ').map(action => {
+    const eventSep = action.lastIndexOf(':')
+    const methodSep = action.lastIndexOf('#')
+    const type = action.slice(0, eventSep)
+    const tag = action.slice(eventSep + 1, methodSep)
+    const method = action.slice(methodSep + 1)
+    return {type, tag, method}
+  })
+}
+
 function bindActions(el: Element) {
-  for (const action of (el.getAttribute('data-action') || '').split(' ')) {
-    el.addEventListener(getActionEventName(action), handleEvent)
+  for (const binding of bindings(el)) {
+    el.addEventListener(binding.type, handleEvent)
   }
 }
