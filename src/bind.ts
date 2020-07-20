@@ -75,28 +75,26 @@ function getActionMethodName(action: string): string {
 // this is far more performant; creating functions for each `addEventListener`
 // would be very costly for CPU performance (and memory), while registering a
 // single handler for every event keeps things relatively performant.
-const ControllerEventHandler = {
-  handleEvent(event: Event) {
-    const el = event.currentTarget
-    if (!(el instanceof Element)) return
-    for (const action of (el.getAttribute('data-action') || '').split(' ')) {
-      // We want to dispatch this event, only to the subscribers; we filter by
-      // event.type to find which actions should fire
-      const eventType = getActionEventName(action)
-      if (event.type !== eventType) continue
-      // We need to find the closest controller to dispatch the event to.
-      const tagName = getActionControllerName(action)
-      // The controller should be "well known" in that `bind()` should have
-      // been called on it.
-      if (!controllers.has(tagName)) continue
-      const controller = el.closest(tagName) as Element & Record<string, (ev: Event) => unknown>
-      if (!controller) continue
-      // Finally we need to get the right method to call on the controller.
-      // The method also needs to exist!
-      const method = getActionMethodName(action)
-      if (typeof controller[method] === 'function') {
-        controller[method](event)
-      }
+function handleEvent(event: Event) {
+  const el = event.currentTarget
+  if (!(el instanceof Element)) return
+  for (const action of (el.getAttribute('data-action') || '').split(' ')) {
+    // We want to dispatch this event, only to the subscribers; we filter by
+    // event.type to find which actions should fire
+    const eventType = getActionEventName(action)
+    if (event.type !== eventType) continue
+    // We need to find the closest controller to dispatch the event to.
+    const tagName = getActionControllerName(action)
+    // The controller should be "well known" in that `bind()` should have
+    // been called on it.
+    if (!controllers.has(tagName)) continue
+    const controller = el.closest(tagName) as Element & Record<string, (ev: Event) => unknown>
+    if (!controller) continue
+    // Finally we need to get the right method to call on the controller.
+    // The method also needs to exist!
+    const method = getActionMethodName(action)
+    if (typeof controller[method] === 'function') {
+      controller[method](event)
     }
   }
 }
@@ -110,7 +108,7 @@ function bindActions(el: Element) {
   for (const action of (el.getAttribute('data-action') || '').split(' ')) {
     const event = getActionEventName(action)
     if (!elementBindings.has(event)) {
-      el.addEventListener(event, ControllerEventHandler)
+      el.addEventListener(event, handleEvent)
     }
     elementBindings.add(event)
   }
