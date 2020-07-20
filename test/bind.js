@@ -20,13 +20,6 @@ describe('bind', () => {
     root.remove()
   })
 
-  it('queries for Elements matching data-action*="tagname"', () => {
-    const instance = document.createElement('bind-test-element')
-    chai.spy.on(instance, 'querySelectorAll', () => [])
-    bind(instance)
-    expect(instance.querySelectorAll).to.have.been.called.once.with.exactly('[data-action*=":bind-test-element#"]')
-  })
-
   it('binds events on elements based on their data-action attribute', () => {
     const instance = document.createElement('bind-test-element')
     chai.spy.on(instance, 'foo')
