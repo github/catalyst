@@ -14,6 +14,7 @@ interface CustomElement {
  */
 export function controller(classObject: CustomElement): void {
   wrap(classObject.prototype, 'connectedCallback', function (this: HTMLElement) {
+    this.toggleAttribute('data-catalyst', true)
     bind(this)
   })
   register(classObject)
