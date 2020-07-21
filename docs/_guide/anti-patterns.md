@@ -258,7 +258,7 @@ class UserListElement extends HTMLElement {
 
 ```typescript
 class UserList {
-  @targets admins!: HTMLElement[]
+  @targets admins: HTMLElement[]
 
   showAdmins() {
     // Just need to get admins here...
@@ -282,7 +282,7 @@ For example let's say we have a list of filter checkboxes and checking the "all"
 ```typescript
 @controller
 class UserFilter {
-  @targets filters!: HTMLInputElement[]
+  @targets filters: HTMLInputElement[]
 
   get allFilter() {
     return this.filters.find(el => el.matches('[data-filter="all"]'))
@@ -325,8 +325,8 @@ While this works well, it could be more easily solved with targets:
 ```typescript
 @controller
 class UserFilter {
-  @targets filters!: HTMLInputElement[]
-  @target allFilter!: HTMLInputElement
+  @targets filters: HTMLInputElement[]
+  @target allFilter: HTMLInputElement
 
   filter(event: Event) {
     if (event.target === this.allFilter) {
