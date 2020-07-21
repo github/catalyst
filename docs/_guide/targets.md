@@ -30,7 +30,7 @@ import { controller, target } from "@github/catalyst"
 
 @controller
 class HelloWorldElement extends HTMLElement {
-  @target outputTarget!: HTMLElement
+  @target outputTarget: HTMLElement
 
   greet() {
     this.outputTarget.textContent = `Hello, world!`
@@ -92,8 +92,8 @@ import { controller, target, targets } from "@github/catalyst"
 
 @controller
 class UserSettingsElement extends HTMLElement {
-  @target read!: HTMLInputElement
-  @target write!: HTMLInputElement
+  @target read: HTMLInputElement
+  @target write: HTMLInputElement
 
   valid() {
     // One checkbox must be checked!
@@ -103,7 +103,7 @@ class UserSettingsElement extends HTMLElement {
 
 @controller
 class UserListElement extends HTMLElement {
-  @targets user!: HTMLElement
+  @targets user: HTMLElement
 
   valid() {
     // Every user must be valid!

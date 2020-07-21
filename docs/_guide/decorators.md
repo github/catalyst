@@ -37,6 +37,28 @@ class HelloWorldElement extends HTMLElement {
 
 Class Field decorators get given the class and the field name so they can add custom functionality to the field. Because they operate on the fields, they must be put on top of or to the left of the field.
 
+#### Disabling `strictPropertyInitialization`
+
+TypeScript comes with various "strict" mode settings, one of which is `strictPropertyInitialization` which TypeScript catch potential class properties which might not be assigned during construction of a class. This option conflicts with Catalyst's `@target`/`@targets` decorators, which safely do the assignment but TypeScript's simple heuristics cannot detect this. It's recommended to disable this option (other strict mode rules can still apply) in your `tsconfig.json` like so:
+
+```json
+{
+  "compilerOptions": {
+    "strict": true,
+    "strictPropertyInitialization": false
+  }
+}
+```
+
+If you really want to keep the `strictPropertyInitialization` option set to `true`, another option would be to use TypeScript's [non-null assertion operator (`!`)](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-0.html#non-null-assertion-operator), adding this to each of your `@target`/`@targets` properties, like so:
+
+```typescript
+class HelloWorldElement extends HTMLElement {
+  @target something!: HTMLElement
+  @targets items!: HTMLElement[]
+}
+```
+
 ### Method Decorators
 
 Catalyst doesn't currently ship with any method decorators, but you might see them in code. They work just like Field Decorators (in fact they're the same thing). Put them on top or on the left of the method, like so:
