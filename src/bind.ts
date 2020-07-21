@@ -1,66 +1,12 @@
-const bound = new Set<string>()
+const controllers = new Set<string>()
+
 /*
  * Bind `[data-action]` elements from the DOM to their actions.
  *
  */
 export function bind(controller: HTMLElement): void {
-  const tag = controller.tagName.toLowerCase()
-  bound.add(tag)
-  const actionAttributeMatcher = `[data-action*=":${tag}#"]`
-
-  for (const el of controller.querySelectorAll(actionAttributeMatcher)) {
-    // Ignore nested elements
-    if (el.closest(tag) !== controller) continue
-    bindActionsToController(controller, el)
-  }
-
-  // Also bind the controller to itself
-  if (controller.matches(actionAttributeMatcher)) {
-    bindActionsToController(controller, controller)
-  }
-}
-
-// Match the pattern of `eventName:constructor#method`.
-function* getActions(el: Element): Generator<[string, string, string]> {
-  for (const binding of (el.getAttribute('data-action') || '').split(' ')) {
-    const [rest, methodName] = binding.split('#')
-    if (!methodName) continue
-
-    // eventName may contain `:` so account for that
-    // by splitting by the last instance of `:`
-    const colonIndex = rest.lastIndexOf(':')
-    if (colonIndex < 0) continue
-
-    yield [rest.slice(0, colonIndex), rest.slice(colonIndex + 1), methodName]
-  }
-}
-
-function bindActionToController(controller: HTMLElement, el: Element, methodName: string, eventName: string) {
-  // Check the `method` is present on the prototype
-  const methodDescriptor =
-    Object.getOwnPropertyDescriptor(controller, methodName) ||
-    Object.getOwnPropertyDescriptor(Object.getPrototypeOf(controller), methodName)
-  if (methodDescriptor && typeof methodDescriptor.value == 'function') {
-    el.addEventListener(eventName, (event: Event) => {
-      methodDescriptor.value.call(controller, event)
-    })
-  }
-}
-
-// Bind the data-action attribute of a single element to the controller
-function bindActionsToController(controller: HTMLElement, el: Element) {
-  const tag = controller.tagName.toLowerCase()
-
-  for (const [eventName, tagName, methodName] of getActions(el)) {
-    if (tagName === tag) {
-      bindActionToController(controller, el, methodName, eventName)
-    }
-  }
-}
-
-interface Subscription {
-  closed: boolean
-  unsubscribe(): void
+  controllers.add(controller.tagName.toLowerCase())
+  bindElements(controller)
 }
 
 /**
@@ -70,26 +16,22 @@ interface Subscription {
  * This returns a Subscription object which you can call `unsubscribe()` on to
  * stop further live updates.
  */
-export function listenForBind(el: Node = document, batchSize = 30): Subscription {
+export function listenForBind(el: Node = document): Subscription {
   let closed = false
-
   const observer = new MutationObserver(mutations => {
-    const queue = new Set<Element>()
     for (const mutation of mutations) {
-      if (mutation.type === 'childList' && mutation.addedNodes.length) {
+      if (mutation.type === 'attributes' && mutation.target instanceof Element) {
+        bindActions(mutation.target)
+      } else if (mutation.type === 'childList' && mutation.addedNodes.length) {
         for (const node of mutation.addedNodes) {
-          if (!(node instanceof Element)) continue
-          if (node.hasAttribute('data-action')) {
-            queue.add(node)
+          if (node instanceof Element) {
+            bindElements(node)
           }
         }
       }
     }
-    if (queue.size) requestAnimationFrame(() => processQueue(queue, batchSize))
   })
-
-  observer.observe(el, {childList: true, subtree: true})
-
+  observer.observe(el, {childList: true, subtree: true, attributes: true, attributeFilter: ['data-action']})
   return {
     get closed() {
       return closed
@@ -101,22 +43,48 @@ export function listenForBind(el: Node = document, batchSize = 30): Subscription
   }
 }
 
-function processQueue(queue: Set<Element>, batchSize: number) {
-  let counter = batchSize
-  for (const el of queue) {
-    for (const [eventName, controllerTag, methodName] of getActions(el)) {
-      if (!bound.has(controllerTag)) continue
-      const controller = el.closest(controllerTag)
-      if (!(controller instanceof HTMLElement)) continue
+interface Subscription {
+  closed: boolean
+  unsubscribe(): void
+}
 
-      bindActionToController(controller, el, methodName, eventName)
-    }
-    queue.delete(el)
-
-    counter -= 1
-    if (counter === 0) break
+function bindElements(root: Element) {
+  for (const el of root.querySelectorAll('[data-action]')) {
+    bindActions(el)
   }
-  if (queue.size !== 0) {
-    requestAnimationFrame(() => processQueue(queue, batchSize))
+  // Also bind the controller to itself
+  if (root.hasAttribute('data-action')) {
+    bindActions(root)
+  }
+}
+
+// Bind a single function to all events to avoid anonymous closure performance penalty.
+function handleEvent(event: Event) {
+  const el = event.currentTarget as Element
+  for (const binding of bindings(el)) {
+    if (event.type === binding.type && controllers.has(binding.tag)) {
+      const controller = el.closest(binding.tag) as Element & Record<string, (ev: Event) => unknown>
+      if (controller && typeof controller[binding.method] === 'function') {
+        controller[binding.method](event)
+      }
+    }
+  }
+}
+
+type Binding = {type: string; tag: string; method: string}
+function* bindings(el: Element): Iterable<Binding> {
+  for (const action of (el.getAttribute('data-action') || '').split(' ')) {
+    const eventSep = action.lastIndexOf(':')
+    const methodSep = action.lastIndexOf('#')
+    const type = action.slice(0, eventSep)
+    const tag = action.slice(eventSep + 1, methodSep)
+    const method = action.slice(methodSep + 1)
+    yield {type, tag, method}
+  }
+}
+
+function bindActions(el: Element) {
+  for (const binding of bindings(el)) {
+    el.addEventListener(binding.type, handleEvent)
   }
 }
