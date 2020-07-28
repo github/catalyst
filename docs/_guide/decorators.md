@@ -1,5 +1,5 @@
 ---
-chapter: 3
+chapter: 4
 subtitle: Using TypeScript for ergonomics
 ---
 
@@ -20,7 +20,7 @@ class HelloWorldElement extends HTMLElement {}
 
 ### Class Field Decorators
 
-Catalyst comes with the `@target` and `@targets` decorators (for more on these [read the Targets guide section](/guide/targets)). These get added on top or to the left of the field name, like so:
+Catalyst comes with the `@target` and `@targets` decorators (for more on these [read the Targets guide section]({{ site.baseurl }}/guide/targets)). These get added on top or to the left of the field name, like so:
 
 ```js
 class HelloWorldElement extends HTMLElement {

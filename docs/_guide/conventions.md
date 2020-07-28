@@ -34,7 +34,7 @@ Be careful not to go too short! We'd recommend avoiding contracting words such a
 
 ### Method names should describe what they do
 
-A good method name, much like a good class name, describes what it does, not how it was invoked. While methods can be given most names, you should avoid names that conflict with existing methods on the `HTMLElement` prototype (more on that in [anti-patterns](/guide/anti-patterns#avoid-shadowing-method-names)). Names like `onClick` are best avoided, overly generic names like `toggle` should also be avoided. Just like class names it is a good idea to ask "how" and "what", so for example `showAdmins`, `filterUsers`, `updateURL`.
+A good method name, much like a good class name, describes what it does, not how it was invoked. While methods can be given most names, you should avoid names that conflict with existing methods on the `HTMLElement` prototype (more on that in [anti-patterns]({{ site.baseurl }}/guide/anti-patterns#avoid-shadowing-method-names)). Names like `onClick` are best avoided, overly generic names like `toggle` should also be avoided. Just like class names it is a good idea to ask "how" and "what", so for example `showAdmins`, `filterUsers`, `updateURL`.
 
 ### `@target` should use singular naming, while `@targets` should use plural
 
