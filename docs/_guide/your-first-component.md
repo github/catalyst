@@ -5,7 +5,7 @@ chapter: 3
 
 ### Catalyst's `@controller` decorator
 
-Catalyst's `@controller` decorator lets you create Custom Elements with virtually no boilerplate, by automatically calling `customElements.register`, and by adding ["Actions"](/guide/actions) and ["Targets"](/guide/targets) features described later. Using TypeScript (with `decorators` support enabled), simply add `@controller` to the top of your class:
+Catalyst's `@controller` decorator lets you create Custom Elements with virtually no boilerplate, by automatically calling `customElements.register`, and by adding ["Actions"]({{ site.baseurl }}/guide/actions) and ["Targets"]({{ site.baseurl }}/guide/targets) features described later. Using TypeScript (with `decorators` support enabled), simply add `@controller` to the top of your class:
 
 ```js
 import {controller} from '@github/catalyst'
@@ -45,7 +45,7 @@ The `@controller` decorator doesn't do all that much. Catalyst components are ju
 
  - Derives a tag name based on your class name, removing the trailing `Element` suffix and lowercasing all capital letters, separating them with a dash.
  - Calls `window.customElements.register` with the newly derived tag name and your class.
- - Injects a call to `bind(this)` inside of the `connectedCallback()` of your class; this ensures that as your element connects it picks up any `data-action` handlers. See [actions](/guide/actions) for more on this.
+ - Injects a call to `bind(this)` inside of the `connectedCallback()` of your class; this ensures that as your element connects it picks up any `data-action` handlers. See [actions]({{ site.baseurl }}/guide/actions) for more on this.
  
 You can do all of this manually; for example here's the above `HelloWorldElement`, written without the `@controller` annotation:
 
