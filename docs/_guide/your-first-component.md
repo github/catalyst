@@ -1,6 +1,6 @@
 ---
 subtitle: Building an HTMLElement
-chapter: 2
+chapter: 3
 ---
 
 ### Catalyst's `@controller` decorator
