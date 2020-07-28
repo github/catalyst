@@ -1,5 +1,5 @@
 ---
-chapter: 3
+chapter: 4
 subtitle: Using TypeScript for ergonomics
 ---
 
