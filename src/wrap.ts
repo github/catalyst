@@ -7,14 +7,14 @@
  * Used in the `controller()` decorator.
  */
 export function wrap<K extends string>(
-  obj: Record<K, (...args: unknown[]) => void>,
+  obj: Record<K, ((...args: unknown[]) => void) | undefined>,
   name: K,
   fn: (...args: unknown[]) => unknown
 ): void {
-  if (!obj[name]) {
+  const oldFn = obj[name]
+  if (!oldFn) {
     obj[name] = fn
   } else {
-    const oldFn = obj[name]
     obj[name] = function (...args: unknown[]) {
       fn.apply(this, args)
       oldFn.apply(this, args)
