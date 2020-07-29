@@ -6,7 +6,7 @@
     "declarationMap": true,
     "esModuleInterop": true,
     "experimentalDecorators": true,
-    "lib": ["es6", "dom", "dom.iterable"],
+    "lib": ["es2017", "dom", "dom.iterable"],
     "module": "ESNext",
     "moduleResolution": "node",
     "noEmit": false,
