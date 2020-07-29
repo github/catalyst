@@ -6,7 +6,7 @@ describe('prop', () => {
     class Foo {
       name = 1
     }
-    __decorate([prop], Foo.prototype, "name", null)
+    __decorate([prop], Foo.prototype, 'name', null)
     expect(Foo.observedProperties).to.eql(['name'])
   })
 
@@ -15,7 +15,7 @@ describe('prop', () => {
       static observedProperties = ['existing']
       name = 1
     }
-    __decorate([prop], Foo.prototype, "name", null)
+    __decorate([prop], Foo.prototype, 'name', null)
     expect(Foo.observedProperties).to.eql(['existing', 'name'])
   })
 
@@ -26,7 +26,7 @@ describe('prop', () => {
       }
       name = 1
     }
-    __decorate([prop], Foo.prototype, "name", null)
+    __decorate([prop], Foo.prototype, 'name', null)
     expect(Foo.observedProperties).to.eql(['existing', 'name'])
   })
 })
