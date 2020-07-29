@@ -5,7 +5,11 @@ interface ClassLike {
   new (...args: any[]): any
   observedProperties?: string[]
 }
-
+/**
+ * The `observeProperties` decorator wraps a class and observes properties declared
+ * by the `observedProperties` static member, calling the `propertyChangedCallback`
+ * method when a property is changed.
+ */
 export function observeProperties<T extends ClassLike>(classObject: T): ClassLike {
   const observedProperties = 'observedProperties' in classObject ? classObject.observedProperties : []
   const Class = class extends classObject {
