@@ -1,4 +1,5 @@
 import {register} from './register'
+import {observeProperties} from './observe-properties'
 import {bind} from './bind'
 import {wrap} from './wrap'
 
@@ -12,10 +13,12 @@ interface CustomElement {
  * registry, as well as ensuring `bind(this)` is called on `connectedCallback`,
  * wrapping the classes `connectedCallback` method if needed.
  */
-export function controller(classObject: CustomElement): void {
+export function controller(classObject: CustomElement): CustomElement {
+  classObject = observeProperties(classObject)
   wrap(classObject.prototype, 'connectedCallback', function (this: HTMLElement) {
     this.toggleAttribute('data-catalyst', true)
     bind(this)
   })
   register(classObject)
+  return classObject
 }
