@@ -5,6 +5,25 @@ subtitle: Data Binding
 
 Catalyst Components can maintain their own internal state as [class fields](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/Public_class_fields), these are convenient because they're easy to access, but it can be hard to figure out when to update a components UI when these fields change, as there's no way of knowing when a field gets set.
 
+You could resort to using `get`&`set` methods, but this can quickly become unwieldy:
+
+```typescript
+class MyClass {
+  prop = 1 // Cannot observe changes to this field
+}
+// vs
+class MyClass {
+  #prop = 1 // make a private field just to hold the state somewhere
+  get prop() {
+    return this.#prop
+  }
+  set prop() {
+    this.#prop = prop
+    this.update()
+  }
+}
+```
+
 With the `@prop` decorator, its possible to declare class fields, and get notified when they change - by `propertyChangedCallback` being fired each time a property is set.
 
 ### Example
@@ -27,7 +46,7 @@ With the `@prop` decorator, its possible to declare class fields, and get notifi
   </div>
   <div class="ml-4">
 
-```js
+```typescript
 import { controller, target, prop }
   from "@github/catalyst"
 
@@ -75,9 +94,9 @@ Be careful! Catalyst cannot observe _nested changes_ to the properties, for exam
 
 ### Using Prop with computed properties, via getters/setters
 
-Sometimes you want to derive a property based on other state or algorithms, which is possible using the `get(){}` and `set(){}` functions in JavaScript. These also work as expected with the `@prop` decorator. Below is an example that delegated the `opened` property to be the opposite of what `hidden` is. When `opened` is changed, it will fire the `propertyChangedCallback` with the expected values.
+Sometimes you _want_ to derive a property based on other state or algorithms, which is possible using the `get`/`set` methods. It's still useful to keep this simple, and use the `@prop` decorator to maintain observability to invoke side effect. These `get`/`set` fields will also work with the `@prop` decorator. Below is an example that delegates the `opened` property to be the opposite of what `hidden` is. When `opened` is changed, it will fire the `propertyChangedCallback` with the expected values.
 
-```js
+```typescript
 import { controller, target, prop } from "@github/catalyst"
 
 @controller
@@ -121,7 +140,8 @@ The `oldValue` will be the value that this property used to have, prior to the m
 
 If you're using decorators, then the `@prop` decorator will handle calling `propertyChangedCallback` for you. However if you're not using decorators, you can manually tell Catalyst to observe properties, by making a `static observedProperties` Array field on your controller:
 
-```js
+```typescript
+import {controller} from '@github/catalyst'
 controller(class HelloWorldElement extends HTMLElement {
   static observedProperties = ['name'] // @prop does this for you.
 
@@ -130,3 +150,14 @@ controller(class HelloWorldElement extends HTMLElement {
 ```
 
 Importantly, you'll still need to call `controller()` on the class, as this reads the `observedProperties` array and sets up the data binding.
+
+If you want _just_ the observe behavior, without the additional behaviours that `controller` gives you, you can import the `observeProperties` function, which will also work on any generic class, and does not to extend from `HTMLElement`:
+
+```typescript
+import {observeProperties} from '@github/catalyst'
+observeProperties(class AnyClass {
+  static observeProperties = ['name']
+
+  name = ''
+})
+```
