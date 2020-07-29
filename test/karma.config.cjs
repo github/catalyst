@@ -4,6 +4,7 @@ module.exports = function (config) {
     frameworks: ['mocha', 'chai-spies', 'chai'],
     files: [
       {pattern: 'lib/*.js', type: 'module', included: false},
+      {pattern: 'node_modules/tslib/tslib.es6.js', type: 'module', included: false},
       {pattern: 'test/*', type: 'module', included: true}
     ],
     reporters: ['mocha'],
