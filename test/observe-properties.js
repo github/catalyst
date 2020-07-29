@@ -1,6 +1,11 @@
 import {observeProperties} from '../lib/observe-properties.js'
 
 describe('observeProperties', () => {
+  it('returns a class with the same name', () => {
+    const Class = observeProperties(class MyController {})
+    expect(Class.name).to.equal('MyController')
+  })
+
   it('changes all observeProperties into getter/setters', () => {
     const Class = observeProperties(
       class {
