@@ -106,7 +106,7 @@ describe('bind', () => {
     expect(calls).to.have.nested.property('[1][0].type', 'submit')
   })
 
-  it('can bind multiple actions', () => {
+  it('can bind multiple actions separated by line feed', () => {
     const instance = document.createElement('bind-test-element')
     chai.spy.on(instance, 'foo')
     chai.spy.on(instance, 'bar')
