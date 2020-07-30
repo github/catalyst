@@ -73,8 +73,7 @@ function handleEvent(event: Event) {
 
 type Binding = {type: string; tag: string; method: string}
 function* bindings(el: Element): Iterable<Binding> {
-  for (const action of (el.getAttribute('data-action') || '').split(/\s+/)) {
-    if (!action) continue
+  for (const action of (el.getAttribute('data-action') || '').trim().split(/\s+/)) {
     const eventSep = action.lastIndexOf(':')
     const methodSep = action.lastIndexOf('#')
     const type = action.slice(0, eventSep)
