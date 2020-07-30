@@ -106,6 +106,22 @@ describe('bind', () => {
     expect(calls).to.have.nested.property('[1][0].type', 'submit')
   })
 
+  it('can bind multiple actions', () => {
+    const instance = document.createElement('bind-test-element')
+    chai.spy.on(instance, 'foo')
+    chai.spy.on(instance, 'bar')
+    const el = document.createElement('div')
+    el.setAttribute('data-action', `click:bind-test-element#foo\nclick:bind-test-element#bar`)
+    instance.appendChild(el)
+    bind(instance)
+    expect(instance.foo).to.have.not.been.called()
+    el.dispatchEvent(new CustomEvent('click'))
+    expect(instance.foo).to.have.been.called.exactly(1)
+    expect(instance.bar).to.have.been.called.exactly(1)
+    expect(instance.foo.__spy.calls).to.have.nested.property('[0][0].type', 'click')
+    expect(instance.bar.__spy.calls).to.have.nested.property('[0][0].type', 'click')
+  })
+
   it('can bind multiple elements to the same event', () => {
     const instance = document.createElement('bind-test-element')
     chai.spy.on(instance, 'foo')
