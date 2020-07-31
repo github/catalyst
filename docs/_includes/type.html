@@ -14,6 +14,10 @@
     {%- when "reflection" %}
       {%- assign type = type.declaration %}
       {%- include type.html %}
+    {%- when "typeParameter" %}
+      {%- assign name = type.name %}
+      {%- assign type = type.constraint %}
+      {{- ''}}<span class="nf">{{ name }}</span>
     {%- else %}
       {%- if type.signatures %}
         {%- assign rootType = type %}
