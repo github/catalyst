@@ -158,12 +158,12 @@ class HelloWorldElement extends HTMLElement {
 
 Catalyst doesn't automatically bind actions to elements that are dynamically injected into the DOM. If you need to dynamically inject actions (for example you're injecting HTML via AJAX) you can call the `listenForBind` function to set up a observer that will bind actions when they are added to a controller.
 
-You can provide the element you'd like to observe as a first argument and the number of items to process in a batch as a second argument. Those arguments default to `document` and `30` respectively.
+You can provide the element you'd like to observe as a first argument which will default to `document`.
 
-Batch processing binds events in small batches to maintain UI stability (using `requestAnimationFrame` behind the scenes). We recommend the default of `30` as a sensible default, but you may find changing this number helps depending on your requirements.
+Batch processing binds events in small batches to maintain UI stability (using `requestAnimationFrame` behind the scenes).
 
 ```js
 import {listenForBind} from '@github/catalyst'
 
-listenForBind(document, 30)
+listenForBind(document)
 ```
