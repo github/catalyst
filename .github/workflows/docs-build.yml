@@ -3,7 +3,7 @@ name: Docs Build
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   test-node:
