@@ -1,5 +1,6 @@
 ---
 layout: reference
+title: Reference guide
 ---
 
 <h1>Reference guide</h1>
@@ -13,7 +14,7 @@ layout: reference
     <h2 class="mb-0" id="{{ file.name | slugify }}">{{ export.name }}</h2>
     <div class="mb-3 f5">
       {% for source in export.sources %}
-      Defined in: 
+      Defined in:
       <a href="{{ site.github.repository_url }}/blob/{{ revision }}/src/{{ source.fileName }}#L{{ source.line }}">
         {{ source.fileName }}:{{ source.line }}
       </a>
