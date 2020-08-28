@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html class="height-full">
   <head>
-    {% if page.title %}<title>{{ page.title }} - {{ site.title }}</title>{% else %}<title>{{ site.title }}</title>{% endif %}
+    <title>{% if page.title %}{{ page.title }} - {% endif %}{{ site.title }}</title>
     <meta charset="utf-8">
     <link rel="stylesheet" href="{{ site.baseurl }}/primer.css">
     <link rel="stylesheet" href="{{ site.baseurl }}/github-syntax.css">
