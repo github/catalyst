@@ -129,7 +129,7 @@ class LazyLoader extends HTMLElement {
 }
 
 @controller
-class HoverCard extenda HTMLElement {
+class HoverCard extends HTMLElement {
 
   enable() {
     this.disabled = false
