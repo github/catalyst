@@ -103,11 +103,11 @@ class UserSettingsElement extends HTMLElement {
 
 @controller
 class UserListElement extends HTMLElement {
-  @targets user: HTMLElement[]
+  @targets users: HTMLElement[]
 
   valid() {
     // Every user must be valid!
-    return this.user.every(user => user.valid())
+    return this.users.every(user => user.valid())
   }
 }
 ```
