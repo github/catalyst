@@ -79,29 +79,66 @@ describe('findTarget', () => {
     expect(foundElement1).to.equal(el)
     expect(foundElement2).to.equal(undefined)
   })
+
+  it('returns targets from the shadowRoot, if available', () => {
+    const instance = document.createElement('find-target-test-element')
+    instance.attachShadow({mode: 'open'})
+    const el = document.createElement('div')
+    el.setAttribute('data-target', 'find-target-test-element.foobar')
+
+    instance.shadowRoot.appendChild(el)
+
+    expect(findTarget(instance, 'foobar')).to.equal(el)
+  })
+
+  it('prioritises shadowRoot targets over others', () => {
+    const instance = document.createElement('find-target-test-element')
+    instance.attachShadow({mode: 'open'})
+    const shadowEl = document.createElement('div')
+    shadowEl.setAttribute('data-target', 'find-target-test-element.foobar')
+    const lightEl = document.createElement('div')
+    lightEl.setAttribute('data-target', 'find-target-test-element.foobar')
+
+    instance.shadowRoot.appendChild(shadowEl)
+    instance.appendChild(lightEl)
+
+    expect(findTarget(instance, 'foobar')).to.equal(shadowEl)
+  })
 })
 
 describe('findTargets', () => {
   it('calls querySelectorAll with the controller name and target name', () => {
     const instance = document.createElement('find-target-test-element')
-    chai.spy.on(instance, 'querySelectorAll', () => [])
-    findTargets(instance, 'foo')
-    expect(instance.querySelectorAll).to.have.been.called.once.with.exactly(
-      '[data-targets~="find-target-test-element.foo"]'
-    )
+    const els = [document.createElement('div'), document.createElement('div'), document.createElement('div')]
+    instance.append(...els)
+
+    els[0].setAttribute('data-targets', 'find-target-test-element.foo')
+    els[1].setAttribute('data-targets', 'find-target-test-element.foo')
+
+    expect(findTargets(instance, 'foo')).to.eql([els[0], els[1]])
   })
 
   it('returns all elements where closest tag is the controller', () => {
-    const els = [document.createElement('div'), document.createElement('div'), document.createElement('div')]
     const instance = document.createElement('find-target-test-element')
-    chai.spy.on(instance, 'querySelectorAll', () => els)
-    chai.spy.on(els[0], 'closest', () => instance)
-    chai.spy.on(els[1], 'closest', () => null)
-    chai.spy.on(els[2], 'closest', () => instance)
-    const targets = findTargets(instance, 'foo')
-    expect(els[0].closest).to.have.been.called.once.with.exactly('find-target-test-element')
-    expect(els[1].closest).to.have.been.called.once.with.exactly('find-target-test-element')
-    expect(els[2].closest).to.have.been.called.once.with.exactly('find-target-test-element')
-    expect(targets).to.deep.equal([els[0], els[2]])
+    const els = [document.createElement('div'), document.createElement('div'), document.createElement('div')]
+    for (const el of els) el.setAttribute('data-targets', 'find-target-test-element.foo')
+    const nested = document.createElement('find-target-test-element')
+
+    nested.append(els[1])
+    instance.append(els[0], nested, els[2])
+
+    expect(findTargets(instance, 'foo')).to.eql([els[0], els[2]])
+  })
+
+  it('returns all elements inside a shadow root', () => {
+    const instance = document.createElement('find-target-test-element')
+    instance.attachShadow({mode: 'open'})
+    const els = [document.createElement('div'), document.createElement('div'), document.createElement('div')]
+    for (const el of els) el.setAttribute('data-targets', 'find-target-test-element.foo')
+
+    instance.shadowRoot.append(els[1])
+    instance.append(els[0], els[2])
+
+    expect(findTargets(instance, 'foo')).to.eql([els[1], els[0], els[2]])
   })
 })
