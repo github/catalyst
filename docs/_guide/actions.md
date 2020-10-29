@@ -138,6 +138,10 @@ class HoverCard extenda HTMLElement {
 }
 ```
 
+### Targets and "ShadowRoots"
+
+Custom elements can create encapsulated DOM trees known as "Shadow" DOM. Catalyst actions support Shadow DOM by traversing the `shadowRoot`, if present, and also automatically watching shadowRoots for changes; auto-binding new elements as they are added.
+
 ### What about without Decorators?
 
 If you're using decorators, then the `@controller` decorator automatically handles binding of actions to a Controller.
