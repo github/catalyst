@@ -138,6 +138,45 @@ describe('bind', () => {
     expect(instance.foo).to.have.been.called.exactly(2)
   })
 
+  it('can bind elements within the shadowDOM', () => {
+    const instance = document.createElement('bind-test-element')
+    chai.spy.on(instance, 'foo')
+    instance.attachShadow({mode: 'open'})
+    const el1 = document.createElement('div')
+    const el2 = document.createElement('div')
+    el1.setAttribute('data-action', 'click:bind-test-element#foo')
+    el2.setAttribute('data-action', 'submit:bind-test-element#foo')
+    instance.shadowRoot.append(el1, el2)
+    bind(instance)
+    expect(instance.foo).to.have.not.been.called()
+    el1.click()
+    expect(instance.foo).to.have.been.called.exactly(1)
+    el2.dispatchEvent(new CustomEvent('submit'))
+    expect(instance.foo).to.have.been.called.exactly(2)
+  })
+
+  it('binds elements added to shadowDOM', async () => {
+    const instance = document.createElement('bind-test-element')
+    chai.spy.on(instance, 'foo')
+    instance.attachShadow({mode: 'open'})
+    const el1 = document.createElement('div')
+    const el2 = document.createElement('div')
+    el1.setAttribute('data-action', 'click:bind-test-element#foo')
+    el2.setAttribute('data-action', 'submit:bind-test-element#foo')
+    bind(instance)
+    instance.shadowRoot.append(el1)
+    instance.shadowRoot.append(el2)
+    // We need to wait for a couple of frames after injecting the HTML into to
+    // controller so that the actions have been bound to the controller.
+    await waitForNextAnimationFrame()
+    await waitForNextAnimationFrame()
+    expect(instance.foo).to.have.not.been.called()
+    el1.click()
+    expect(instance.foo).to.have.been.called.exactly(1)
+    el2.dispatchEvent(new CustomEvent('submit'))
+    expect(instance.foo).to.have.been.called.exactly(2)
+  })
+
   describe('listenForBind', () => {
     it('re-binds actions that are denoted by HTML that is dynamically injected into the controller', async function () {
       const instance = document.createElement('bind-test-element')
