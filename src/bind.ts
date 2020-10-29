@@ -6,6 +6,10 @@ const controllers = new Set<string>()
  */
 export function bind(controller: HTMLElement): void {
   controllers.add(controller.tagName.toLowerCase())
+  if (controller.shadowRoot) {
+    bindElements(controller.shadowRoot)
+    listenForBind(controller.shadowRoot)
+  }
   bindElements(controller)
 }
 
@@ -48,12 +52,12 @@ interface Subscription {
   unsubscribe(): void
 }
 
-function bindElements(root: Element) {
+function bindElements(root: Element | ShadowRoot) {
   for (const el of root.querySelectorAll('[data-action]')) {
     bindActions(el)
   }
   // Also bind the controller to itself
-  if (root.hasAttribute('data-action')) {
+  if (root instanceof Element && root.hasAttribute('data-action')) {
     bindActions(root)
   }
 }
@@ -63,9 +67,17 @@ function handleEvent(event: Event) {
   const el = event.currentTarget as Element
   for (const binding of bindings(el)) {
     if (event.type === binding.type && controllers.has(binding.tag)) {
-      const controller = el.closest(binding.tag) as Element & Record<string, (ev: Event) => unknown>
+      type EventDispatcher = Element & Record<string, (ev: Event) => unknown>
+      const controller = el.closest(binding.tag) as EventDispatcher
       if (controller && typeof controller[binding.method] === 'function') {
         controller[binding.method](event)
+      }
+      const root = el.getRootNode()
+      if (root instanceof ShadowRoot && root.host.matches(binding.tag)) {
+        const shadowController = root.host as EventDispatcher
+        if (typeof shadowController[binding.method] === 'function') {
+          shadowController[binding.method](event)
+        }
       }
     }
   }
