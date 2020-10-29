@@ -123,7 +123,7 @@ To clarify the difference between `@target` and `@targets` here is a handy table
 
 ### Targets and "ShadowRoots"
 
-Custom elements can create encapsulated DOM trees known as "Shadow" DOM. Catalyst targets support Shadow DOM by first traversing the `shadowRoot`, if present.
+Custom elements can create encapsulated DOM trees known as "Shadow" DOM. Catalyst targets support Shadow DOM by traversing the `shadowRoot` first, if present.
 
 Important to note here is that nodes from the `shadowRoot` get returned _first_. So `@targets` will return an array of nodes, where shadowRoot nodes are at the start of the Array, and `@target` will return a ShadowRoot target if it exists, otherwise it will fall back to traversing the elements direct children.
 
