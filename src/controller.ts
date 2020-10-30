@@ -1,5 +1,6 @@
 import {register} from './register'
 import {bind} from './bind'
+import {autoShadowRoot} from './auto-shadow-root'
 import {wrap} from './wrap'
 
 interface CustomElement {
@@ -15,6 +16,7 @@ interface CustomElement {
 export function controller(classObject: CustomElement): void {
   wrap(classObject.prototype, 'connectedCallback', function (this: HTMLElement) {
     this.toggleAttribute('data-catalyst', true)
+    autoShadowRoot(this)
     bind(this)
   })
   register(classObject)
