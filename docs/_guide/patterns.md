@@ -1,12 +1,11 @@
 ---
-chapter: 9
+chapter: 10
 subtitle: Patterns
 ---
 
 An aim of Catalyst is to be as light weight as possible, and so we often avoid including helper functions for otherwise fine code. We also want to keep Catalyst focussed, and so where some helper functions might be reasonable, we recommend judicious use of other small libraries.
 
 Here are a few common patterns which we've avoided introducing into the Catalyst code base, and instead encourage you to take the example code and run with that:
-
 
 ### Debouncing or Throttling events
 

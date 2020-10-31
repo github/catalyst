@@ -1,5 +1,5 @@
 ---
-chapter: 7
+chapter: 8
 subtitle: Observing the life cycle of an element
 ---
 
