@@ -11,6 +11,7 @@ export function bind(controller: HTMLElement): void {
     listenForBind(controller.shadowRoot)
   }
   bindElements(controller)
+  listenForBind(controller.ownerDocument)
 }
 
 /**
