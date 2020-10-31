@@ -14,6 +14,7 @@ export function bind(controller: HTMLElement): void {
   listenForBind(controller.ownerDocument)
 }
 
+const observers = new WeakMap<Node, Subscription>()
 /**
  * Set up observer that will make sure any actions that are dynamically
  * injected into `el` will be bound to it's controller.
@@ -22,6 +23,7 @@ export function bind(controller: HTMLElement): void {
  * stop further live updates.
  */
 export function listenForBind(el: Node = document): Subscription {
+  if (observers.has(el)) return observers.get(el)!
   let closed = false
   const observer = new MutationObserver(mutations => {
     for (const mutation of mutations) {
@@ -37,15 +39,18 @@ export function listenForBind(el: Node = document): Subscription {
     }
   })
   observer.observe(el, {childList: true, subtree: true, attributes: true, attributeFilter: ['data-action']})
-  return {
+  const subscription = {
     get closed() {
       return closed
     },
     unsubscribe() {
       closed = true
+      observers.delete(el)
       observer.disconnect()
     }
   }
+  observers.set(el, subscription)
+  return subscription
 }
 
 interface Subscription {
