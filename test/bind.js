@@ -138,6 +138,30 @@ describe('bind', () => {
     expect(instance.foo).to.have.been.called.exactly(2)
   })
 
+  it('binds elements added to elements subtree', async () => {
+    const instance = document.createElement('bind-test-element')
+    chai.spy.on(instance, 'foo')
+    const el1 = document.createElement('div')
+    const el2 = document.createElement('div')
+    el1.setAttribute('data-action', 'click:bind-test-element#foo')
+    el2.setAttribute('data-action', 'submit:bind-test-element#foo')
+    document.body.appendChild(instance)
+
+    bind(instance)
+
+    instance.append(el1, el2)
+    // We need to wait for a couple of frames after injecting the HTML into to
+    // controller so that the actions have been bound to the controller.
+    await waitForNextAnimationFrame()
+    document.body.removeChild(instance)
+
+    expect(instance.foo).to.have.not.been.called()
+    el1.click()
+    expect(instance.foo).to.have.been.called.exactly(1)
+    el2.dispatchEvent(new CustomEvent('submit'))
+    expect(instance.foo).to.have.been.called.exactly(2)
+  })
+
   it('can bind elements within the shadowDOM', () => {
     const instance = document.createElement('bind-test-element')
     chai.spy.on(instance, 'foo')
@@ -199,6 +223,7 @@ describe('bind', () => {
       chai.spy.on(instance, 'foo')
       root.appendChild(instance)
       listenForBind(root).unsubscribe()
+      listenForBind(document).unsubscribe()
       const button = document.createElement('button')
       button.setAttribute('data-action', 'click:bind-test-element#foo')
       instance.appendChild(button)

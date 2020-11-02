@@ -160,14 +160,21 @@ class HelloWorldElement extends HTMLElement {
 
 ### Binding dynamically added actions
 
-Catalyst doesn't automatically bind actions to elements that are dynamically injected into the DOM. If you need to dynamically inject actions (for example you're injecting HTML via AJAX) you can call the `listenForBind` function to set up a observer that will bind actions when they are added to a controller.
-
-You can provide the element you'd like to observe as a first argument which will default to `document`.
+Catalyst automatically listens for elements that are dynamically injected into the DOM, and will bind any element's `data-action` attributes. It does this by calling `listenForBind(controller.ownerDocument)`. If for some reason you need to observe other documents (such as mutations within an iframe), then you can call the `listenForBind` manually, passing a `Node` to listen to DOM mutations on.
 
 Batch processing binds events in small batches to maintain UI stability (using `requestAnimationFrame` behind the scenes).
 
 ```js
 import {listenForBind} from '@github/catalyst'
 
-listenForBind(document)
+@controller
+class HelloWorldElement extends HTMLElement {
+  @target iframe: HTMLIFrameElement
+
+  connectedCallback() {
+    // listenForBind(this.ownerDocument) is automatically called.
+
+    listenForBind(this.iframe.document.body)
+  }
+}
 ```
