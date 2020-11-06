@@ -100,7 +100,7 @@ class HelloWorldElement extends HTMLElement {
   update() {
     render(() => html`
       <div>
-        Hello <span>${ this.name }</span>
+        Hello <span>${ this.#name }</span>
       </div>`,
     this.shadowRoot!)
   }
