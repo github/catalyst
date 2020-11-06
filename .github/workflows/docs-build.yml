@@ -33,4 +33,4 @@ jobs:
         git config --local user.name "Actions Auto Build"
         git add docs/_data/reference.json
         git commit -m "docs: compile reference.json" || true
-        git push
+        git push --force origin HEAD:refs/heads/docs
