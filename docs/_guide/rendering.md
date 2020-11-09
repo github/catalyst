@@ -21,7 +21,7 @@ Remember to _always_ make your JavaScript progressively enhanced, where possible
   </div>
 </div>
 
-By leveraging the native [`ShadowDOM`] feature, Catalyst components can render complex sub-trees, fully encapsulated from the rest of the page.
+By leveraging the native [`ShadowDOM`](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_shadow_DOM) feature, Catalyst components can render complex sub-trees, fully encapsulated from the rest of the page.
 
 Catalyst will automatically look for elements that match the `template[data-shadowroot]` selector, within your controller. If it finds one as a direct-child of your controller, it will use that to create a shadowRoot. 
 
