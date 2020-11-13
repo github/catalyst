@@ -1,4 +1,4 @@
-import {bind, listenForBind} from '../lib/bind.js'
+import {bind, unbind, listenForBind} from '../lib/bind.js'
 
 async function waitForNextAnimationFrame() {
   return new Promise(resolve => {
@@ -328,5 +328,107 @@ describe('bind', () => {
     await waitForNextAnimationFrame()
     button.click()
     expect(instance.foo).to.have.been.called.exactly(1)
+  })
+
+  describe('unbind', () => {
+    it('removes event listeners on elements based on their data-action attribute', () => {
+      const instance = document.createElement('bind-test-element')
+      chai.spy.on(instance, 'foo')
+      const el = document.createElement('div')
+      el.setAttribute('data-action', 'click:bind-test-element#foo')
+      instance.appendChild(el)
+      bind(instance)
+      expect(instance.foo).to.have.not.been.called()
+      el.click()
+      expect(instance.foo).to.have.been.called(1)
+      unbind(instance)
+      el.click()
+    })
+
+    it('removes events listeners on the controller to itself', () => {
+      const instance = document.createElement('bind-test-element')
+      chai.spy.on(instance, 'foo')
+      instance.setAttribute('data-action', 'click:bind-test-element#foo')
+      bind(instance)
+      expect(instance.foo).to.have.not.been.called()
+      instance.click()
+      expect(instance.foo).to.have.been.called(1)
+      unbind(instance)
+      instance.click()
+      expect(instance.foo).to.have.been.called(1)
+    })
+
+    it('can remove event listeners for multiple actions separated by line feed', () => {
+      const instance = document.createElement('bind-test-element')
+      chai.spy.on(instance, 'foo')
+      chai.spy.on(instance, 'bar')
+      const el = document.createElement('div')
+      el.setAttribute('data-action', `click:bind-test-element#foo\nclick:bind-test-element#bar`)
+      instance.appendChild(el)
+      bind(instance)
+      expect(instance.foo).to.have.not.been.called()
+      el.dispatchEvent(new CustomEvent('click'))
+      expect(instance.foo).to.have.been.called.exactly(1)
+      expect(instance.bar).to.have.been.called.exactly(1)
+      expect(instance.foo.__spy.calls).to.have.nested.property('[0][0].type', 'click')
+      expect(instance.bar.__spy.calls).to.have.nested.property('[0][0].type', 'click')
+      unbind(instance)
+      el.dispatchEvent(new CustomEvent('click'))
+      expect(instance.foo).to.have.been.called.exactly(1)
+      expect(instance.bar).to.have.been.called.exactly(1)
+      expect(instance.foo.__spy.calls).to.have.nested.property('[0][0].type', 'click')
+      expect(instance.bar.__spy.calls).to.have.nested.property('[0][0].type', 'click')
+    })
+
+    it('can remove event handlers on elements within the shadowDOM', () => {
+      const instance = document.createElement('bind-test-element')
+      chai.spy.on(instance, 'foo')
+      instance.attachShadow({mode: 'open'})
+      const el1 = document.createElement('div')
+      const el2 = document.createElement('div')
+      el1.setAttribute('data-action', 'click:bind-test-element#foo')
+      el2.setAttribute('data-action', 'submit:bind-test-element#foo')
+      instance.shadowRoot.append(el1, el2)
+      bind(instance)
+      expect(instance.foo).to.have.not.been.called()
+      el1.click()
+      expect(instance.foo).to.have.been.called.exactly(1)
+      el2.dispatchEvent(new CustomEvent('submit'))
+      expect(instance.foo).to.have.been.called.exactly(2)
+
+      unbind(instance)
+      el1.click()
+      expect(instance.foo).to.have.been.called.exactly(1)
+      el2.dispatchEvent(new CustomEvent('submit'))
+      expect(instance.foo).to.have.been.called.exactly(2)
+    })
+
+    it('remove event handlers from elements added to shadowDOM', async () => {
+      const instance = document.createElement('bind-test-element')
+      chai.spy.on(instance, 'foo')
+      instance.attachShadow({mode: 'open'})
+      const el1 = document.createElement('div')
+      const el2 = document.createElement('div')
+      el1.setAttribute('data-action', 'click:bind-test-element#foo')
+      el2.setAttribute('data-action', 'submit:bind-test-element#foo')
+      bind(instance)
+      instance.shadowRoot.append(el1)
+      instance.shadowRoot.append(el2)
+      // We need to wait for a couple of frames after injecting the HTML into to
+      // controller so that the actions have been bound to the controller.
+      await waitForNextAnimationFrame()
+      await waitForNextAnimationFrame()
+      expect(instance.foo).to.have.not.been.called()
+      el1.click()
+      expect(instance.foo).to.have.been.called.exactly(1)
+      el2.dispatchEvent(new CustomEvent('submit'))
+      expect(instance.foo).to.have.been.called.exactly(2)
+
+      unbind(instance)
+      el1.click()
+      expect(instance.foo).to.have.been.called.exactly(1)
+      el2.dispatchEvent(new CustomEvent('submit'))
+      expect(instance.foo).to.have.been.called.exactly(2)
+    })
   })
 })
