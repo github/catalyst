@@ -1,5 +1,5 @@
 import {register} from './register'
-import {bind} from './bind'
+import {bind, unbind} from './bind'
 import {autoShadowRoot} from './auto-shadow-root'
 import {wrap} from './wrap'
 
@@ -18,6 +18,9 @@ export function controller(classObject: CustomElement): void {
     this.toggleAttribute('data-catalyst', true)
     autoShadowRoot(this)
     bind(this)
+  })
+  wrap(classObject.prototype, 'disconnectedCallback', function (this: HTMLElement) {
+    unbind(this)
   })
   register(classObject)
 }

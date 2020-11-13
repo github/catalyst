@@ -14,6 +14,14 @@ export function bind(controller: HTMLElement): void {
   listenForBind(controller.ownerDocument)
 }
 
+export function unbind(controller: HTMLElement): void {
+  controllers.delete(controller.tagName.toLowerCase())
+  if (controller.shadowRoot) {
+    unbindElements(controller.shadowRoot)
+  }
+  unbindElements(controller)
+}
+
 const observers = new WeakMap<Node, Subscription>()
 /**
  * Set up observer that will make sure any actions that are dynamically
@@ -25,6 +33,7 @@ const observers = new WeakMap<Node, Subscription>()
 export function listenForBind(el: Node = document): Subscription {
   if (observers.has(el)) return observers.get(el)!
   let closed = false
+  // TODO: Check if a element is removed from the DOM and unbind the event listeners.
   const observer = new MutationObserver(mutations => {
     for (const mutation of mutations) {
       if (mutation.type === 'attributes' && mutation.target instanceof Element) {
@@ -68,6 +77,16 @@ function bindElements(root: Element | ShadowRoot) {
   }
 }
 
+function unbindElements(root: Element | ShadowRoot) {
+  for (const el of root.querySelectorAll('[data-action]')) {
+    unbindActions(el)
+  }
+  // Also bind the controller to itself
+  if (root instanceof Element && root.hasAttribute('data-action')) {
+    unbindActions(root)
+  }
+}
+
 // Bind a single function to all events to avoid anonymous closure performance penalty.
 function handleEvent(event: Event) {
   const el = event.currentTarget as Element
@@ -104,5 +123,11 @@ function* bindings(el: Element): Iterable<Binding> {
 function bindActions(el: Element) {
   for (const binding of bindings(el)) {
     el.addEventListener(binding.type, handleEvent)
+  }
+}
+
+function unbindActions(el: Element) {
+  for (const binding of bindings(el)) {
+    el.removeEventListener(binding.type, handleEvent)
   }
 }
