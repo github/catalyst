@@ -8,7 +8,7 @@ import {findTarget, findTargets} from './findtarget'
  * `findTarget(this, 'foo')`.
  */
 export function target<K extends string>(proto: Record<K, unknown>, key: K): void {
-  Object.defineProperty(proto, key, {
+  return Object.defineProperty(proto, key, {
     configurable: true,
     get() {
       return findTarget(this, key)
@@ -24,7 +24,7 @@ export function target<K extends string>(proto: Record<K, unknown>, key: K): voi
  * `findTargets(this, 'foo')`.
  */
 export function targets<K extends string>(proto: Record<K, unknown>, key: K): void {
-  Object.defineProperty(proto, key, {
+  return Object.defineProperty(proto, key, {
     configurable: true,
     get() {
       return findTargets(this, key)
