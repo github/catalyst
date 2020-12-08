@@ -1,7 +1,7 @@
 pre { font-size: 100% !important }
 code { font-size: 90% !important }
 
-h1, h2, h3, h4, h5 { margin: 1rem 0 }
+h1, h2, h3, h4, h5 { margin: 1rem 0; width: 100%; }
 ul li { margin-left: 1rem }
 
 :root {
