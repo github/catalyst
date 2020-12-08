@@ -2,3 +2,4 @@ node_modules
 _site
 *.tsbuildinfo
 lib/
+docs/_data/reference.json
