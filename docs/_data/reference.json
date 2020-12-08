@@ -7,31 +7,105 @@
 	"children": [
 		{
 			"id": 1,
-			"name": "\"bind\"",
+			"name": "\"src/auto-shadow-root\"",
 			"kind": 1,
-			"kindString": "External module",
+			"kindString": "Module",
 			"flags": {
 				"isExported": true
 			},
-			"originalName": "/home/runner/work/catalyst/catalyst/src/bind.ts",
+			"originalName": "/Users/kristjanoddsson/github/catalyst/src/auto-shadow-root.ts",
 			"children": [
 				{
 					"id": 2,
+					"name": "autoShadowRoot",
+					"kind": 64,
+					"kindString": "Function",
+					"flags": {
+						"isExported": true
+					},
+					"signatures": [
+						{
+							"id": 3,
+							"name": "autoShadowRoot",
+							"kind": 4096,
+							"kindString": "Call signature",
+							"flags": {
+								"isExported": true
+							},
+							"parameters": [
+								{
+									"id": 4,
+									"name": "element",
+									"kind": 32768,
+									"kindString": "Parameter",
+									"flags": {
+										"isExported": true
+									},
+									"type": {
+										"type": "reference",
+										"name": "HTMLElement"
+									}
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "void"
+							}
+						}
+					],
+					"sources": [
+						{
+							"fileName": "src/auto-shadow-root.ts",
+							"line": 1,
+							"character": 30
+						}
+					]
+				}
+			],
+			"groups": [
+				{
+					"title": "Functions",
+					"kind": 64,
+					"children": [
+						2
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "src/auto-shadow-root.ts",
+					"line": 1,
+					"character": 0
+				}
+			]
+		},
+		{
+			"id": 5,
+			"name": "\"src/bind\"",
+			"kind": 1,
+			"kindString": "Module",
+			"flags": {
+				"isExported": true
+			},
+			"originalName": "/Users/kristjanoddsson/github/catalyst/src/bind.ts",
+			"children": [
+				{
+					"id": 6,
 					"name": "Subscription",
 					"kind": 256,
 					"kindString": "Interface",
 					"flags": {},
 					"children": [
 						{
-							"id": 3,
+							"id": 7,
 							"name": "closed",
 							"kind": 1024,
 							"kindString": "Property",
 							"flags": {},
 							"sources": [
 								{
-									"fileName": "bind.ts",
-									"line": 47,
+									"fileName": "src/bind.ts",
+									"line": 57,
 									"character": 8
 								}
 							],
@@ -41,14 +115,14 @@
 							}
 						},
 						{
-							"id": 4,
+							"id": 8,
 							"name": "unsubscribe",
 							"kind": 2048,
 							"kindString": "Method",
 							"flags": {},
 							"signatures": [
 								{
-									"id": 5,
+									"id": 9,
 									"name": "unsubscribe",
 									"kind": 4096,
 									"kindString": "Call signature",
@@ -61,8 +135,8 @@
 							],
 							"sources": [
 								{
-									"fileName": "bind.ts",
-									"line": 48,
+									"fileName": "src/bind.ts",
+									"line": 58,
 									"character": 13
 								}
 							]
@@ -73,57 +147,57 @@
 							"title": "Properties",
 							"kind": 1024,
 							"children": [
-								3
+								7
 							]
 						},
 						{
 							"title": "Methods",
 							"kind": 2048,
 							"children": [
-								4
+								8
 							]
 						}
 					],
 					"sources": [
 						{
-							"fileName": "bind.ts",
-							"line": 46,
+							"fileName": "src/bind.ts",
+							"line": 56,
 							"character": 22
 						}
 					]
 				},
 				{
-					"id": 19,
+					"id": 24,
 					"name": "Binding",
 					"kind": 4194304,
 					"kindString": "Type alias",
 					"flags": {},
 					"sources": [
 						{
-							"fileName": "bind.ts",
-							"line": 74,
+							"fileName": "src/bind.ts",
+							"line": 92,
 							"character": 12
 						}
 					],
 					"type": {
 						"type": "reflection",
 						"declaration": {
-							"id": 20,
+							"id": 25,
 							"name": "__type",
 							"kind": 65536,
 							"kindString": "Type literal",
 							"flags": {},
 							"children": [
 								{
-									"id": 23,
+									"id": 28,
 									"name": "method",
 									"kind": 32,
 									"kindString": "Variable",
 									"flags": {},
 									"sources": [
 										{
-											"fileName": "bind.ts",
-											"line": 74,
+											"fileName": "src/bind.ts",
+											"line": 92,
 											"character": 49
 										}
 									],
@@ -133,15 +207,15 @@
 									}
 								},
 								{
-									"id": 22,
+									"id": 27,
 									"name": "tag",
 									"kind": 32,
 									"kindString": "Variable",
 									"flags": {},
 									"sources": [
 										{
-											"fileName": "bind.ts",
-											"line": 74,
+											"fileName": "src/bind.ts",
+											"line": 92,
 											"character": 33
 										}
 									],
@@ -151,15 +225,15 @@
 									}
 								},
 								{
-									"id": 21,
+									"id": 26,
 									"name": "type",
 									"kind": 32,
 									"kindString": "Variable",
 									"flags": {},
 									"sources": [
 										{
-											"fileName": "bind.ts",
-											"line": 74,
+											"fileName": "src/bind.ts",
+											"line": 92,
 											"character": 20
 										}
 									],
@@ -174,16 +248,16 @@
 									"title": "Variables",
 									"kind": 32,
 									"children": [
-										23,
-										22,
-										21
+										28,
+										27,
+										26
 									]
 								}
 							],
 							"sources": [
 								{
-									"fileName": "bind.ts",
-									"line": 74,
+									"fileName": "src/bind.ts",
+									"line": 92,
 									"character": 14
 								}
 							]
@@ -191,7 +265,7 @@
 					}
 				},
 				{
-					"id": 6,
+					"id": 10,
 					"name": "controllers",
 					"kind": 32,
 					"kindString": "Variable",
@@ -200,7 +274,7 @@
 					},
 					"sources": [
 						{
-							"fileName": "bind.ts",
+							"fileName": "src/bind.ts",
 							"line": 1,
 							"character": 17
 						}
@@ -218,7 +292,39 @@
 					"defaultValue": "new Set<string>()"
 				},
 				{
-					"id": 7,
+					"id": 14,
+					"name": "observers",
+					"kind": 32,
+					"kindString": "Variable",
+					"flags": {
+						"isConst": true
+					},
+					"sources": [
+						{
+							"fileName": "src/bind.ts",
+							"line": 17,
+							"character": 15
+						}
+					],
+					"type": {
+						"type": "reference",
+						"typeArguments": [
+							{
+								"type": "reference",
+								"name": "Node"
+							},
+							{
+								"type": "reference",
+								"id": 6,
+								"name": "Subscription"
+							}
+						],
+						"name": "WeakMap"
+					},
+					"defaultValue": "new WeakMap<Node, Subscription>()"
+				},
+				{
+					"id": 11,
 					"name": "bind",
 					"kind": 64,
 					"kindString": "Function",
@@ -227,7 +333,7 @@
 					},
 					"signatures": [
 						{
-							"id": 8,
+							"id": 12,
 							"name": "bind",
 							"kind": 4096,
 							"kindString": "Call signature",
@@ -236,7 +342,7 @@
 							},
 							"parameters": [
 								{
-									"id": 9,
+									"id": 13,
 									"name": "controller",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -257,28 +363,28 @@
 					],
 					"sources": [
 						{
-							"fileName": "bind.ts",
+							"fileName": "src/bind.ts",
 							"line": 7,
 							"character": 20
 						}
 					]
 				},
 				{
-					"id": 27,
+					"id": 32,
 					"name": "bindActions",
 					"kind": 64,
 					"kindString": "Function",
 					"flags": {},
 					"signatures": [
 						{
-							"id": 28,
+							"id": 33,
 							"name": "bindActions",
 							"kind": 4096,
 							"kindString": "Call signature",
 							"flags": {},
 							"parameters": [
 								{
-									"id": 29,
+									"id": 34,
 									"name": "el",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -297,35 +403,44 @@
 					],
 					"sources": [
 						{
-							"fileName": "bind.ts",
-							"line": 86,
+							"fileName": "src/bind.ts",
+							"line": 104,
 							"character": 20
 						}
 					]
 				},
 				{
-					"id": 13,
+					"id": 18,
 					"name": "bindElements",
 					"kind": 64,
 					"kindString": "Function",
 					"flags": {},
 					"signatures": [
 						{
-							"id": 14,
+							"id": 19,
 							"name": "bindElements",
 							"kind": 4096,
 							"kindString": "Call signature",
 							"flags": {},
 							"parameters": [
 								{
-									"id": 15,
+									"id": 20,
 									"name": "root",
 									"kind": 32768,
 									"kindString": "Parameter",
 									"flags": {},
 									"type": {
-										"type": "reference",
-										"name": "Element"
+										"type": "union",
+										"types": [
+											{
+												"type": "reference",
+												"name": "Element"
+											},
+											{
+												"type": "reference",
+												"name": "ShadowRoot"
+											}
+										]
 									}
 								}
 							],
@@ -337,28 +452,28 @@
 					],
 					"sources": [
 						{
-							"fileName": "bind.ts",
-							"line": 51,
+							"fileName": "src/bind.ts",
+							"line": 61,
 							"character": 21
 						}
 					]
 				},
 				{
-					"id": 24,
+					"id": 29,
 					"name": "bindings",
 					"kind": 64,
 					"kindString": "Function",
 					"flags": {},
 					"signatures": [
 						{
-							"id": 25,
+							"id": 30,
 							"name": "bindings",
 							"kind": 4096,
 							"kindString": "Call signature",
 							"flags": {},
 							"parameters": [
 								{
-									"id": 26,
+									"id": 31,
 									"name": "el",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -374,7 +489,7 @@
 								"typeArguments": [
 									{
 										"type": "reference",
-										"id": 19,
+										"id": 24,
 										"name": "Binding"
 									}
 								],
@@ -384,28 +499,28 @@
 					],
 					"sources": [
 						{
-							"fileName": "bind.ts",
-							"line": 75,
+							"fileName": "src/bind.ts",
+							"line": 93,
 							"character": 18
 						}
 					]
 				},
 				{
-					"id": 16,
+					"id": 21,
 					"name": "handleEvent",
 					"kind": 64,
 					"kindString": "Function",
 					"flags": {},
 					"signatures": [
 						{
-							"id": 17,
+							"id": 22,
 							"name": "handleEvent",
 							"kind": 4096,
 							"kindString": "Call signature",
 							"flags": {},
 							"parameters": [
 								{
-									"id": 18,
+									"id": 23,
 									"name": "event",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -424,14 +539,14 @@
 					],
 					"sources": [
 						{
-							"fileName": "bind.ts",
-							"line": 62,
+							"fileName": "src/bind.ts",
+							"line": 72,
 							"character": 20
 						}
 					]
 				},
 				{
-					"id": 10,
+					"id": 15,
 					"name": "listenForBind",
 					"kind": 64,
 					"kindString": "Function",
@@ -440,7 +555,7 @@
 					},
 					"signatures": [
 						{
-							"id": 11,
+							"id": 16,
 							"name": "listenForBind",
 							"kind": 4096,
 							"kindString": "Call signature",
@@ -453,7 +568,7 @@
 							},
 							"parameters": [
 								{
-									"id": 12,
+									"id": 17,
 									"name": "el",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -469,15 +584,15 @@
 							],
 							"type": {
 								"type": "reference",
-								"id": 2,
+								"id": 6,
 								"name": "Subscription"
 							}
 						}
 					],
 					"sources": [
 						{
-							"fileName": "bind.ts",
-							"line": 19,
+							"fileName": "src/bind.ts",
+							"line": 25,
 							"character": 29
 						}
 					]
@@ -488,70 +603,71 @@
 					"title": "Interfaces",
 					"kind": 256,
 					"children": [
-						2
+						6
 					]
 				},
 				{
 					"title": "Type aliases",
 					"kind": 4194304,
 					"children": [
-						19
+						24
 					]
 				},
 				{
 					"title": "Variables",
 					"kind": 32,
 					"children": [
-						6
+						10,
+						14
 					]
 				},
 				{
 					"title": "Functions",
 					"kind": 64,
 					"children": [
-						7,
-						27,
-						13,
-						24,
-						16,
-						10
+						11,
+						32,
+						18,
+						29,
+						21,
+						15
 					]
 				}
 			],
 			"sources": [
 				{
-					"fileName": "bind.ts",
+					"fileName": "src/bind.ts",
 					"line": 1,
 					"character": 0
 				}
 			]
 		},
 		{
-			"id": 50,
-			"name": "\"controller\"",
+			"id": 42,
+			"name": "\"src/controller\"",
 			"kind": 1,
-			"kindString": "External module",
+			"kindString": "Module",
 			"flags": {
 				"isExported": true
 			},
-			"originalName": "/home/runner/work/catalyst/catalyst/src/controller.ts",
+			"originalName": "/Users/kristjanoddsson/github/catalyst/src/controller.ts",
 			"children": [
 				{
-					"id": 51,
+					"id": 43,
 					"name": "CustomElement",
 					"kind": 256,
 					"kindString": "Interface",
 					"flags": {},
 					"children": [
 						{
-							"id": 52,
+							"id": 44,
 							"name": "constructor",
 							"kind": 512,
 							"kindString": "Constructor",
 							"flags": {},
 							"signatures": [
 								{
-									"id": 53,
+									"id": 45,
 									"name": "new CustomElement",
 									"kind": 16384,
 									"kindString": "Constructor signature",
@@ -564,7 +680,7 @@
 							],
 							"sources": [
 								{
-									"fileName": "controller.ts",
+									"fileName": "src/controller.ts",
 									"line": 5,
 									"character": 25
 								}
@@ -576,20 +692,20 @@
 							"title": "Constructors",
 							"kind": 512,
 							"children": [
-								52
+								44
 							]
 						}
 					],
 					"sources": [
 						{
-							"fileName": "controller.ts",
+							"fileName": "src/controller.ts",
 							"line": 5,
 							"character": 23
 						}
 					]
 				},
 				{
-					"id": 54,
+					"id": 46,
 					"name": "controller",
 					"kind": 64,
 					"kindString": "Function",
@@ -598,7 +714,7 @@
 					},
 					"signatures": [
 						{
-							"id": 55,
+							"id": 47,
 							"name": "controller",
 							"kind": 4096,
 							"kindString": "Call signature",
@@ -610,7 +726,7 @@
 							},
 							"parameters": [
 								{
-									"id": 56,
+									"id": 48,
 									"name": "classObject",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -619,7 +735,7 @@
 									},
 									"type": {
 										"type": "reference",
-										"id": 31,
+										"id": 36,
 										"name": "CustomElement"
 									}
 								}
@@ -632,7 +748,7 @@
 					],
 					"sources": [
 						{
-							"fileName": "controller.ts",
+							"fileName": "src/controller.ts",
 							"line": 15,
 							"character": 26
 						}
@@ -644,37 +760,37 @@
 					"title": "Interfaces",
 					"kind": 256,
 					"children": [
-						51
+						43
 					]
 				},
 				{
 					"title": "Functions",
 					"kind": 64,
 					"children": [
-						54
+						46
 					]
 				}
 			],
 			"sources": [
 				{
-					"fileName": "controller.ts",
+					"fileName": "src/controller.ts",
 					"line": 1,
 					"character": 0
 				}
 			]
 		},
 		{
-			"id": 57,
-			"name": "\"findtarget\"",
+			"id": 49,
+			"name": "\"src/findtarget\"",
 			"kind": 1,
-			"kindString": "External module",
+			"kindString": "Module",
 			"flags": {
 				"isExported": true
 			},
-			"originalName": "/home/runner/work/catalyst/catalyst/src/findtarget.ts",
+			"originalName": "/Users/kristjanoddsson/github/catalyst/src/findtarget.ts",
 			"children": [
 				{
-					"id": 58,
+					"id": 50,
 					"name": "findTarget",
 					"kind": 64,
 					"kindString": "Function",
@@ -683,7 +799,7 @@
 					},
 					"signatures": [
 						{
-							"id": 59,
+							"id": 51,
 							"name": "findTarget",
 							"kind": 4096,
 							"kindString": "Call signature",
@@ -691,12 +807,12 @@
 								"isExported": true
 							},
 							"comment": {
-								"shortText": "findTarget will run `querySelectorAll` against the given controller,\nreturning any the first child that:",
+								"shortText": "findTarget will run `querySelectorAll` against the given controller, plus\nits shadowRoot, returning any the first child that:",
 								"text": " - Matches the selector of `[data-target~=\"tag.name\"]` where tag is the\n tagName of the given HTMLElement, and `name` is the given `name` argument.\n\n - Closest ascendant of the element, that matches the tagname of the\n controller, is the specific instance of the controller itself - in other\n words it is not nested in other controllers of the same type.\n\n"
 							},
 							"parameters": [
 								{
-									"id": 60,
+									"id": 52,
 									"name": "controller",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -709,7 +825,7 @@
 									}
 								},
 								{
-									"id": 61,
+									"id": 53,
 									"name": "name",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -739,14 +855,14 @@
 					],
 					"sources": [
 						{
-							"fileName": "findtarget.ts",
+							"fileName": "src/findtarget.ts",
 							"line": 13,
 							"character": 26
 						}
 					]
 				},
 				{
-					"id": 62,
+					"id": 54,
 					"name": "findTargets",
 					"kind": 64,
 					"kindString": "Function",
@@ -755,7 +871,7 @@
 					},
 					"signatures": [
 						{
-							"id": 63,
+							"id": 55,
 							"name": "findTargets",
 							"kind": 4096,
 							"kindString": "Call signature",
@@ -764,7 +880,7 @@
 							},
 							"parameters": [
 								{
-									"id": 64,
+									"id": 56,
 									"name": "controller",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -777,7 +893,7 @@
 									}
 								},
 								{
-									"id": 65,
+									"id": 57,
 									"name": "name",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -801,8 +917,8 @@
 					],
 					"sources": [
 						{
-							"fileName": "findtarget.ts",
-							"line": 20,
+							"fileName": "src/findtarget.ts",
+							"line": 25,
 							"character": 27
 						}
 					]
@@ -813,62 +929,62 @@
 					"title": "Functions",
 					"kind": 64,
 					"children": [
-						58,
-						62
+						50,
+						54
 					]
 				}
 			],
 			"sources": [
 				{
-					"fileName": "findtarget.ts",
+					"fileName": "src/findtarget.ts",
 					"line": 1,
 					"character": 0
 				}
 			]
 		},
 		{
-			"id": 77,
-			"name": "\"index\"",
+			"id": 69,
+			"name": "\"src/index\"",
 			"kind": 1,
-			"kindString": "External module",
+			"kindString": "Module",
 			"flags": {
 				"isExported": true
 			},
-			"originalName": "/home/runner/work/catalyst/catalyst/src/index.ts",
+			"originalName": "/Users/kristjanoddsson/github/catalyst/src/index.ts",
 			"sources": [
 				{
-					"fileName": "index.ts",
+					"fileName": "src/index.ts",
 					"line": 1,
 					"character": 0
 				}
 			]
 		},
 		{
-			"id": 30,
-			"name": "\"register\"",
+			"id": 35,
+			"name": "\"src/register\"",
 			"kind": 1,
-			"kindString": "External module",
+			"kindString": "Module",
 			"flags": {
 				"isExported": true
 			},
-			"originalName": "/home/runner/work/catalyst/catalyst/src/register.ts",
+			"originalName": "/Users/kristjanoddsson/github/catalyst/src/register.ts",
 			"children": [
 				{
-					"id": 31,
+					"id": 36,
 					"name": "CustomElement",
 					"kind": 256,
 					"kindString": "Interface",
 					"flags": {},
 					"children": [
 						{
-							"id": 32,
+							"id": 37,
 							"name": "constructor",
 							"kind": 512,
 							"kindString": "Constructor",
 							"flags": {},
 							"signatures": [
 								{
-									"id": 33,
+									"id": 38,
 									"name": "new CustomElement",
 									"kind": 16384,
 									"kindString": "Constructor signature",
@@ -881,7 +997,7 @@
 							],
 							"sources": [
 								{
-									"fileName": "register.ts",
+									"fileName": "src/register.ts",
 									"line": 1,
 									"character": 25
 								}
@@ -893,20 +1009,20 @@
 							"title": "Constructors",
 							"kind": 512,
 							"children": [
-								32
+								37
 							]
 						}
 					],
 					"sources": [
 						{
-							"fileName": "register.ts",
+							"fileName": "src/register.ts",
 							"line": 1,
 							"character": 23
 						}
 					]
 				},
 				{
-					"id": 34,
+					"id": 39,
 					"name": "register",
 					"kind": 64,
 					"kindString": "Function",
@@ -915,7 +1031,7 @@
 					},
 					"signatures": [
 						{
-							"id": 35,
+							"id": 40,
 							"name": "register",
 							"kind": 4096,
 							"kindString": "Call signature",
@@ -928,7 +1044,7 @@
 							},
 							"parameters": [
 								{
-									"id": 36,
+									"id": 41,
 									"name": "classObject",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -937,7 +1053,7 @@
 									},
 									"type": {
 										"type": "reference",
-										"id": 31,
+										"id": 36,
 										"name": "CustomElement"
 									}
 								}
@@ -950,7 +1066,7 @@
 					],
 					"sources": [
 						{
-							"fileName": "register.ts",
+							"fileName": "src/register.ts",
 							"line": 12,
 							"character": 24
 						}
@@ -962,37 +1078,37 @@
 					"title": "Interfaces",
 					"kind": 256,
 					"children": [
-						31
+						36
 					]
 				},
 				{
 					"title": "Functions",
 					"kind": 64,
 					"children": [
-						34
+						39
 					]
 				}
 			],
 			"sources": [
 				{
-					"fileName": "register.ts",
+					"fileName": "src/register.ts",
 					"line": 1,
 					"character": 0
 				}
 			]
 		},
 		{
-			"id": 66,
-			"name": "\"target\"",
+			"id": 58,
+			"name": "\"src/target\"",
 			"kind": 1,
-			"kindString": "External module",
+			"kindString": "Module",
 			"flags": {
 				"isExported": true
 			},
-			"originalName": "/home/runner/work/catalyst/catalyst/src/target.ts",
+			"originalName": "/Users/kristjanoddsson/github/catalyst/src/target.ts",
 			"children": [
 				{
-					"id": 67,
+					"id": 59,
 					"name": "target",
 					"kind": 64,
 					"kindString": "Function",
@@ -1001,7 +1117,7 @@
 					},
 					"signatures": [
 						{
-							"id": 68,
+							"id": 60,
 							"name": "target",
 							"kind": 4096,
 							"kindString": "Call signature",
@@ -1013,7 +1129,7 @@
 							},
 							"typeParameter": [
 								{
-									"id": 69,
+									"id": 61,
 									"name": "K",
 									"kind": 131072,
 									"kindString": "Type parameter",
@@ -1028,7 +1144,7 @@
 							],
 							"parameters": [
 								{
-									"id": 70,
+									"id": 62,
 									"name": "proto",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -1055,7 +1171,7 @@
 									}
 								},
 								{
-									"id": 71,
+									"id": 63,
 									"name": "key",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -1080,14 +1196,14 @@
 					],
 					"sources": [
 						{
-							"fileName": "target.ts",
+							"fileName": "src/target.ts",
 							"line": 10,
 							"character": 22
 						}
 					]
 				},
 				{
-					"id": 72,
+					"id": 64,
 					"name": "targets",
 					"kind": 64,
 					"kindString": "Function",
@@ -1096,7 +1212,7 @@
 					},
 					"signatures": [
 						{
-							"id": 73,
+							"id": 65,
 							"name": "targets",
 							"kind": 4096,
 							"kindString": "Call signature",
@@ -1108,7 +1224,7 @@
 							},
 							"typeParameter": [
 								{
-									"id": 74,
+									"id": 66,
 									"name": "K",
 									"kind": 131072,
 									"kindString": "Type parameter",
@@ -1123,7 +1239,7 @@
 							],
 							"parameters": [
 								{
-									"id": 75,
+									"id": 67,
 									"name": "proto",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -1150,7 +1266,7 @@
 									}
 								},
 								{
-									"id": 76,
+									"id": 68,
 									"name": "key",
 									"kind": 32768,
 									"kindString": "Parameter",
@@ -1175,7 +1291,7 @@
 					],
 					"sources": [
 						{
-							"fileName": "target.ts",
+							"fileName": "src/target.ts",
 							"line": 26,
 							"character": 23
 						}
@@ -1187,249 +1303,14 @@
 					"title": "Functions",
 					"kind": 64,
 					"children": [
-						67,
-						72
+						59,
+						64
 					]
 				}
 			],
 			"sources": [
 				{
-					"fileName": "target.ts",
-					"line": 1,
-					"character": 0
-				}
-			]
-		},
-		{
-			"id": 37,
-			"name": "\"wrap\"",
-			"kind": 1,
-			"kindString": "External module",
-			"flags": {
-				"isExported": true
-			},
-			"originalName": "/home/runner/work/catalyst/catalyst/src/wrap.ts",
-			"children": [
-				{
-					"id": 38,
-					"name": "wrap",
-					"kind": 64,
-					"kindString": "Function",
-					"flags": {
-						"isExported": true
-					},
-					"signatures": [
-						{
-							"id": 39,
-							"name": "wrap",
-							"kind": 4096,
-							"kindString": "Call signature",
-							"flags": {
-								"isExported": true
-							},
-							"comment": {
-								"shortText": "A utility method which wraps a method on an object. If the method doesn't\nalready exist on the object, it is simply assigned. If it does exist then\nboth the new function and the existing function will be called with the same\narguments.",
-								"text": "Used in the `controller()` decorator.\n"
-							},
-							"typeParameter": [
-								{
-									"id": 40,
-									"name": "K",
-									"kind": 131072,
-									"kindString": "Type parameter",
-									"flags": {
-										"isExported": true
-									},
-									"type": {
-										"type": "intrinsic",
-										"name": "string"
-									}
-								}
-							],
-							"parameters": [
-								{
-									"id": 41,
-									"name": "obj",
-									"kind": 32768,
-									"kindString": "Parameter",
-									"flags": {
-										"isExported": true
-									},
-									"type": {
-										"type": "reference",
-										"typeArguments": [
-											{
-												"type": "typeParameter",
-												"name": "K",
-												"constraint": {
-													"type": "intrinsic",
-													"name": "string"
-												}
-											},
-											{
-												"type": "reflection",
-												"declaration": {
-													"id": 42,
-													"name": "__type",
-													"kind": 65536,
-													"kindString": "Type literal",
-													"flags": {
-														"isExported": true
-													},
-													"signatures": [
-														{
-															"id": 43,
-															"name": "__call",
-															"kind": 4096,
-															"kindString": "Call signature",
-															"flags": {
-																"isExported": true
-															},
-															"parameters": [
-																{
-																	"id": 44,
-																	"name": "args",
-																	"kind": 32768,
-																	"kindString": "Parameter",
-																	"flags": {
-																		"isExported": true,
-																		"isRest": true
-																	},
-																	"type": {
-																		"type": "array",
-																		"elementType": {
-																			"type": "intrinsic",
-																			"name": "unknown"
-																		}
-																	}
-																}
-															],
-															"type": {
-																"type": "intrinsic",
-																"name": "void"
-															}
-														}
-													],
-													"sources": [
-														{
-															"fileName": "wrap.ts",
-															"line": 10,
-															"character": 16
-														}
-													]
-												}
-											}
-										],
-										"name": "Record"
-									}
-								},
-								{
-									"id": 45,
-									"name": "name",
-									"kind": 32768,
-									"kindString": "Parameter",
-									"flags": {
-										"isExported": true
-									},
-									"type": {
-										"type": "typeParameter",
-										"name": "K",
-										"constraint": {
-											"type": "intrinsic",
-											"name": "string"
-										}
-									}
-								},
-								{
-									"id": 46,
-									"name": "fn",
-									"kind": 32768,
-									"kindString": "Parameter",
-									"flags": {
-										"isExported": true
-									},
-									"type": {
-										"type": "reflection",
-										"declaration": {
-											"id": 47,
-											"name": "__type",
-											"kind": 65536,
-											"kindString": "Type literal",
-											"flags": {
-												"isExported": true
-											},
-											"signatures": [
-												{
-													"id": 48,
-													"name": "__call",
-													"kind": 4096,
-													"kindString": "Call signature",
-													"flags": {
-														"isExported": true
-													},
-													"parameters": [
-														{
-															"id": 49,
-															"name": "args",
-															"kind": 32768,
-															"kindString": "Parameter",
-															"flags": {
-																"isExported": true,
-																"isRest": true
-															},
-															"type": {
-																"type": "array",
-																"elementType": {
-																	"type": "intrinsic",
-																	"name": "unknown"
-																}
-															}
-														}
-													],
-													"type": {
-														"type": "intrinsic",
-														"name": "unknown"
-													}
-												}
-											],
-											"sources": [
-												{
-													"fileName": "wrap.ts",
-													"line": 12,
-													"character": 5
-												}
-											]
-										}
-									}
-								}
-							],
-							"type": {
-								"type": "intrinsic",
-								"name": "void"
-							}
-						}
-					],
-					"sources": [
-						{
-							"fileName": "wrap.ts",
-							"line": 9,
-							"character": 20
-						}
-					]
-				}
-			],
-			"groups": [
-				{
-					"title": "Functions",
-					"kind": 64,
-					"children": [
-						38
-					]
-				}
-			],
-			"sources": [
-				{
-					"fileName": "wrap.ts",
+					"fileName": "src/target.ts",
 					"line": 1,
 					"character": 0
 				}
@@ -1438,16 +1319,16 @@
 	],
 	"groups": [
 		{
-			"title": "External modules",
+			"title": "Modules",
 			"kind": 1,
 			"children": [
 				1,
-				50,
-				57,
-				77,
-				30,
-				66,
-				37
+				5,
+				42,
+				49,
+				69,
+				35,
+				58
 			]
 		}
 	]
