@@ -31,10 +31,10 @@ body {
 
 /* Code Blocks & Syntax */
 .markdown-body .highlight pre, .markdown-body pre { background-color: var(--color-bg-canvas-tertiary) }
-.highlight .kc, .highlight .o, .highlight .k, .highlight .kd { color: buttonText }
+.highlight .kc, .highlight .o, .highlight .k, .highlight .kd { color: var(--color-text-primary) }
 /* Syntax — Tags */
 /* TODO: A very dark blue is used in light mode; find something equally-distinctive for dark mode. */
-@media (prefers-color-scheme: dark) { .highlight .nt { color: buttonText } }
+@media (prefers-color-scheme: dark) { .highlight .nt { color: var(--color-text-primary) } }
 
 /* Inline Code */
 .markdown-body code, .markdown-body tt { background-color: var(--color-markdown-code-bg) }
