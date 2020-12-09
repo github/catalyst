@@ -3,7 +3,7 @@ title: Catalyst
 markdown: CommonMarkGhPages
 
 commonmark:
-  extensions: ["autolink", "table"]
+  extensions: ['autolink', 'table']
 
 permalink: pretty
 
@@ -16,11 +16,14 @@ collections:
   guide:
     output: true
 
-defaults: 
+defaults:
   - scope:
       type: guide
     values:
       layout: guide
 
+repository: github/catalyst
+
 plugins:
-  - "jekyll-github-metadata"
+  - 'jekyll-github-metadata'
+  - 'jekyll-gzip'
