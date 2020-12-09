@@ -1,0 +1,11 @@
+{
+  "ci": {
+    "collect": {
+      "url": ["http://localhost:4000/"],
+      "startServerCommand": "cd docs && bundle exec jekyll serve"
+    },
+    "assert": {
+      "preset": "lighthouse:no-pwa"
+    }
+  }
+}
