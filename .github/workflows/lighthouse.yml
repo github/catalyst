@@ -30,10 +30,10 @@ jobs:
         with:
           node-version: 14.x
 
-      - name: Use Ruby 2.6
+      - name: Use Ruby 2.7
         uses: actions/setup-ruby@v1
         with:
-          ruby-version: '2.6'
+          ruby-version: '2.7'
 
       - name: Install dependencies
         run: |
