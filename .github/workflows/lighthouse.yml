@@ -53,4 +53,5 @@ jobs:
       - name: Run Lighthouse CI
         run: npx lhci autorun
         env:
+          JEKYLL_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           LHCI_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
