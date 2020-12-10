@@ -25,7 +25,7 @@
   "scripts": {
     "build": "tsc --build",
     "build:docs": "npm run build:docs:reference && npm run build:docs:jekyll",
-    "build:docs:jekyll": "cd docs && bundle exec jekyll build",
+    "build:docs:jekyll": "cd docs && JEKYLL_ENV=production bundle exec jekyll build",
     "build:docs:reference": "typedoc --json docs/_data/reference.json",
     "clean": "tsc --build --clean",
     "lint": "eslint . --ignore-path .gitignore",

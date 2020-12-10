@@ -10,21 +10,6 @@ jobs:
       - name: Checkout the project
         uses: actions/checkout@v2
 
-      - name: Restore npm cache
-        uses: actions/cache@v2
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
-      - uses: actions/cache@v2
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-modules-
-
       - name: Use Node.js 14.x (LTS)
         uses: actions/setup-node@v1
         with:
@@ -35,12 +20,32 @@ jobs:
         with:
           ruby-version: '2.7'
 
+      - name: Restore npm cache
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Restore Bundler cache
+        uses: actions/cache@v2
+        with:
+          path: docs/vendor/bundle
+          key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-gems-
+
+      - name: Configure Bundler cache
+        run: |
+          bundle config path vendor/bundle
+
       - name: Install dependencies
         run: |
           npm ci
           cd docs && bundle install && cd ..
 
-      - name: Build Docs
+      - name: Build docs
         run: npm run build:docs
 
       - name: Run Lighthouse CI
