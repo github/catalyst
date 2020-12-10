@@ -10,6 +10,16 @@ jobs:
       - name: Checkout the project
         uses: actions/checkout@v2
 
+      - name: Use Node.js 14.x (LTS)
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+
+      - name: Use Ruby 2.7
+        uses: actions/setup-ruby@v1
+        with:
+          ruby-version: '2.7'
+
       - name: Restore npm cache
         uses: actions/cache@v2
         with:
@@ -29,16 +39,6 @@ jobs:
       - name: Configure Bundler cache
         run: |
           bundle config path vendor/bundle
-
-      - name: Use Node.js 14.x (LTS)
-        uses: actions/setup-node@v1
-        with:
-          node-version: 14.x
-
-      - name: Use Ruby 2.7
-        uses: actions/setup-ruby@v1
-        with:
-          ruby-version: '2.7'
 
       - name: Install dependencies
         run: |
