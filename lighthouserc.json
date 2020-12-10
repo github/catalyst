@@ -1,0 +1,23 @@
+{
+  "ci": {
+    "collect": {
+      "url": ["http://localhost:4000/"],
+      "startServerCommand": "cd docs && bundle exec jekyll serve"
+    },
+    "assert": {
+      "preset": "lighthouse:no-pwa",
+      "assertions": {
+        "unused-css-rules": "off",
+        "uses-text-compression": "off",
+        "render-blocking-resources": "off",
+        "uses-rel-preload": "off",
+        "first-contentful-paint": ["warn", {"minScore": 0.8}],
+        "first-meaningful-paint": ["warn", {"minScore": 0.8}],
+        "largest-contentful-paint": ["warn", {"minScore": 0.8}]
+      }
+    },
+    "upload": {
+      "target": "temporary-public-storage"
+    }
+  }
+}

@@ -25,7 +25,7 @@
   "scripts": {
     "build": "tsc --build",
     "build:docs": "npm run build:docs:reference && npm run build:docs:jekyll",
-    "build:docs:jekyll": "cd docs && bundle exec jekyll build",
+    "build:docs:jekyll": "cd docs && JEKYLL_ENV=production bundle exec jekyll build",
     "build:docs:reference": "typedoc --json docs/_data/reference.json",
     "clean": "tsc --build --clean",
     "lint": "eslint . --ignore-path .gitignore",
@@ -36,6 +36,7 @@
   "prettier": "@github/prettier-config",
   "devDependencies": {
     "@github/prettier-config": "^0.0.4",
+    "@lhci/cli": "^0.6.1",
     "@typescript-eslint/eslint-plugin": "^4.6.1",
     "@typescript-eslint/parser": "^4.6.1",
     "chai": "^4.2.0",
