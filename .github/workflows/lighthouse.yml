@@ -47,6 +47,8 @@ jobs:
 
       - name: Build docs
         run: npm run build:docs
+        env:
+          JEKYLL_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Run Lighthouse CI
         run: npx lhci autorun
