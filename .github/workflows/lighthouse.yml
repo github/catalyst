@@ -18,12 +18,17 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
-      - uses: actions/cache@v2
+      - name: Restore Bundler cache
+        uses: actions/cache@v2
         with:
-          path: node_modules
-          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
+          path: vendor/bundle
+          key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
           restore-keys: |
-            ${{ runner.os }}-node-modules-
+            ${{ runner.os }}-gems-
+
+      - name: Configure Bundler cache
+        run: |
+          bundle config path vendor/bundle
 
       - name: Use Node.js 14.x (LTS)
         uses: actions/setup-node@v1
@@ -40,7 +45,7 @@ jobs:
           npm ci
           cd docs && bundle install && cd ..
 
-      - name: Build Docs
+      - name: Build docs
         run: npm run build:docs
 
       - name: Run Lighthouse CI
