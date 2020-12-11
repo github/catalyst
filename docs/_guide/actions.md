@@ -52,12 +52,12 @@ import { controller, target } from "@github/catalyst"
 
 @controller
 class HelloWorldElement extends HTMLElement {
-  @target nameTarget: HTMLElement
-  @target outputTarget: HTMLElement
+  @target name: HTMLElement
+  @target output: HTMLElement
 
   greet() {
-    this.outputTarget.textContent =
-      `Hello, ${this.nameTarget.value}!`
+    this.output.textContent =
+      `Hello, ${this.name.value}!`
   }
 }
 ```
