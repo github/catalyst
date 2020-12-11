@@ -3,4 +3,5 @@ _site
 *.tsbuildinfo
 lib/
 .jekyll-cache
+.lighthouseci
 docs/_data/reference.json
