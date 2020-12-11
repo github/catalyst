@@ -4,3 +4,4 @@ _site
 lib/
 .jekyll-cache
 .lighthouseci
+docs/_data/reference.json
