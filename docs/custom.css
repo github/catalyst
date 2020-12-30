@@ -5,7 +5,7 @@ h1, h2, h3, h4, h5 { margin: 1rem 0; width: 100%; }
 ul li { margin-left: 1rem }
 
 /* No preference or prefers light */
-:root:not(html[data-prefers-color-scheme=dark]),
+:root:not([data-prefers-color-scheme=dark]),
 html[data-prefers-color-scheme=light] {
   --color-bg-canvas: rgb(255, 255, 255);
   --color-bg-canvas-shadow: rgba(255, 255, 255, 0);
@@ -22,7 +22,7 @@ html[data-prefers-color-scheme=dark] {
   --color-markdown-code-bg: rgba(240, 246, 252, 0.05);
 }
 @media (prefers-color-scheme: dark) {
-  :root:not(html[data-prefers-color-scheme=light]) {
+  :root:not([data-prefers-color-scheme=light]) {
     --color-bg-canvas: rgb(13, 17, 23);
     --color-bg-canvas-shadow: rgba(13, 17, 23, 0);
     --color-bg-canvas-tertiary: #161b22;
@@ -42,10 +42,6 @@ body {
 
 /* Code Blocks & Syntax */
 .markdown-body .highlight pre, .markdown-body pre { background-color: var(--color-bg-canvas-tertiary) }
-.highlight .kc, .highlight .o, .highlight .k, .highlight .kd { color: var(--color-text-primary) }
-/* Syntax — Tags */
-/* TODO: A very dark blue is used in light mode; find something equally-distinctive for dark mode. */
-@media (prefers-color-scheme: dark) { .highlight .nt { color: var(--color-text-primary) } }
 
 /* Inline Code */
 .markdown-body code, .markdown-body tt { background-color: var(--color-markdown-code-bg) }
