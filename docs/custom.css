@@ -4,15 +4,25 @@ code { font-size: 90% !important }
 h1, h2, h3, h4, h5 { margin: 1rem 0; width: 100%; }
 ul li { margin-left: 1rem }
 
-:root {
+/* No preference or prefers light */
+:root:not(html[data-prefers-color-scheme=dark]),
+html[data-prefers-color-scheme=light] {
   --color-bg-canvas: rgb(255, 255, 255);
   --color-bg-canvas-shadow: rgba(255, 255, 255, 0);
   --color-bg-canvas-tertiary: #f6f8fa;
   --color-text-primary: #24292e;
   --color-markdown-code-bg: rgba(27, 31, 35, 0.05);
 }
+/* Prefers dark */
+html[data-prefers-color-scheme=dark] {
+  --color-bg-canvas: rgb(13, 17, 23);
+  --color-bg-canvas-shadow: rgba(13, 17, 23, 0);
+  --color-bg-canvas-tertiary: #161b22;
+  --color-text-primary: #c9d1d9;
+  --color-markdown-code-bg: rgba(240, 246, 252, 0.05);
+}
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not(html[data-prefers-color-scheme=light]) {
     --color-bg-canvas: rgb(13, 17, 23);
     --color-bg-canvas-shadow: rgba(13, 17, 23, 0);
     --color-bg-canvas-tertiary: #161b22;
@@ -20,6 +30,7 @@ ul li { margin-left: 1rem }
     --color-markdown-code-bg: rgba(240, 246, 252, 0.05);
   }
 }
+
 body {
   background-color: var(--color-bg-canvas);
   color: var(--color-text-primary);
