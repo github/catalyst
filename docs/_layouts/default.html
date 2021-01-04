@@ -7,6 +7,7 @@
     <meta name="description" content="Catalyst is a set of patterns and techniques for developing components within a complex application.">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width">
+    <meta name="supported-color-schemes" content="light dark">
     <link rel="stylesheet" href="{{ site.baseurl }}/primer.css">
     <link rel="stylesheet" href="{{ site.baseurl }}/github-syntax.css">
     <link rel="stylesheet" href="{{ site.baseurl }}/custom.css">
@@ -22,7 +23,7 @@
   </head>
   <body class="d-flex flex-column height-full">
     <header class="position-sticky top-0 d-flex"
-      style="z-index: 1; background-image: linear-gradient(to top, rgba(255, 255, 255, 0), white 25%)">
+      style="z-index: 1; background-image: linear-gradient(to top, var(--color-bg-canvas-shadow), var(--color-bg-canvas) 25%)">
       <div class="flex-1 pl-3 pb-6 col-3 {% if page.layout != "default" %}bg-gray{% endif %}">
         <h1 class="m-0 mt-2">Catalyst</h1>
       </div>
@@ -54,5 +55,6 @@
 
     {{ content }}
 
+    <script async src="{{ site.baseurl }}/index.js"></script>
   </body>
 </html>

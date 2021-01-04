@@ -1,7 +1,10 @@
 {
   "ci": {
     "collect": {
-      "url": ["http://localhost:4000/"],
+      "url": [
+        "http://localhost:4000/?prefers-color-scheme=light",
+        "http://localhost:4000/?prefers-color-scheme=dark"
+      ],
       "startServerCommand": "cd docs && bundle exec jekyll serve"
     },
     "assert": {
