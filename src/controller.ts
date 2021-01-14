@@ -1,10 +1,8 @@
 import {register} from './register'
 import {bind} from './bind'
 import {autoShadowRoot} from './auto-shadow-root'
-
-interface CustomElement {
-  new (): HTMLElement
-}
+import {defineObservedAttributes, initializeAttrs} from './attr'
+import {CustomElement} from './custom-element'
 
 /**
  * Controller is a decorator to be used over a class that extends HTMLElement.
@@ -17,8 +15,10 @@ export function controller(classObject: CustomElement): void {
   classObject.prototype.connectedCallback = function (this: HTMLElement) {
     this.toggleAttribute('data-catalyst', true)
     autoShadowRoot(this)
+    initializeAttrs(this)
     if (connect) connect.call(this)
     bind(this)
   }
+  defineObservedAttributes(classObject)
   register(classObject)
 }
