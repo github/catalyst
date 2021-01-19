@@ -2,11 +2,11 @@
 layout: default
 ---
 
-<div class="d-flex flex-1">
+<div class="d-md-flex flex-1">
   {% assign sidebarItems = site.data.reference.children %}
   {% include reference_sidebar.html %}
 
-  <section class="col-9 px-5 f4">
+  <section class="col-lg-9 px-5 f4">
     <div class="container-md markdown-body">
       <h1 class="mb-4 f0-light">{{ page.title }}</h1>
       {{ content }}
