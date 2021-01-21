@@ -175,7 +175,7 @@ class HelloWorldElement extends HTMLElement {
 
 ### What about without Decorators?
 
-If you're using decorators, then you won't be able to use the `@attr` decorator, but there is still a way to achieve the same result. Under the hood `@attr` simply tags a field, but `initializeAttrs` does all of the logic.
+If you're not using decorators, then you won't be able to use the `@attr` decorator, but there is still a way to achieve the same result. Under the hood `@attr` simply tags a field, but `initializeAttrs` does all of the logic.
 
 Calling `initializeAttrs` in your connected callback, with the list of properties you'd like to initialize can achieve the same result. The class fields can still be defined in your class, and they'll be overridden as described above. For example:
 
