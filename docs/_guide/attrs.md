@@ -5,7 +5,7 @@ subtitle: Using attributes as configuration
 
 Components may sometimes manage state, or configuration. We encourage the use of DOM as state, rather than maintaining a separate state. One way to maintain state in the DOM is via [Attributes](https://developer.mozilla.org/en-US/docs/Learn/HTML/Howto/Use_data_attributes).
 
-As Catalyst elements are really just Web Components, they have the `hasAttribute`, `getAttribute`, `setAttribute`, `toggleAttribute`, and `removeAttribute` set of methods available, as well as [`dataset`](https://developer.mozilla.org/pl/docs/Web/API/HTMLElement/dataset), but these can be a little tedious to use; requiring null checking code with each call.
+As Catalyst elements are really just Web Components, they have the `hasAttribute`, `getAttribute`, `setAttribute`, `toggleAttribute`, and `removeAttribute` set of methods available, as well as [`dataset`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLOrForeignElement/dataset), but these can be a little tedious to use; requiring null checking code with each call.
 
 Catalyst includes the `@attr` decorator, which provides nice syntax sugar to simplify, standardise, and encourage use of attributes. `@attr` has the following benefits over the basic `*Attribute` methods:
 
