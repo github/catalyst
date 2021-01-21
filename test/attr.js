@@ -169,7 +169,6 @@ describe('attr', () => {
     expect(instance.getAttribute('data-foo')).to.equal('hello')
     expect(instance.getAttribute('data-bar')).to.equal('')
   })
-
 })
 
 describe('defineObservedAttributes', () => {
