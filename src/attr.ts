@@ -1,6 +1,6 @@
 import {CustomElement} from './custom-element'
 
-const attrs = new WeakMap<Record<PropertyKey, unknown>, Set<string>>()
+const attrs = new WeakMap<Record<PropertyKey, unknown>, string[]>()
 type attrValue = string | number | boolean
 
 /**
@@ -11,8 +11,8 @@ type attrValue = string | number | boolean
  * Number or Boolean. This matches the behavior of `initializeAttrs`.
  */
 export function attr<K extends string>(proto: Record<K, attrValue>, key: K): void {
-  if (!attrs.has(proto)) attrs.set(proto, new Set())
-  attrs.get(proto)!.add(key)
+  if (!attrs.has(proto)) attrs.set(proto, [])
+  attrs.get(proto)!.push(key)
 }
 
 /**
@@ -85,7 +85,7 @@ export function defineObservedAttributes(classObject: CustomElement): void {
     get() {
       const attrMap = attrs.get(classObject.prototype)
       if (!attrMap) return observed
-      return [...attrMap].map(attrToAttributeName).concat(observed)
+      return attrMap.map(attrToAttributeName).concat(observed)
     },
     set(attributes: string[]) {
       observed = attributes
