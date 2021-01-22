@@ -39,7 +39,14 @@ export function initializeAttrs(instance: HTMLElement, names?: Iterable<string>)
   for (const key of names) {
     const value = (<Record<PropertyKey, unknown>>(<unknown>instance))[key]
     const name = attrToAttributeName(key)
-    let descriptor: PropertyDescriptor
+    let descriptor: PropertyDescriptor = {
+      get(this: HTMLElement): string {
+        return String(this.getAttribute(name) || '')
+      },
+      set(this: HTMLElement, newValue: string) {
+        this.setAttribute(name, newValue || '')
+      }
+    }
     if (typeof value === 'number') {
       descriptor = {
         get(this: HTMLElement): number {
@@ -56,15 +63,6 @@ export function initializeAttrs(instance: HTMLElement, names?: Iterable<string>)
         },
         set(this: HTMLElement, newValue: boolean) {
           this.toggleAttribute(name, newValue)
-        }
-      }
-    } else {
-      descriptor = {
-        get(this: HTMLElement): string {
-          return String(this.getAttribute(name) || '')
-        },
-        set(this: HTMLElement, newValue: string) {
-          this.setAttribute(name, newValue || '')
         }
       }
     }
