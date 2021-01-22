@@ -38,53 +38,39 @@ export function initializeAttrs(instance: HTMLElement, names?: Iterable<string>)
   if (!names) names = attrs.get(Object.getPrototypeOf(instance)) || []
   for (const key of names) {
     const value = (<Record<PropertyKey, unknown>>(<unknown>instance))[key]
+    const name = attrToAttributeName(key)
     let descriptor: PropertyDescriptor
     if (typeof value === 'number') {
-      descriptor = numberProperty(key)
+      descriptor = {
+        get(this: HTMLElement): number {
+          return Number(this.getAttribute(name) || 0)
+        },
+        set(this: HTMLElement, newValue: string) {
+          this.setAttribute(name, newValue)
+        }
+      }
     } else if (typeof value === 'boolean') {
-      descriptor = booleanProperty(key)
+      descriptor = {
+        get(this: HTMLElement): boolean {
+          return this.hasAttribute(name)
+        },
+        set(this: HTMLElement, newValue: boolean) {
+          this.toggleAttribute(name, newValue)
+        }
+      }
     } else {
-      descriptor = stringProperty(key)
+      descriptor = {
+        get(this: HTMLElement): string {
+          return String(this.getAttribute(name) || '')
+        },
+        set(this: HTMLElement, newValue: string) {
+          this.setAttribute(name, newValue || '')
+        }
+      }
     }
     Object.defineProperty(instance, key, descriptor)
-    if (key in instance && !instance.hasAttribute(attrToAttributeName(key))) {
+    if (key in instance && !instance.hasAttribute(name)) {
       descriptor.set!.call(instance, value)
-    }
-  }
-}
-
-function booleanProperty(key: string): PropertyDescriptor {
-  const attributeName = attrToAttributeName(key)
-  return {
-    get(this: HTMLElement): boolean {
-      return this.hasAttribute(attributeName)
-    },
-    set(this: HTMLElement, value: boolean) {
-      this.toggleAttribute(attributeName, value)
-    }
-  }
-}
-
-function stringProperty(key: string): PropertyDescriptor {
-  const attributeName = attrToAttributeName(key)
-  return {
-    get(this: HTMLElement): string {
-      return String(this.getAttribute(attributeName) || '')
-    },
-    set(this: HTMLElement, value: string) {
-      this.setAttribute(attributeName, value || '')
-    }
-  }
-}
-
-function numberProperty(key: string): PropertyDescriptor {
-  const attributeName = attrToAttributeName(key)
-  return {
-    get(this: HTMLElement): number {
-      return Number(this.getAttribute(attributeName) || 0)
-    },
-    set(this: HTMLElement, value: number) {
-      this.setAttribute(attributeName, String(value))
     }
   }
 }
