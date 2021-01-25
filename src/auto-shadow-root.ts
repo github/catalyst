@@ -5,7 +5,7 @@ export function autoShadowRoot(element: HTMLElement): void {
         .attachShadow({
           mode: template.getAttribute('data-shadowroot') === 'closed' ? 'closed' : 'open'
         })
-        .appendChild(template.content.cloneNode(true))
+        .append(template.content.cloneNode(true))
     }
   }
 }
