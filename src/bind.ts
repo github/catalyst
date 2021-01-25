@@ -1,11 +1,11 @@
-const controllers = new Set<string>()
+const controllers = new WeakSet<Element>()
 
 /*
  * Bind `[data-action]` elements from the DOM to their actions.
  *
  */
 export function bind(controller: HTMLElement): void {
-  controllers.add(controller.tagName.toLowerCase())
+  controllers.add(controller)
   if (controller.shadowRoot) {
     bindElements(controller.shadowRoot)
     listenForBind(controller.shadowRoot)
@@ -72,14 +72,14 @@ function bindElements(root: Element | ShadowRoot) {
 function handleEvent(event: Event) {
   const el = event.currentTarget as Element
   for (const binding of bindings(el)) {
-    if (event.type === binding.type && controllers.has(binding.tag)) {
-      type EventDispatcher = Element & Record<string, (ev: Event) => unknown>
-      const controller = el.closest(binding.tag) as EventDispatcher
-      if (controller && typeof controller[binding.method] === 'function') {
+    if (event.type === binding.type) {
+      type EventDispatcher = HTMLElement & Record<string, (ev: Event) => unknown>
+      const controller = el.closest<EventDispatcher>(binding.tag)!
+      if (controllers.has(controller) && typeof controller[binding.method] === 'function') {
         controller[binding.method](event)
       }
       const root = el.getRootNode()
-      if (root instanceof ShadowRoot && root.host.matches(binding.tag)) {
+      if (root instanceof ShadowRoot && controllers.has(root.host) && root.host.matches(binding.tag)) {
         const shadowController = root.host as EventDispatcher
         if (typeof shadowController[binding.method] === 'function') {
           shadowController[binding.method](event)
