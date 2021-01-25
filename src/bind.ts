@@ -38,7 +38,7 @@ export function listenForBind(el: Node = document): Subscription {
       }
     }
   })
-  observer.observe(el, {childList: true, subtree: true, attributes: true, attributeFilter: ['data-action']})
+  observer.observe(el, {childList: true, subtree: true, attributeFilter: ['data-action']})
   const subscription = {
     get closed() {
       return closed
