@@ -41,7 +41,7 @@ export function initializeAttrs(instance: HTMLElement, names?: Iterable<string>)
     const name = attrToAttributeName(key)
     let descriptor: PropertyDescriptor = {
       get(this: HTMLElement): string {
-        return String(this.getAttribute(name) || '')
+        return this.getAttribute(name) || ''
       },
       set(this: HTMLElement, newValue: string) {
         this.setAttribute(name, newValue || '')
