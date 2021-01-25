@@ -1,6 +1,4 @@
-interface CustomElement {
-  new (): HTMLElement
-}
+import {CustomElement} from './custom-element'
 
 /**
  * Register the controller as a custom element.
