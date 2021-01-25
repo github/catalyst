@@ -204,6 +204,7 @@ describe('bind', () => {
   describe('listenForBind', () => {
     it('re-binds actions that are denoted by HTML that is dynamically injected into the controller', async function () {
       const instance = document.createElement('bind-test-element')
+      bind(instance)
       chai.spy.on(instance, 'foo')
       root.appendChild(instance)
       listenForBind(root)
@@ -278,6 +279,7 @@ describe('bind', () => {
 
   it('re-binds actions deeply in the HTML', async function () {
     const instance = document.createElement('bind-test-element')
+    bind(instance)
     chai.spy.on(instance, 'foo')
     root.appendChild(instance)
     listenForBind(root)
