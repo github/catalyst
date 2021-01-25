@@ -38,7 +38,7 @@ export function listenForBind(el: Node = document): Subscription {
       }
     }
   })
-  observer.observe(el, {childList: true, subtree: true, attributes: true, attributeFilter: ['data-action']})
+  observer.observe(el, {childList: true, subtree: true, attributeFilter: ['data-action']})
   const subscription = {
     get closed() {
       return closed
@@ -94,10 +94,11 @@ function* bindings(el: Element): Iterable<Binding> {
   for (const action of (el.getAttribute('data-action') || '').trim().split(/\s+/)) {
     const eventSep = action.lastIndexOf(':')
     const methodSep = action.lastIndexOf('#')
-    const type = action.slice(0, eventSep)
-    const tag = action.slice(eventSep + 1, methodSep)
-    const method = action.slice(methodSep + 1)
-    yield {type, tag, method}
+    yield {
+      type: action.slice(0, eventSep),
+      tag: action.slice(eventSep + 1, methodSep),
+      method: action.slice(methodSep + 1)
+    }
   }
 }
 
