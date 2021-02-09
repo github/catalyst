@@ -1,11 +1,5 @@
 import {bind, listenForBind} from '../lib/bind.js'
 
-async function waitForNextAnimationFrame() {
-  return new Promise(resolve => {
-    window.requestAnimationFrame(resolve)
-  })
-}
-
 describe('bind', () => {
   window.customElements.define('bind-test-element', class extends HTMLElement {})
 
@@ -150,9 +144,9 @@ describe('bind', () => {
     bind(instance)
 
     instance.append(el1, el2)
-    // We need to wait for a couple of frames after injecting the HTML into to
+    // We need to wait for one microtask after injecting the HTML into to
     // controller so that the actions have been bound to the controller.
-    await waitForNextAnimationFrame()
+    await Promise.resolve()
     document.body.removeChild(instance)
 
     expect(instance.foo).to.have.not.been.called()
@@ -190,10 +184,9 @@ describe('bind', () => {
     bind(instance)
     instance.shadowRoot.append(el1)
     instance.shadowRoot.append(el2)
-    // We need to wait for a couple of frames after injecting the HTML into to
+    // We need to wait for one microtask after injecting the HTML into to
     // controller so that the actions have been bound to the controller.
-    await waitForNextAnimationFrame()
-    await waitForNextAnimationFrame()
+    await Promise.resolve()
     expect(instance.foo).to.have.not.been.called()
     el1.click()
     expect(instance.foo).to.have.been.called.exactly(1)
@@ -211,10 +204,9 @@ describe('bind', () => {
       const button = document.createElement('button')
       button.setAttribute('data-action', 'click:bind-test-element#foo')
       instance.appendChild(button)
-      // We need to wait for a couple of frames after injecting the HTML into to
+      // We need to wait for one microtask after injecting the HTML into to
       // controller so that the actions have been bound to the controller.
-      await waitForNextAnimationFrame()
-      await waitForNextAnimationFrame()
+      await Promise.resolve()
       button.click()
       expect(instance.foo).to.have.been.called.exactly(1)
     })
@@ -228,10 +220,9 @@ describe('bind', () => {
       const button = document.createElement('button')
       button.setAttribute('data-action', 'click:bind-test-element#foo')
       instance.appendChild(button)
-      // We need to wait for a couple of frames after injecting the HTML into to
+      // We need to wait for one microtask after injecting the HTML into to
       // controller so that the actions have been bound to the controller.
-      await waitForNextAnimationFrame()
-      await waitForNextAnimationFrame()
+      await Promise.resolve()
       button.click()
       expect(instance.foo).to.have.been.called.exactly(0)
     })
@@ -245,10 +236,9 @@ describe('bind', () => {
       const button = document.createElement('button')
       button.setAttribute('data-action', 'click:bind-test-not-element#foo')
       instance.appendChild(button)
-      // We need to wait for a couple of frames after injecting the HTML into to
+      // We need to wait for one microtask after injecting the HTML into to
       // controller so that the actions have been bound to the controller.
-      await waitForNextAnimationFrame()
-      await waitForNextAnimationFrame()
+      await Promise.resolve()
       button.click()
       expect(instance.foo).to.have.been.called.exactly(0)
     })
@@ -270,8 +260,7 @@ describe('bind', () => {
       instance.appendChild(button)
       root.appendChild(instance)
       // wait for processQueue
-      await waitForNextAnimationFrame()
-      await waitForNextAnimationFrame()
+      await Promise.resolve()
       button.click()
       expect(instance.foo).to.have.been.called.exactly(1)
     })
@@ -290,10 +279,9 @@ describe('bind', () => {
           </div>
         </div>
       `
-    // We need to wait for a couple of frames after injecting the HTML into to
+    // We need to wait for one microtask after injecting the HTML into to
     // controller so that the actions have been bound to the controller.
-    await waitForNextAnimationFrame()
-    await waitForNextAnimationFrame()
+    await Promise.resolve()
     instance.querySelector('button').click()
     expect(instance.foo).to.have.been.called.exactly(1)
   })
@@ -322,12 +310,11 @@ describe('bind', () => {
     instance.appendChild(button)
     bind(instance)
     listenForBind(root)
-    await waitForNextAnimationFrame()
+    await Promise.resolve()
     button.click()
     expect(instance.foo).to.have.been.called.exactly(0)
     button.setAttribute('data-action', 'click:bind-test-element#foo')
-    await waitForNextAnimationFrame()
-    await waitForNextAnimationFrame()
+    await Promise.resolve()
     button.click()
     expect(instance.foo).to.have.been.called.exactly(1)
   })
