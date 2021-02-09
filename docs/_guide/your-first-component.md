@@ -41,26 +41,33 @@ Remember! A class name _must_ include at least two CamelCased words (not includi
 
 ### What does `@controller` do?
 
-The `@controller` decorator doesn't do all that much. Catalyst components are just "Custom Elements" under the hood, and the `@controller` decorator saves you writing some boilerplate that you'd otherwise have to write by hand. Specifically the `@controller` decorator:
+The `@controller` decorator ties together the various other decorators within Catalyst, plus a few extra conveniences such as automatically registering the element, which saves you writing some boilerplate that you'd otherwise have to write by hand. Specifically the `@controller` decorator:
 
  - Derives a tag name based on your class name, removing the trailing `Element` suffix and lowercasing all capital letters, separating them with a dash.
  - Calls `window.customElements.register` with the newly derived tag name and your class.
- - Injects a call to `bind(this)` inside of the `connectedCallback()` of your class; this ensures that as your element connects it picks up any `data-action` handlers. See [actions]({{ site.baseurl }}/guide/actions) for more on this.
+ - Calls `defineObservedAttributes` with the class to add map any `@attr` decorators. See [attrs]({{ site.baseurl }}/guide/attrs) for more on this.
+ - Injects the following code inside of the `connectedCallback()` function of your class:
+   - `bind(this)`; ensures that as your element connects it picks up any `data-action` handlers. See [actions]({{ site.baseurl }}/guide/actions) for more on this.
+   - `autoShadowRoot(this)`; ensures that your element loads any `data-shadowroot` templates. See [rendering]({{ site.baseurl }}/guide/rendering) for more on this.
+   - `initializeAttrs(this)`; ensures that your element binds any `data-*` attributes to props. See [attrs]({{ site.baseurl }}/guide/attrs) for more on this.
  
 You can do all of this manually; for example here's the above `HelloWorldElement`, written without the `@controller` annotation:
 
 ```js
-import {bind} from '@github/catalyst'
+import {bind, autoShadowRoot, initializeAttrs, defineObservedAttributes} from '@github/catalyst'
 class HelloWorldElement extends HTMLElement {
   connectedCallback() {
-    bind(this)
+    autoShadowRoot(this)
+    initializeAttrs(this)
     this.innerHTML = 'Hello World!'
+    bind(this)
   }
 }
+defineObservedAttributes(HelloWorldElement)
 window.customElements.register('hello-world', HelloWorldElement)
 ```
 
-The Catalyst version isn't all that different, it's just that we have the `@controller` decorator to save on some of the boilerplate.
+Using the `@controller` decorator saves on having to write this boilerplate for each element.
 
 ### What about without TypeScript Decorators?
 
