@@ -59,3 +59,6 @@ body {
 .code-tooltip:after { content: attr(data-title); text-align: left; font-size: 100%; }
 /* :after text will be announced by AT, this adds a separation between textContent and :after text */
 .code-tooltip:before { content: ': '; font-size: 0; }
+.code-tooltip {
+  scroll-margin-top: 150px;
+}
