@@ -175,12 +175,12 @@ class HelloWorldElement extends HTMLElement {
 
 ### What about without Decorators?
 
-If you're not using decorators, then you won't be able to use the `@attr` decorator, but there is still a way to achieve the same result. Under the hood `@attr` simply tags a field, but `initializeAttrs` does all of the logic.
+If you're not using decorators, then you won't be able to use the `@attr` decorator, but there is still a way to achieve the same result. Under the hood `@attr` simply tags a field, but `initializeAttrs` and `defineObservedAttributes` do all of the logic.
 
-Calling `initializeAttrs` in your connected callback, with the list of properties you'd like to initialize can achieve the same result. The class fields can still be defined in your class, and they'll be overridden as described above. For example:
+Calling `initializeAttrs` in your connected callback, with the list of properties you'd like to initialize, and calling `defineObservedAttributes` with the class, can achieve the same result as `@attr`. The class fields can still be defined in your class, and they'll be overridden as described above. For example:
 
 ```js
-import {initializeAttrs} from '@github/catalyst'
+import {initializeAttrs, defineObservedAttributes} from '@github/catalyst'
 
 class HelloWorldElement extends HTMLElement {
   foo = 1
@@ -190,6 +190,7 @@ class HelloWorldElement extends HTMLElement {
   }
 
 }
+defineObservedAttributes(HelloWorldElement, ['foo'])
 ```
 
 This example is functionally identical to:
