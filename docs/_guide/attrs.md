@@ -18,6 +18,10 @@ To use the `@attr` decorator, attach it to a class field, and it will get/set th
 
 ### Example
 
+<!-- annotations
+attr foo: Maps to get/setAttribute('datafoo')
+-->
+
 ```js
 import { controller, attr } from "@github/catalyst"
 
@@ -66,6 +70,10 @@ Below is a handy reference for the small differences, this is all explained in m
 
 If an attribute is first set to a `string`, then it can only ever be a `string` during the lifetime of an element. The property will return an empty string (`''`) if the attribute doesn't exist, and trying to set it to something that isn't a string will turn it into one before assignment.
 
+<!-- annotations
+attr foo: Maps to get/setAttribute('data-foo')
+-->
+
 ```js
 import { controller, attr } from "@github/catalyst"
 
@@ -87,6 +95,10 @@ class HelloWorldElement extends HTMLElement {
 
 If an attribute is first set to a boolean, then it can only ever be a boolean during the lifetime of an element. Boolean properties check for _presence_ of an attribute, sort of like how [`required`, `disabled` & `readonly` attributes work on forms](https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes#boolean_attributes) The property will return `false` if the attribute doesn't exist, and `true` if it does, regardless of the value. If the property is set to `false` then `removeAttribute` is called, whereas `setAttribute(name, '')` is called when setting to a truthy value.
 
+<!-- annotations
+attr foo: Maps to has/toggleAttribute('data-foo')
+-->
+
 ```js
 import { controller, attr } from "@github/catalyst"
 
@@ -107,6 +119,10 @@ class HelloWorldElement extends HTMLElement {
 #### Number Attributes
 
 If an attribute is first set to a number, then it can only ever be a number during the lifetime of an element. This is sort of like the [`maxlength` attribute on inputs](https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/maxlength). The property will return `0` if the attribute doesn't exist, and will be coerced to `Number` if it does - this means it is _possible_ to get back `NaN`. Negative numbers and floats are also valid.
+
+<!-- annotations
+attr foo: Maps to get/setAttribute('data-foo')
+-->
 
 ```js
 import { controller, attr } from "@github/catalyst"
@@ -139,6 +155,10 @@ Remember! The values defined in the class field are the _default_. They won't be
 
 The following example illustrates this behavior:
 
+<!-- annotations
+attr name: Maps to get/setAttribute('data-name')
+-->
+
 ```js
 import { controller, attr } from "@github/catalyst"
 @controller
@@ -149,6 +169,10 @@ class HelloWorldElement extends HTMLElement {
   }
 }
 ```
+
+<!-- annotations
+data-name ".*": Will set the value of `name`
+-->
 
 ```html
 <hello-world></hello-world>
