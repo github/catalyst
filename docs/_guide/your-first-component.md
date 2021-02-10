@@ -7,8 +7,15 @@ chapter: 3
 
 Catalyst's `@controller` decorator lets you create Custom Elements with virtually no boilerplate, by automatically calling `customElements.register`, and by adding ["Actions"]({{ site.baseurl }}/guide/actions) and ["Targets"]({{ site.baseurl }}/guide/targets) features described later. Using TypeScript (with `decorators` support enabled), simply add `@controller` to the top of your class:
 
+<!-- annotations
+controller: This must be added to all Catalyst controllers.
+extends HTMLElement: This must be added to all Catalyst controllers.
+connectedCallback: This runs when the element is added to the DOM | {{ site.baseurl }}/guide/lifecycle-hooks/#codeconnectedcallbackcode
+-->
+
 ```js
 import {controller} from '@github/catalyst'
+
 @controller
 class HelloWorldElement extends HTMLElement {
   connectedCallback() {
@@ -62,6 +69,8 @@ Using the `@controller` decorator saves on having to write this boilerplate for 
 If you don't want to use TypeScript decorators, you can use `controller` as a regular function, and just pass it your class:
 
 ```js
+import {controller} from '@github/catalyst'
+
 controller(
   class HelloWorldElement extends HTMLElement {
     //...

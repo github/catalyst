@@ -13,6 +13,9 @@ To create a Target, use the `@target` decorator on a class field, and add the ma
 
 <div class="d-flex my-4">
   <div>
+<!-- annotations
+data-target ".*": This maps to the `@target output` property
+-->
 
 ```html
 <hello-world>
@@ -24,6 +27,10 @@ To create a Target, use the `@target` decorator on a class field, and add the ma
 
   </div>
   <div class="ml-4">
+
+<!-- annotations
+@ target output: This maps to the data-target attribute
+-->
 
 ```js
 import { controller, target } from "@github/catalyst"
@@ -58,22 +65,34 @@ The `@target` decorator will only ever return _one_ element, just like `querySel
 
 Elements can be referenced as multiple targets, and targets may be referenced multiple times within the HTML:
 
+<!-- annotations
+data-targets ".*users": This maps to the `@targets users` property
+data-target ".*read": This maps to the `@target read` property
+data-target ".*write": This maps to the `@target write` property
+-->
+
 ```html
 <team-members>
   <user-list>
     <user-settings data-targets="user-list.users">
-      <input type="checkbox" data-targets="team-members.reads user-settings.reads">
-      <input type="checkbox" data-targets="team-members.writes user-settings.writes">
+      <input type="checkbox" data-target="user-settings.read">
+      <input type="checkbox" data-target="user-settings.write">
     </user-settings>
     <user-settings data-targets="user-list.users">
-      <input type="checkbox" data-targets="team-members.reads user-settings.reads">
-      <input type="checkbox" data-targets="team-members.writes user-settings.writes">
+      <input type="checkbox" data-target="user-settings.read">
+      <input type="checkbox" data-target="user-settings.write">
     </user-settings>
   </user-list>
 </team-members>
 ```
 
 <br>
+
+<!-- annotations
+@ targets users: This maps to the data-targets attribute
+@ target read: This maps to the data-target attribute
+@ target write: This maps to the data-target attribute
+-->
 
 ```js
 import { controller, target, targets } from "@github/catalyst"
@@ -84,7 +103,7 @@ class UserSettingsElement extends HTMLElement {
   @target write: HTMLInputElement
 
   valid() {
-    // One checkbox must be checked!
+    // At least one checkbox must be checked!
     return this.read.checked || this.write.checked
   }
 }
@@ -125,8 +144,8 @@ If you're not using decorators, then you'll need to make a `getter`, and call `f
 import {findTarget, findTargets} from '@github/catalyst'
 class HelloWorldElement extends HTMLElement {
 
-  get outputTarget() {
-    return findTarget(this, 'outputTarget')
+  get output() {
+    return findTarget(this, 'output')
   }
 
   get pages() {

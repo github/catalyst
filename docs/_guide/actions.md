@@ -14,6 +14,10 @@ Remember! Actions are _automatically_ bound using the `@controller` decorator. T
 <div class="d-flex my-4">
   <div class="">
 
+<!-- annotations
+data-action "click.*": Will call `greet()` when clicked
+-->
+
 ```html
 <hello-world>
   <input
@@ -34,6 +38,10 @@ Remember! Actions are _automatically_ bound using the `@controller` decorator. T
 
   </div>
   <div class="ml-4">
+
+<!-- annotations
+greet: All public methods can be called with `data-action`
+-->
 
 ```js
 import { controller, target } from "@github/catalyst"
@@ -65,6 +73,10 @@ The actions syntax follows a pattern of `event:controller#method`.
 
 Multiple actions can be bound to multiple events, methods, and controllers. For example:
 
+<!-- annotations
+data-action: Fires all of these methods depending on the event
+-->
+
 ```html
 <analytics-tracking>
   <hello-world>
@@ -95,6 +107,10 @@ Multiple actions can be bound to multiple events, methods, and controllers. For 
 
 A Controller may emit custom events, which may be listened to by other Controllers using the same Actions Syntax. There is no extra syntax needed for this. For example a `lazy-loader` Controller might dispatch a `loaded` event, once its contents are loaded, and other controllers can listen to this event:
 
+<!-- annotations
+data-action "loaded: Calls enable() on the `loaded` custom event
+-->
+
 ```html
 <hover-card disabled>
   <lazy-loader data-url="/user/1" data-action="loaded:hover-card#enable">
@@ -102,6 +118,11 @@ A Controller may emit custom events, which may be listened to by other Controlle
   </lazy-loader>
 </hover-card>
 ```
+
+<!-- annotations
+this . dispatchEvent . new CustomEvent . . loaded . . : Dispatches custom "loaded" event
+enable: All public methods can be called with `data-action`
+-->
 
 ```js
 import {controller} from '@github/catalyst'

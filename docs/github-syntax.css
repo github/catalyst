@@ -47,6 +47,9 @@ html[data-prefers-color-scheme=dark] {
 
 .highlight .hll { background-color: var(--color-syntax-highlight) }
 
+.highlight .nx,
+.highlight .p { color: var(--color-syntax-primary); }
+
 /* Comment, Comment.Multiline, Comment.Single */
 .highlight .c,
 .highlight .cm,
@@ -90,6 +93,7 @@ html[data-prefers-color-scheme=dark] {
 .highlight .sr,
 .highlight .s1,
 .highlight .ss,
+.highlight .dl,
 .highlight .il { color: var(--color-syntax-string) }
 
 /* Name.Attribute, Name.Constant, Name.Variable, Name.Variable.Class, Name.Variable.Global, Name.Variable.Instance */
