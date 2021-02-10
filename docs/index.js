@@ -39,7 +39,6 @@ function applyColorSchemePreference() {
 storeColorSchemePreference()
 applyColorSchemePreference()
 
-
 function addAnnotations() {
   for (const codeBlock of document.querySelectorAll('.highlighter-rouge')) {
     const comment = parseCommentNode(codeBlock)
@@ -68,7 +67,7 @@ function parseCommentNode(el) {
   return {
     noDemo: type.match(/no_demo/),
     onlyDemo: type.match(/only_demo/),
-    annotations: type.match(/annotations/) && details,
+    annotations: type.match(/annotations/) && details
   }
 }
 
@@ -80,7 +79,7 @@ function annotate(codeBlock, items) {
     for (const item of items) {
       let currentNode = el
       const [pattern, rest] = item.split(/: /)
-      const [title, link] = (rest||'').split(/ \| /)
+      const [title, link] = (rest || '').split(/ \| /)
       const parts = pattern.split(' ')
       let toAnnotate = []
       for (const part of parts) {
@@ -100,7 +99,7 @@ function annotate(codeBlock, items) {
           }
           annotated.set(node, title)
           const a = document.createElement('a')
-          a.className = node.className + ' code-tooltip tooltipped tooltipped-multiline tooltipped-se bg-gray text-underline'
+          a.className = `${node.className} code-tooltip tooltipped tooltipped-multiline tooltipped-se bg-gray text-underline`
           a.id = `match-${matchIndex++}`
           a.href = link || `#${a.id}`
           a.setAttribute('data-title', title)
@@ -113,6 +112,7 @@ function annotate(codeBlock, items) {
     }
   }
   for (const pattern of noMatch) {
+    // eslint-disable-next-line no-console
     console.error(`Code annotations: No match found for "${pattern}"`)
   }
 }
