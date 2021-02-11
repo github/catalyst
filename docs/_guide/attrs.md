@@ -165,7 +165,7 @@ import { controller, attr } from "@github/catalyst"
 class HelloWorldElement extends HTMLElement {
   @attr name = 'World'
   connectedCallback() {
-    this.textContent = `Hello ${name}`
+    this.textContent = `Hello ${this.name}`
   }
 }
 ```
