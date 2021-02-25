@@ -1,8 +1,8 @@
-import {register} from './register'
-import {bind} from './bind'
-import {autoShadowRoot} from './auto-shadow-root'
-import {defineObservedAttributes, initializeAttrs} from './attr'
-import {CustomElement} from './custom-element'
+import {register} from './register.js'
+import {bind} from './bind.js'
+import {autoShadowRoot} from './auto-shadow-root.js'
+import {defineObservedAttributes, initializeAttrs} from './attr.js'
+import type {CustomElement} from './custom-element'
 
 /**
  * Controller is a decorator to be used over a class that extends HTMLElement.

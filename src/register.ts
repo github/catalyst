@@ -1,4 +1,4 @@
-import {CustomElement} from './custom-element'
+import type {CustomElement} from './custom-element'
 
 /**
  * Register the controller as a custom element.

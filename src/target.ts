@@ -1,4 +1,4 @@
-import {findTarget, findTargets} from './findtarget'
+import {findTarget, findTargets} from './findtarget.js'
 
 /**
  * Target is a decorator which - when assigned to a property field on the
