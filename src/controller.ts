@@ -1,7 +1,7 @@
 import {register} from './register.js'
 import {bind} from './bind.js'
 import {autoShadowRoot} from './auto-shadow-root.js'
-import {defineObservedAttributes, initializeAttrs} from './attr.ts'
+import {defineObservedAttributes, initializeAttrs} from './attr.js'
 import type {CustomElement} from './custom-element.js'
 
 /**
