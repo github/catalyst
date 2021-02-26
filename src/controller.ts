@@ -4,6 +4,8 @@ import {autoShadowRoot} from './auto-shadow-root.js'
 import {defineObservedAttributes, initializeAttrs} from './attr.js'
 import type {CustomElement} from './custom-element'
 
+
+foo()
 /**
  * Controller is a decorator to be used over a class that extends HTMLElement.
  * It will automatically `register()` the component in the customElement
