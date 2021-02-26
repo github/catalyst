@@ -26,7 +26,7 @@
     "build": "tsc --build",
     "build:docs": "npm run build:docs:reference && npm run build:docs:jekyll",
     "build:docs:jekyll": "cd docs && JEKYLL_ENV=production bundle exec jekyll build",
-    "build:docs:reference": "typedoc --json docs/_data/reference.json",
+    "build:docs:reference": "mkdir -p docs/_data && typedoc src/index.ts --json docs/_data/reference.json",
     "clean": "tsc --build --clean",
     "lint": "eslint . --ignore-path .gitignore",
     "pretest": "npm run build",
