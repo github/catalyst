@@ -1,4 +1,4 @@
-import type {CustomElement} from './custom-element'
+import type {CustomElement} from './custom-element.js'
 
 const attrs = new WeakMap<Record<PropertyKey, unknown>, string[]>()
 type attrValue = string | number | boolean

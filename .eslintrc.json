@@ -4,7 +4,9 @@
   "extends": ["plugin:github/recommended", "plugin:github/typescript", "plugin:github/browser"],
   "rules": {
     "no-invalid-this": "off",
-    "@typescript-eslint/no-invalid-this": ["error"]
+    "@typescript-eslint/no-invalid-this": ["error"],
+    "import/extensions": ["error", "ignorePackages"],
+    "@typescript-eslint/consistent-type-imports": ["error", {"prefer": "type-imports"}]
   },
   "overrides": [
     {
