@@ -51,7 +51,7 @@ Remember that _all_ instances of your controller _must_ add the `<template data-
 
 Sometimes you wont have a template that is server rendered, and instead want to make a template using JS. Catalyst does not support this out of the box, but it is possible to use another library: `@github/jtml`. This library can be used to write declarative templates using JS. Let's re-work the above example using `@github/jtml`:
 
-```
+```typescript
 import { attr, controller } from "@github/catalyst"
 import { html, render } from "@github/jtml"
 
