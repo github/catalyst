@@ -52,7 +52,7 @@ Remember that _all_ instances of your controller _must_ add the `<template data-
 Sometimes you wont have a template that is server rendered, and instead want to make a template using JS. Catalyst does not support this out of the box, but it is possible to use another library: `@github/jtml`. This library can be used to write declarative templates using JS. Let's re-work the above example using `@github/jtml`:
 
 ```typescript
-import { controller, target } from "@github/catalyst"
+import { controller } from "@github/catalyst"
 import { html, render } from "@github/jtml"
 
 @controller
@@ -84,3 +84,26 @@ class HelloWorldElement extends HTMLElement {
 ```
 
 Here, instead of declaring our template in HTML, we can do so in JS, and achieve exactly the same effect. We aren't using `@targets` in this example, as there is a more direct way to handle the data; re-calling `update()` will efficiently update only the parts that change.
+
+The same effect could be achieved using `@attr` via:
+
+```
+import { attr, controller } from "@github/catalyst"
+import { html, render } from "@github/jtml"
+
+@controller
+class HelloWorldElement extends HTMLElement {
+  @attr name = 'World'
+  connectedCallback() {
+    this.attachShadow({mode: 'open'})
+  }
+
+  attributeChangedCallback() {
+    render(() => html`
+      <div>
+        Hello <span>${ this.name }</span>
+      </div>`,
+    this.shadowRoot!)
+  }
+}
+```
