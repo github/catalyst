@@ -94,6 +94,7 @@ import { html, render } from "@github/jtml"
 @controller
 class HelloWorldElement extends HTMLElement {
   @attr name = 'World'
+
   connectedCallback() {
     this.attachShadow({mode: 'open'})
   }
