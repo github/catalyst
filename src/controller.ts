@@ -16,8 +16,8 @@ export function controller(classObject: CustomElement): void {
     this.toggleAttribute('data-catalyst', true)
     autoShadowRoot(this)
     initializeAttrs(this)
-    if (connect) connect.call(this)
     bind(this)
+    if (connect) connect.call(this)
   }
   defineObservedAttributes(classObject)
   register(classObject)

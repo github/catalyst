@@ -16,4 +16,25 @@ describe('controller', () => {
     expect(instance.hasAttribute('data-catalyst')).to.equal(true)
     expect(instance.getAttribute('data-catalyst')).to.equal('')
   })
+
+  it('binds controllers before custom connectedCallback behaviour', async () => {
+    controller(class ControllerBindOrderElement extends HTMLElement {})
+    controller(
+      class ControllerBindOrderSubElement extends HTMLElement {
+        connectedCallback() {
+          this.dispatchEvent(new CustomEvent('loaded'))
+        }
+      }
+    )
+
+    const instance = document.createElement('controller-bind-order')
+    chai.spy.on(instance, 'foo')
+    document.body.appendChild(instance)
+
+    const sub = document.createElement('controller-bind-order-sub')
+    sub.setAttribute('data-action', 'loaded:controller-bind-order#foo')
+    instance.appendChild(sub)
+
+    expect(instance.foo).to.have.been.called(1)
+  })
 })
