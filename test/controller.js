@@ -57,4 +57,23 @@ describe('controller', () => {
 
     expect(instance.foo).to.have.been.called(1)
   })
+
+  it('binds auto shadowRoots', async () => {
+    controller(class ControllerBindAutoShadowElement extends HTMLElement {})
+    const instance = document.createElement('controller-bind-auto-shadow')
+    const template = document.createElement('template')
+    template.setAttribute('data-shadowroot', 'open')
+    // eslint-disable-next-line github/unescaped-html-literal
+    template.innerHTML = '<button data-action="click:controller-bind-auto-shadow#foo"></button>'
+    instance.appendChild(template)
+    chai.spy.on(instance, 'foo')
+    document.body.appendChild(instance)
+
+    expect(instance.shadowRoot).to.exist
+    expect(instance).to.have.property('shadowRoot').not.equal(null)
+    expect(instance.shadowRoot.children).to.have.lengthOf(1)
+    instance.shadowRoot.querySelector('button').click()
+
+    expect(instance.foo).to.have.been.called(1)
+  })
 })
