@@ -37,4 +37,24 @@ describe('controller', () => {
 
     expect(instance.foo).to.have.been.called(1)
   })
+
+  it('binds shadowRoots after connectedCallback behaviour', async () => {
+    controller(
+      class ControllerBindShadowElement extends HTMLElement {
+        connectedCallback() {
+          this.attachShadow({mode: 'open'})
+          const button = document.createElement('button')
+          button.setAttribute('data-action', 'click:controller-bind-shadow#foo')
+          this.shadowRoot.appendChild(button)
+        }
+      }
+    )
+    const instance = document.createElement('controller-bind-shadow')
+    chai.spy.on(instance, 'foo')
+    document.body.appendChild(instance)
+
+    instance.shadowRoot.querySelector('button').click()
+
+    expect(instance.foo).to.have.been.called(1)
+  })
 })

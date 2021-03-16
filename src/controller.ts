@@ -1,5 +1,5 @@
 import {register} from './register.js'
-import {bind} from './bind.js'
+import {bind, bindShadow} from './bind.js'
 import {autoShadowRoot} from './auto-shadow-root.js'
 import {defineObservedAttributes, initializeAttrs} from './attr.js'
 import type {CustomElement} from './custom-element.js'
@@ -18,6 +18,7 @@ export function controller(classObject: CustomElement): void {
     initializeAttrs(this)
     bind(this)
     if (connect) connect.call(this)
+    if (this.shadowRoot) bindShadow(this.shadowRoot)
   }
   defineObservedAttributes(classObject)
   register(classObject)
