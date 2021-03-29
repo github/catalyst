@@ -142,6 +142,10 @@ When naming a method, you should avoid naming it something that already exists o
       const goodEl = document.querySelector('.js-methodname-shadow-good-input')
       const badEl = document.querySelector('.js-methodname-shadow-bad-input')
       const warnEl = document.querySelector('.js-methodname-shadow-warn-input')
+      if (name === '') {
+        goodEl.hidden = true
+        return
+      }
       let warning = warnings[name]
       if (name !== name.toLowerCase() && name.toLowerCase() in HTMLElement.prototype) {
         warning = `it is too similar to \`${name.toLowerCase()}\` which already exists`
@@ -149,7 +153,7 @@ When naming a method, you should avoid naming it something that already exists o
         warning = 'starting with `on` suggests a coupling between the event and the method (see below)'
       }
       goodEl.hidden = warning || (name in HTMLElement.prototype)
-      warnEl.hidden = !warning 
+      warnEl.hidden = !warning
       badEl.hidden = warning || !(name in HTMLElement.prototype)
       if (warning) {
         warnEl.querySelector('span').textContent = warning
