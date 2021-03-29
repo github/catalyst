@@ -1,10 +1,7 @@
 {
   "ci": {
     "collect": {
-      "url": [
-        "http://localhost:4000/?prefers-color-scheme=light",
-        "http://localhost:4000/?prefers-color-scheme=dark"
-      ],
+      "url": ["http://localhost:4000/?prefers-color-scheme=light", "http://localhost:4000/?prefers-color-scheme=dark"],
       "startServerCommand": "cd docs && bundle exec jekyll serve"
     },
     "assert": {
@@ -16,7 +13,8 @@
         "uses-rel-preload": "off",
         "first-contentful-paint": ["warn", {"minScore": 0.8}],
         "first-meaningful-paint": ["warn", {"minScore": 0.8}],
-        "largest-contentful-paint": ["warn", {"minScore": 0.8}]
+        "largest-contentful-paint": ["warn", {"minScore": 0.8}],
+        "deprecations": "off"
       }
     },
     "upload": {
