@@ -6,12 +6,14 @@ const controllers = new WeakSet<Element>()
  */
 export function bind(controller: HTMLElement): void {
   controllers.add(controller)
-  if (controller.shadowRoot) {
-    bindElements(controller.shadowRoot)
-    listenForBind(controller.shadowRoot)
-  }
+  if (controller.shadowRoot) bindShadow(controller.shadowRoot)
   bindElements(controller)
   listenForBind(controller.ownerDocument)
+}
+
+export function bindShadow(root: ShadowRoot): void {
+  bindElements(root)
+  listenForBind(root)
 }
 
 const observers = new WeakMap<Node, Subscription>()
