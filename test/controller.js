@@ -62,7 +62,7 @@ describe('controller', () => {
     controller(class ControllerBindAutoShadowElement extends HTMLElement {})
     const instance = document.createElement('controller-bind-auto-shadow')
     const template = document.createElement('template')
-    template.setAttribute('data-shadowroot', 'open')
+    template.setAttribute('shadowroot', 'open')
     // eslint-disable-next-line github/unescaped-html-literal
     template.innerHTML = '<button data-action="click:controller-bind-auto-shadow#foo"></button>'
     instance.appendChild(template)
