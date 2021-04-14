@@ -1,9 +1,9 @@
 export function autoShadowRoot(element: HTMLElement): void {
-  for (const template of element.querySelectorAll<HTMLTemplateElement>('template[data-shadowroot]')) {
+  for (const template of element.querySelectorAll<HTMLTemplateElement>('template[shadowroot]')) {
     if (template.parentElement === element) {
       element
         .attachShadow({
-          mode: template.getAttribute('data-shadowroot') === 'closed' ? 'closed' : 'open'
+          mode: template.getAttribute('shadowroot') === 'closed' ? 'closed' : 'open'
         })
         .append(template.content.cloneNode(true))
     }
