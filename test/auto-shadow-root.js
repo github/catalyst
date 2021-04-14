@@ -18,7 +18,7 @@ describe('autoShadowRoot', () => {
     const instance = document.createElement('shadowroot-test-element')
     const template = document.createElement('template')
     template.innerHTML = 'Hello World'
-    template.setAttribute('data-shadowroot', 'open')
+    template.setAttribute('shadowroot', 'open')
     instance.appendChild(template)
 
     autoShadowRoot(instance)
@@ -32,7 +32,7 @@ describe('autoShadowRoot', () => {
     const template = document.createElement('template')
     template.setAttribute('data-notshadowroot', 'open')
     const otherTemplate = document.createElement('div')
-    otherTemplate.setAttribute('data-shadowroot', 'open')
+    otherTemplate.setAttribute('shadowroot', 'open')
     instance.appendChild(template, otherTemplate)
 
     autoShadowRoot(instance)
@@ -57,7 +57,7 @@ describe('autoShadowRoot', () => {
     const instance = document.createElement('shadowroot-test-element')
     const template = document.createElement('template')
     template.innerHTML = 'Hello World'
-    template.setAttribute('data-shadowroot', '')
+    template.setAttribute('shadowroot', '')
     instance.appendChild(template)
 
     autoShadowRoot(instance)
@@ -70,7 +70,7 @@ describe('autoShadowRoot', () => {
     const instance = document.createElement('shadowroot-test-element')
     const template = document.createElement('template')
     template.innerHTML = 'Hello World'
-    template.setAttribute('data-shadowroot', 'closed')
+    template.setAttribute('shadowroot', 'closed')
     instance.appendChild(template)
 
     let shadowRoot = null
