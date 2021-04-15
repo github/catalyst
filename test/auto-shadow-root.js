@@ -18,6 +18,19 @@ describe('autoShadowRoot', () => {
     const instance = document.createElement('shadowroot-test-element')
     const template = document.createElement('template')
     template.innerHTML = 'Hello World'
+    template.setAttribute('data-shadowroot', 'open')
+    instance.appendChild(template)
+
+    autoShadowRoot(instance)
+
+    expect(instance).to.have.property('shadowRoot').not.equal(null)
+    expect(instance.shadowRoot.textContent).to.equal('Hello World')
+  })
+
+  it('automatically declares shadowroot for elements with `template[shadowroot]` children', () => {
+    const instance = document.createElement('shadowroot-test-element')
+    const template = document.createElement('template')
+    template.innerHTML = 'Hello World'
     template.setAttribute('shadowroot', 'open')
     instance.appendChild(template)
 
@@ -28,6 +41,19 @@ describe('autoShadowRoot', () => {
   })
 
   it('does not attach shadowroot without a template`data-shadowroot` child', () => {
+    const instance = document.createElement('shadowroot-test-element')
+    const template = document.createElement('template')
+    template.setAttribute('data-notshadowroot', 'open')
+    const otherTemplate = document.createElement('div')
+    otherTemplate.setAttribute('data-shadowroot', 'open')
+    instance.appendChild(template, otherTemplate)
+
+    autoShadowRoot(instance)
+
+    expect(instance).to.have.property('shadowRoot').equal(null)
+  })
+
+  it('does not attach shadowroot without a template`shadowroot` child', () => {
     const instance = document.createElement('shadowroot-test-element')
     const template = document.createElement('template')
     template.setAttribute('data-notshadowroot', 'open')
@@ -53,7 +79,20 @@ describe('autoShadowRoot', () => {
     expect(instance).to.have.property('shadowRoot').equal(null)
   })
 
-  it('attaches shadowRoot nodes open by default', () => {
+  it('attaches template[data-shadowRoot] nodes open by default', () => {
+    const instance = document.createElement('shadowroot-test-element')
+    const template = document.createElement('template')
+    template.innerHTML = 'Hello World'
+    template.setAttribute('data-shadowroot', '')
+    instance.appendChild(template)
+
+    autoShadowRoot(instance)
+
+    expect(instance).to.have.property('shadowRoot').not.equal(null)
+    expect(instance.shadowRoot.textContent).to.equal('Hello World')
+  })
+
+  it('attaches template[shadowRoot] nodes open by default', () => {
     const instance = document.createElement('shadowroot-test-element')
     const template = document.createElement('template')
     template.innerHTML = 'Hello World'
@@ -70,7 +109,7 @@ describe('autoShadowRoot', () => {
     const instance = document.createElement('shadowroot-test-element')
     const template = document.createElement('template')
     template.innerHTML = 'Hello World'
-    template.setAttribute('shadowroot', 'closed')
+    template.setAttribute('data-shadowroot', 'closed')
     instance.appendChild(template)
 
     let shadowRoot = null
@@ -84,5 +123,18 @@ describe('autoShadowRoot', () => {
     expect(instance).to.have.property('shadowRoot').equal(null)
     expect(instance.attachShadow).to.have.been.called.once.with.exactly({mode: 'closed'})
     expect(shadowRoot.textContent).to.equal('Hello World')
+  })
+
+  it('attaches template[shadowRoot] nodes open by default', () => {
+    const instance = document.createElement('shadowroot-test-element')
+    const template = document.createElement('template')
+    template.innerHTML = 'Hello World'
+    template.setAttribute('shadowroot', '')
+    instance.appendChild(template)
+
+    autoShadowRoot(instance)
+
+    expect(instance).to.have.property('shadowRoot').not.equal(null)
+    expect(instance.shadowRoot.textContent).to.equal('Hello World')
   })
 })
