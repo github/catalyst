@@ -5,7 +5,7 @@ export function autoShadowRoot(element: HTMLElement): void {
 
       if (
         template.hasAttribute('data-shadowroot') ||
-        (template.hasAttribute('shadowroot') && !HTMLTemplateElement.prototype.hasOwnProperty('shadowRoot'))
+        (template.hasAttribute('shadowroot') && !HTMLTemplateElement.prototype.hasOwnProperty('shadowroot'))
       ) {
         element
           .attachShadow({
