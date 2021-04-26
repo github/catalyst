@@ -15,7 +15,7 @@ Remember! Actions are _automatically_ bound using the `@controller` decorator. T
   <div class="">
 
 <!-- annotations
-data-action "click.*": Will call `greet()` when clicked
+data-action "click.*": Will call `greetSomeone()` when clicked
 -->
 
 ```html
@@ -26,8 +26,8 @@ data-action "click.*": Will call `greet()` when clicked
   >
 
   <button
-    data-action="click:hello-world#greet">
-    Greet
+    data-action="click:hello-world#greetSomeone">
+    Greet Someone
   </button>
 
   <span
@@ -40,7 +40,7 @@ data-action "click.*": Will call `greet()` when clicked
   <div class="ml-4">
 
 <!-- annotations
-greet: All public methods can be called with `data-action`
+greetSomeone: All public methods can be called with `data-action`
 -->
 
 ```js
@@ -51,7 +51,7 @@ class HelloWorldElement extends HTMLElement {
   @target name: HTMLElement
   @target output: HTMLElement
 
-  greet() {
+  greetSomeone() {
     this.output.textContent =
       `Hello, ${this.name.value}!`
   }
@@ -92,12 +92,12 @@ data-action: Fires all of these methods depending on the event
 
     <button
       data-action="
-        click:hello-world#greet
+        click:hello-world#greetSomeone
         click:analytics-tracking#click
         hover:analytics-tracking#hover
       "
     >
-      Greet
+      Greet Someone
     </button>
   </hello-world>
 </analytics-tracking>
