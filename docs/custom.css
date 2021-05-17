@@ -45,7 +45,7 @@ body {
 /* Code Blocks & Syntax */
 .markdown-body .highlight pre, .markdown-body pre {
   background-color: var(--color-bg-canvas-tertiary);
-  overflow: inherit
+  overflow: auto;
 }
 
 /* Inline Code */
