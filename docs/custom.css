@@ -44,7 +44,8 @@ body {
 
 /* Code Blocks & Syntax */
 .markdown-body .highlight pre, .markdown-body pre {
-  background-color: var(--color-bg-canvas-tertiary)
+  background-color: var(--color-bg-canvas-tertiary);
+  overflow: auto;
 }
 
 /* Inline Code */
