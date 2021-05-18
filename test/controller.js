@@ -9,6 +9,15 @@ describe('controller', () => {
     expect(instance).to.be.instanceof(ControllerRegisterElement)
   })
 
+  it('calls register with extends', () => {
+    class ControllerRegisterExtendsElement extends HTMLAnchorElement {}
+    controller({extends: 'a'})(ControllerRegisterExtendsElement)
+    const instance = document.createElement('a', {is: 'controller-register-extends'})
+    document.body.appendChild(instance)
+    expect(instance).to.be.instanceof(HTMLAnchorElement)
+    expect(instance).to.be.instanceof(ControllerRegisterExtendsElement)
+  })
+
   it('adds data-catalyst to elements', async () => {
     controller(class ControllerDataAttrElement extends HTMLElement {})
     const instance = document.createElement('controller-data-attr')
