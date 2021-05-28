@@ -11,7 +11,7 @@ GitHub's first page interactions were written using jQuery, which was widely use
 
 Rather than moving to entirely new paradigms, GitHub continued to use the same concepts within jQuery. Event Delegation was still heavily used, as well as querySelector. The event delegation concept was also extended to "element delegation" - discovering when Elements were added to the DOM, using the [Selector Observer](https://github.com/josh/selector-observer) library.
 
-From this emerged a set of patterns which were reduced down to their first principles. _Observing_ elements on the page, _listening_ to the events these elements or their children emit, and _querying_ the children of an element to mutate or extend them.
+These patterns were reduced to first principles: _Observing_ elements on the page, _listening_ to the events these elements or their children emit, and _querying_ the children of an element to mutate or extend them.
 
 The Web Systems team at GitHub explored other tools that adopt these set of patterns and principles. The closest match to those goals was [Stimulus](https://stimulusjs.org/) (from which Catalyst is heavily inspired), but ultimately the desire to leverage technology that engineers at GitHub were already familiar with was the motivation to create Catalyst.
 
