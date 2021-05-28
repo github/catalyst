@@ -33,10 +33,6 @@ By convention Catalyst controllers end in `Element`; Catalyst will omit this whe
 Remember! A class name _must_ include at least two CamelCased words (not including the `Element` suffix). One-word elements will raise exceptions. Example of good names: `UserListElement`, `SubTaskElement`, `PagerContainerElement`
 {% endcapture %}{% include callout.md %}
 
-{% capture callout %}
-When using build tools, some JavaScript minifiers might modify the class name that Catalyst relies on. A best-practice is to allow classnames that end with `Element`. In particular, for Terser, you can use the following config: `{ keep_classnames: /Element$/ }`
-{% endcapture %}{% include callout.md %}
-
 
 ### What does `@controller` do?
 
