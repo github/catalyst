@@ -37,27 +37,31 @@ class HelloWorldElement extends HTMLElement {
 
 Class Field decorators get given the class and the field name so they can add custom functionality to the field. Because they operate on the fields, they must be put on top of or to the left of the field.
 
-#### Disabling `strictPropertyInitialization`
+#### Supporting `strictPropertyInitialization`
 
-TypeScript comes with various "strict" mode settings, one of which is `strictPropertyInitialization` which TypeScript catch potential class properties which might not be assigned during construction of a class. This option conflicts with Catalyst's `@target`/`@targets` decorators, which safely do the assignment but TypeScript's simple heuristics cannot detect this. It's recommended to disable this option (other strict mode rules can still apply) in your `tsconfig.json` like so:
+TypeScript comes with various "strict" mode settings, one of which is `strictPropertyInitialization` which TypeScript catch potential class properties which might not be assigned during construction of a class. This option conflicts with Catalyst's `@target`/`@targets` decorators, which safely do the assignment but TypeScript's simple heuristics cannot detect this. There are two ways to work around this:
 
-```json
-{
-  "compilerOptions": {
-    "strict": true,
-    "strictPropertyInitialization": false
-  }
-}
-```
+1. Use TypeScript's [`declare` modifier](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-7.html#the-usedefineforclassfields-flag-and-the-declare-property-modifier) to tell TypeScript that the decorated field will still be set up correctly:
 
-If you really want to keep the `strictPropertyInitialization` option set to `true`, another option would be to use TypeScript's [non-null assertion operator (`!`)](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-0.html#non-null-assertion-operator), adding this to each of your `@target`/`@targets` properties, like so:
+    ```typescript
+    class HelloWorldElement extends HTMLElement {
+      @target declare something: HTMLElement
+      @targets declare items: HTMLElement[]
+    }
+    ```
+    
+    Note that this only works on TypeScript 3.7+, so if you're on an older version, you can also use the [definite initialization operator](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-7.html#definite-assignment-assertions) to do the same thing.
 
-```typescript
-class HelloWorldElement extends HTMLElement {
-  @target something!: HTMLElement
-  @targets items!: HTMLElement[]
-}
-```
+2. You can also disable the compiler option (other strict mode rules can still apply) in your `tsconfig.json` like so:
+
+    ```json
+    {
+      "compilerOptions": {
+        "strict": true,
+        "strictPropertyInitialization": false
+      }
+    }
+    ```
 
 ### Method Decorators
 
