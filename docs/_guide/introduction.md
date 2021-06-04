@@ -19,7 +19,7 @@ The Web Systems team at GitHub explored other tools that adopt these set of patt
 
 Catalyst takes these three core concepts and delivers them in the lightest possible way they can be delivered.
 
- - **Observability** Catalyst solves observability by leveraging [Custom Elements](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements). Custom Elements are given unique names within a system, and the browser will automatically use the Custom Element registry to observe these Elements entering and leaving the DOM. Read more about this in the Guide Section entitled [Custom Elements]({{ site.baseurl }}/guide/your-first-component).
+ - **Observability** Catalyst solves observability by leveraging [Custom Elements](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements). Custom Elements are given unique names within a system, and the browser will automatically use the Custom Element registry to observe these Elements entering and leaving the DOM. Read more about this in the Guide Section entitled [Your First Component]({{ site.baseurl }}/guide/your-first-component).
 
  - **Listening** Event Delegation makes a great deal of sense when observing events "high up the tree" - registering global event listeners on the Window element - but Custom Elements sit much closer to their children within the tree, and so Direct Event binding is preferred. Catalyst solves this by binding event listeners to any descendants with `data-action` attributes. Read more about this in the Guide Section entitled [Actions]({{ site.baseurl }}/guide/actions).
 
