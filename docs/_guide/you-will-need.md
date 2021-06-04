@@ -18,3 +18,9 @@ Catalyst uses modern browser standards, and so requires evergreen browsers or ma
  - [`MutationObserver`](https://caniuse.com/#search=MutationObserver). [`mutation-observer`](https://github.com/webmodules/mutation-observer) can polyfill this.
 
 Please note this list may increase over time. Catalyst will never ship with polyfills that add missing browser functionality, but will continue to use the latest Web Standards, and so may require more polyfills as new releases come out.
+
+### Build considerations
+
+When using build tools, some JavaScript minifiers modify the class name that Catalyst relies on. You know you have an issue if you encounter the error `"c" is not a valid custom element name`.
+
+A best practice is to allow class names that end with `Element`. For instance, for Terser, you can use the following config: `{ keep_classnames: /Element$/ }`
