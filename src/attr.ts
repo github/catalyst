@@ -35,7 +35,7 @@ export function attr<K extends string>(proto: Record<K, attrValue>, key: K): voi
  * `@controller` decorator it should not call this manually.
  */
 export function initializeAttrs(instance: HTMLElement, names?: Iterable<string>): void {
-  if (!names) names = attrs.get(Object.getPrototypeOf(instance)) || []
+  if (!names) names = new Set(getAttrNames(instance))
   for (const key of names) {
     const value = (<Record<PropertyKey, unknown>>(<unknown>instance))[key]
     const name = attrToAttributeName(key)
@@ -71,6 +71,12 @@ export function initializeAttrs(instance: HTMLElement, names?: Iterable<string>)
       descriptor.set!.call(instance, value)
     }
   }
+}
+
+function getAttrNames(instance: HTMLElement | typeof HTMLElement): string[] {
+  if (!instance || instance === HTMLElement) return []
+  const proto = Object.getPrototypeOf(instance)
+  return (attrs.get(proto) || []).concat(getAttrNames(proto))
 }
 
 function attrToAttributeName(name: string): string {
