@@ -218,4 +218,12 @@ describe('defineObservedAttributes', () => {
     TestElement.observedAttributes = ['a', 'b', 'c']
     expect(TestElement.observedAttributes).to.eql(['data-foo', 'a', 'b', 'c'])
   })
+
+  it('will reflect values from extended elements', () => {
+    class TestElement extends HTMLElement {}
+    class ExtendedTestElement extends TestElement {}
+    defineObservedAttributes(ExtendedTestElement)
+    attr(TestElement.prototype, 'foo')
+    expect(ExtendedTestElement.observedAttributes).to.eql(['data-foo'])
+  })
 })
