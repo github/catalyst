@@ -35,7 +35,7 @@ export function attr<K extends string>(proto: Record<K, attrValue>, key: K): voi
  * `@controller` decorator it should not call this manually.
  */
 export function initializeAttrs(instance: HTMLElement, names?: Iterable<string>): void {
-  if (!names) names = attrs.get(Object.getPrototypeOf(instance)) || []
+  if (!names) names = getAttrNames(Object.getPrototypeOf(instance))
   for (const key of names) {
     const value = (<Record<PropertyKey, unknown>>(<unknown>instance))[key]
     const name = attrToAttributeName(key)
@@ -73,6 +73,19 @@ export function initializeAttrs(instance: HTMLElement, names?: Iterable<string>)
   }
 }
 
+function getAttrNames(classObjectProto: Record<PropertyKey, unknown>): Set<string> {
+  const names: Set<string> = new Set()
+  let proto: Record<PropertyKey, unknown> | typeof HTMLElement = classObjectProto
+
+  while (proto && proto !== HTMLElement) {
+    const attrNames = attrs.get(<Record<PropertyKey, unknown>>proto) || []
+    for (const name of attrNames) names.add(name)
+    proto = Object.getPrototypeOf(proto)
+  }
+
+  return names
+}
+
 function attrToAttributeName(name: string): string {
   return `data-${name.replace(/([A-Z]($|[a-z]))/g, '-$1')}`.replace(/--/g, '-').toLowerCase()
 }
@@ -81,9 +94,8 @@ export function defineObservedAttributes(classObject: CustomElement): void {
   let observed = classObject.observedAttributes || []
   Object.defineProperty(classObject, 'observedAttributes', {
     get() {
-      const attrMap = attrs.get(classObject.prototype)
-      if (!attrMap) return observed
-      return attrMap.map(attrToAttributeName).concat(observed)
+      const attrMap = getAttrNames(classObject.prototype)
+      return [...attrMap].map(attrToAttributeName).concat(observed)
     },
     set(attributes: string[]) {
       observed = attributes

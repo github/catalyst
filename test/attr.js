@@ -155,11 +155,15 @@ describe('initializeAttrs', () => {
 
 describe('attr', () => {
   class AttrTestElement extends HTMLElement {}
+  attr(AttrTestElement.prototype, 'foo')
+  attr(AttrTestElement.prototype, 'bar')
   window.customElements.define('attr-test-element', AttrTestElement)
 
+  class ExtendedAttrTestElement extends AttrTestElement {}
+  attr(ExtendedAttrTestElement.prototype, 'baz')
+  window.customElements.define('extended-attr-test-element', ExtendedAttrTestElement)
+
   it('populates the "default" list for initializeAttrs', () => {
-    attr(AttrTestElement.prototype, 'foo')
-    attr(AttrTestElement.prototype, 'bar')
     const instance = document.createElement('attr-test-element')
     instance.foo = 'hello'
     initializeAttrs(instance)
@@ -168,6 +172,20 @@ describe('attr', () => {
     expect(instance.getAttributeNames()).to.eql(['data-foo', 'data-bar'])
     expect(instance.getAttribute('data-foo')).to.equal('hello')
     expect(instance.getAttribute('data-bar')).to.equal('')
+  })
+
+  it('includes attrs from extended elements', () => {
+    const instance = document.createElement('extended-attr-test-element')
+    instance.bar = 'hello'
+    instance.baz = 'world'
+    initializeAttrs(instance)
+    expect(instance).to.have.property('foo', '')
+    expect(instance).to.have.property('bar', 'hello')
+    expect(instance).to.have.property('baz', 'world')
+    expect(instance.getAttributeNames()).to.eql(['data-baz', 'data-foo', 'data-bar'])
+    expect(instance.getAttribute('data-foo')).to.equal('')
+    expect(instance.getAttribute('data-bar')).to.equal('hello')
+    expect(instance.getAttribute('data-baz')).to.equal('world')
   })
 })
 
@@ -199,5 +217,13 @@ describe('defineObservedAttributes', () => {
     attr(TestElement.prototype, 'foo')
     TestElement.observedAttributes = ['a', 'b', 'c']
     expect(TestElement.observedAttributes).to.eql(['data-foo', 'a', 'b', 'c'])
+  })
+
+  it('will reflect values from extended elements', () => {
+    class TestElement extends HTMLElement {}
+    class ExtendedTestElement extends TestElement {}
+    defineObservedAttributes(ExtendedTestElement)
+    attr(TestElement.prototype, 'foo')
+    expect(ExtendedTestElement.observedAttributes).to.eql(['data-foo'])
   })
 })
