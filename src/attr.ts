@@ -74,6 +74,15 @@ export function initializeAttrs(instance: HTMLElement, names?: Iterable<string>)
   }
 }
 
+export function removeAttrs(instance: HTMLElement, names?: Iterable<string>): void {
+  if (!names) names = getAttrNames(Object.getPrototypeOf(instance))
+  for (const key of names) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    delete instance[key]
+  }
+}
+
 function getAttrNames(classObjectProto: Record<PropertyKey, unknown>): Set<string> {
   const names: Set<string> = new Set()
   let proto: Record<PropertyKey, unknown> | typeof HTMLElement = classObjectProto

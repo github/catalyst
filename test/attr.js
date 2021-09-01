@@ -1,4 +1,4 @@
-import {initializeAttrs, defineObservedAttributes, attr} from '../lib/attr.js'
+import {initializeAttrs, removeAttrs, defineObservedAttributes, attr} from '../lib/attr.js'
 
 describe('initializeAttrs', () => {
   class InitializeAttrTestElement extends HTMLElement {}
@@ -9,6 +9,15 @@ describe('initializeAttrs', () => {
     expect(instance).to.not.have.ownPropertyDescriptor('foo')
     initializeAttrs(instance, ['foo'])
     expect(instance).to.have.ownPropertyDescriptor('foo')
+  })
+
+  it('removes any getter/setter pair that were set for each given attr name', () => {
+    const instance = document.createElement('initialize-attr-test-element')
+    expect(instance).to.not.have.ownPropertyDescriptor('foo')
+    initializeAttrs(instance, ['foo'])
+    expect(instance).to.have.ownPropertyDescriptor('foo')
+    removeAttrs(instance, ['foo'])
+    expect(instance).to.not.have.ownPropertyDescriptor('foo')
   })
 
   it('reflects the `data-*` attribute name of the given key', () => {
