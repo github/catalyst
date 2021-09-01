@@ -1,7 +1,7 @@
 import {register} from './register.js'
 import {bind, bindShadow} from './bind.js'
 import {autoShadowRoot} from './auto-shadow-root.js'
-import {defineObservedAttributes, initializeAttrs} from './attr.js'
+import {defineObservedAttributes, initializeAttrs, removeAttrs} from './attr.js'
 import type {CustomElement} from './custom-element.js'
 
 /**
@@ -22,4 +22,10 @@ export function controller(classObject: CustomElement): void {
   }
   defineObservedAttributes(classObject)
   register(classObject)
+
+  const disconnect = classObject.prototype.disconnectedCallback
+  classObject.prototype.disconnectedCallback = function (this: HTMLElement) {
+    removeAttrs(this)
+    if (disconnect) disconnect.call(this)
+  }
 }
