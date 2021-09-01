@@ -66,6 +66,7 @@ export function initializeAttrs(instance: HTMLElement, names?: Iterable<string>)
         }
       }
     }
+    descriptor.configurable = true
     Object.defineProperty(instance, key, descriptor)
     if (key in instance && !instance.hasAttribute(name)) {
       descriptor.set!.call(instance, value)
