@@ -305,18 +305,18 @@ class UserFilter {
 ```
 
 ```html
-<user-list>
+<user-filter>
   <label><input type="checkbox"
-    data-action="change:user-list.filter"
-    data-targets="user-list.filters"
+    data-action="change:user-filter#filter"
+    data-targets="user-filter.filters"
     data-filter="all">Show all</label>
   <label><input type="checkbox"
-    data-action="change:user-list.filter"
-    data-targets="user-list.filters"
+    data-action="change:user-filter#filter"
+    data-targets="user-filter.filters"
     data-filter="new">New Users</label>
   <label><input type="checkbox"
-    data-action="change:user-list.filter"
-    data-targets="user-list.filters"
+    data-action="change:user-filter#filter"
+    data-targets="user-filter.filters"
     data-filter="admin">Admins</label>
   <!-- ... --->
 </user-filter>
@@ -347,17 +347,17 @@ class UserFilter {
 ```html
 <user-filter>
   <label><input type="checkbox"
-    data-action="change:user-list.filter"
-    data-target="user-list.allFilter"
-    data-targets="user-list.filters"
+    data-action="change:user-filter#filter"
+    data-target="user-filter.allFilter"
+    data-targets="user-filter.filters"
     data-filter="all">Show all</label>
   <label><input type="checkbox"
-    data-action="change:user-list.filter"
-    data-targets="user-list.filters"
+    data-action="change:user-filter#filter"
+    data-targets="user-filter.filters"
     data-filter="new">New Users</label>
   <label><input type="checkbox"
-    data-action="change:user-list.filter"
-    data-targets="user-list.filters"
+    data-action="change:user-filter#filter"
+    data-targets="user-filter.filters"
     data-filter="admin">Admins</label>
   <!-- ... --->
 </user-filter>
