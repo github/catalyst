@@ -94,7 +94,7 @@ data-action: Fires all of these methods depending on the event
       data-action="
         click:hello-world#greetSomeone
         click:analytics-tracking#click
-        hover:analytics-tracking#hover
+        mouseover:analytics-tracking#hover
       "
     >
       Greet Someone

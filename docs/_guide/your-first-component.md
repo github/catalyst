@@ -39,7 +39,7 @@ Remember! A class name _must_ include at least two CamelCased words (not includi
 The `@controller` decorator ties together the various other decorators within Catalyst, plus a few extra conveniences such as automatically registering the element, which saves you writing some boilerplate that you'd otherwise have to write by hand. Specifically the `@controller` decorator:
 
  - Derives a tag name based on your class name, removing the trailing `Element` suffix and lowercasing all capital letters, separating them with a dash.
- - Calls `window.customElements.register` with the newly derived tag name and your class.
+ - Calls `window.customElements.define` with the newly derived tag name and your class.
  - Calls `defineObservedAttributes` with the class to add map any `@attr` decorators. See [attrs]({{ site.baseurl }}/guide/attrs) for more on this.
  - Injects the following code inside of the `connectedCallback()` function of your class:
    - `bind(this)`; ensures that as your element connects it picks up any `data-action` handlers. See [actions]({{ site.baseurl }}/guide/actions) for more on this.
@@ -59,7 +59,7 @@ class HelloWorldElement extends HTMLElement {
   }
 }
 defineObservedAttributes(HelloWorldElement)
-window.customElements.register('hello-world', HelloWorldElement)
+window.customElements.define('hello-world', HelloWorldElement)
 ```
 
 Using the `@controller` decorator saves on having to write this boilerplate for each element.
