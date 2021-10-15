@@ -39,7 +39,7 @@ Class Field decorators get given the class and the field name so they can add cu
 
 #### Supporting `strictPropertyInitialization`
 
-TypeScript comes with various "strict" mode settings, one of which is `strictPropertyInitialization` which TypeScript catch potential class properties which might not be assigned during construction of a class. This option conflicts with Catalyst's `@target`/`@targets` decorators, which safely do the assignment but TypeScript's simple heuristics cannot detect this. There are two ways to work around this:
+TypeScript comes with various "strict" mode settings, one of which is `strictPropertyInitialization` which lets TypeScript catch potential class properties which might not be assigned during construction of a class. This option conflicts with Catalyst's `@target`/`@targets` decorators, which safely do the assignment but TypeScript's simple heuristics cannot detect this. There are two ways to work around this:
 
 1. Use TypeScript's [`declare` modifier](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-7.html#the-usedefineforclassfields-flag-and-the-declare-property-modifier) to tell TypeScript that the decorated field will still be set up correctly:
 
