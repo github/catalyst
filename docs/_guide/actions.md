@@ -67,7 +67,18 @@ The actions syntax follows a pattern of `event:controller#method`.
 
  - `event` must be the name of a [_DOM Event_](https://developer.mozilla.org/en-US/docs/Web/Events), e.g. `click`.
  - `controller` must be the name of a controller ascendant to the element.
- - `method` must be a _public_ _method_ attached to a controller's prototype. Static methods will not work.
+ - `method` (optional) must be a _public_ _method_ attached to a controller's prototype. Static methods will not work.
+
+If method is not supplied, it will default to `handleEvent`.
+
+Some examples of Actions Syntax:
+
+- `click:my-element#foo` -> `click` events will call `foo` on `my-element` elements.
+- `submit:my-element#foo` -> `submit` events will call `foo` on `my-element` elements.
+- `click:user-list` -> `click` events will call `handleEvent` on `user-list` elements.
+- `click:user-list#` -> `click` events will call `handleEvent` on `user-list` elements.
+- `click:top-header-user-profile#` -> `click` events will call `handleEvent` on `top-header-user-profile` elements.
+- `nav:keydown:user-list` -> `navigation:keydown` events will call `handleEvent` on `user-list` elements.
 
 ### Multiple Actions
 
