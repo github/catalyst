@@ -1,3 +1,6 @@
+/* eslint-disable-next-line @typescript-eslint/no-var-requires */
+process.env.CHROME_BIN = require('chromium').path
+
 module.exports = function (config) {
   config.set({
     basePath: '..',
