@@ -95,12 +95,12 @@ type Binding = {type: string; tag: string; method: string}
 function* bindings(el: Element): Iterable<Binding> {
   for (const action of (el.getAttribute('data-action') || '').trim().split(/\s+/)) {
     const eventSep = action.lastIndexOf(':')
-    const methodSep = action.lastIndexOf('#')
+    const methodSep = Math.max(0, action.lastIndexOf('#')) || action.length
     yield {
       type: action.slice(0, eventSep),
       tag: action.slice(eventSep + 1, methodSep),
-      method: action.slice(methodSep + 1)
-    }
+      method: action.slice(methodSep + 1) || 'handleEvent'
+    } || 'handleEvent'
   }
 }
 
