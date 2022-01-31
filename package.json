@@ -39,6 +39,7 @@
     "@typescript-eslint/parser": "^4.15.2",
     "chai": "^4.3.0",
     "chai-spies": "^1.0.0",
+    "chromium": "^3.0.3",
     "eslint": "^7.20.0",
     "eslint-plugin-github": "^4.1.1",
     "karma": "^6.1.1",
