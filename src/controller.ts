@@ -1,9 +1,5 @@
-import {register} from './register.js'
-import {bind, bindShadow} from './bind.js'
-import {autoShadowRoot} from './auto-shadow-root.js'
-import {defineObservedAttributes, initializeAttrs} from './attr.js'
+import {initializeInstance, initializeClass} from './core.js'
 import type {CustomElement} from './custom-element.js'
-
 /**
  * Controller is a decorator to be used over a class that extends HTMLElement.
  * It will automatically `register()` the component in the customElement
@@ -13,13 +9,7 @@ import type {CustomElement} from './custom-element.js'
 export function controller(classObject: CustomElement): void {
   const connect = classObject.prototype.connectedCallback
   classObject.prototype.connectedCallback = function (this: HTMLElement) {
-    this.toggleAttribute('data-catalyst', true)
-    autoShadowRoot(this)
-    initializeAttrs(this)
-    bind(this)
-    if (connect) connect.call(this)
-    if (this.shadowRoot) bindShadow(this.shadowRoot)
+    initializeInstance(this, connect)
   }
-  defineObservedAttributes(classObject)
-  register(classObject)
+  initializeClass(classObject)
 }
