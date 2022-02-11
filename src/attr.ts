@@ -40,6 +40,7 @@ export function initializeAttrs(instance: HTMLElement, names?: Iterable<string>)
     const value = (<Record<PropertyKey, unknown>>(<unknown>instance))[key]
     const name = attrToAttributeName(key)
     let descriptor: PropertyDescriptor = {
+      configurable: true,
       get(this: HTMLElement): string {
         return this.getAttribute(name) || ''
       },
@@ -49,6 +50,7 @@ export function initializeAttrs(instance: HTMLElement, names?: Iterable<string>)
     }
     if (typeof value === 'number') {
       descriptor = {
+        configurable: true,
         get(this: HTMLElement): number {
           return Number(this.getAttribute(name) || 0)
         },
@@ -58,6 +60,7 @@ export function initializeAttrs(instance: HTMLElement, names?: Iterable<string>)
       }
     } else if (typeof value === 'boolean') {
       descriptor = {
+        configurable: true,
         get(this: HTMLElement): boolean {
           return this.hasAttribute(name)
         },
@@ -93,6 +96,7 @@ function attrToAttributeName(name: string): string {
 export function defineObservedAttributes(classObject: CustomElement): void {
   let observed = classObject.observedAttributes || []
   Object.defineProperty(classObject, 'observedAttributes', {
+    configurable: true,
     get() {
       const attrMap = getAttrNames(classObject.prototype)
       return [...attrMap].map(attrToAttributeName).concat(observed)
