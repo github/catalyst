@@ -100,6 +100,23 @@ describe('bind', () => {
     expect(calls).to.have.nested.property('[1][0].type', 'submit')
   })
 
+  it('binds to `handleEvent` is function name is omitted', () => {
+    const instance = document.createElement('bind-test-element')
+    chai.spy.on(instance, 'handleEvent')
+    const el = document.createElement('div')
+    el.setAttribute('data-action', 'click:bind-test-element submit:bind-test-element')
+    instance.appendChild(el)
+    bind(instance)
+    expect(instance.handleEvent).to.have.not.been.called()
+    el.dispatchEvent(new CustomEvent('click'))
+    expect(instance.handleEvent).to.have.been.called.exactly(1)
+    el.dispatchEvent(new CustomEvent('submit'))
+    expect(instance.handleEvent).to.have.been.called.exactly(2)
+    const calls = instance.handleEvent.__spy.calls
+    expect(calls).to.have.nested.property('[0][0].type', 'click')
+    expect(calls).to.have.nested.property('[1][0].type', 'submit')
+  })
+
   it('can bind multiple actions separated by line feed', () => {
     const instance = document.createElement('bind-test-element')
     chai.spy.on(instance, 'foo')

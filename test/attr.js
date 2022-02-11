@@ -187,6 +187,14 @@ describe('attr', () => {
     expect(instance.getAttribute('data-bar')).to.equal('hello')
     expect(instance.getAttribute('data-baz')).to.equal('world')
   })
+
+  it('can be initialized multiple times without error', () => {
+    const instance = document.createElement('initialize-attr-test-element')
+    expect(instance).to.not.have.ownPropertyDescriptor('foo')
+    initializeAttrs(instance, ['foo'])
+    expect(instance).to.have.ownPropertyDescriptor('foo')
+    initializeAttrs(instance, ['foo'])
+  })
 })
 
 describe('defineObservedAttributes', () => {
