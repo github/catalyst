@@ -16,14 +16,14 @@ describe('controller', () => {
     class ControllerRegisterElement extends HTMLElement {}
     controller(ControllerRegisterElement)
     const instance = document.createElement('controller-register')
-    document.body.appendChild(instance)
+    root.appendChild(instance)
     expect(instance).to.be.instanceof(ControllerRegisterElement)
   })
 
   it('adds data-catalyst to elements', async () => {
     controller(class ControllerDataAttrElement extends HTMLElement {})
     const instance = document.createElement('controller-data-attr')
-    document.body.appendChild(instance)
+    root.appendChild(instance)
     expect(instance.hasAttribute('data-catalyst')).to.equal(true)
     expect(instance.getAttribute('data-catalyst')).to.equal('')
   })
@@ -40,7 +40,7 @@ describe('controller', () => {
 
     const instance = document.createElement('controller-bind-order')
     chai.spy.on(instance, 'foo')
-    document.body.appendChild(instance)
+    root.appendChild(instance)
 
     const sub = document.createElement('controller-bind-order-sub')
     sub.setAttribute('data-action', 'loaded:controller-bind-order#foo')
@@ -62,7 +62,7 @@ describe('controller', () => {
     )
     const instance = document.createElement('controller-bind-shadow')
     chai.spy.on(instance, 'foo')
-    document.body.appendChild(instance)
+    root.appendChild(instance)
 
     instance.shadowRoot.querySelector('button').click()
 
@@ -78,7 +78,7 @@ describe('controller', () => {
     template.innerHTML = '<button data-action="click:controller-bind-auto-shadow#foo"></button>'
     instance.appendChild(template)
     chai.spy.on(instance, 'foo')
-    document.body.appendChild(instance)
+    root.appendChild(instance)
 
     expect(instance.shadowRoot).to.exist
     expect(instance).to.have.property('shadowRoot').not.equal(null)
