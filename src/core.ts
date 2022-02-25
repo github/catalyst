@@ -8,6 +8,7 @@ const instances = new WeakSet<Element>()
 
 export function initializeInstance(instance: HTMLElement, connect?: (this: HTMLElement) => void): void {
   instance.toggleAttribute('data-catalyst', true)
+  customElements.upgrade(instance)
   instances.add(instance)
   autoShadowRoot(instance)
   initializeAttrs(instance)

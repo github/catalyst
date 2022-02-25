@@ -9,7 +9,6 @@ import type {CustomElement} from './custom-element.js'
 export function controller(classObject: CustomElement): void {
   const connect = classObject.prototype.connectedCallback
   classObject.prototype.connectedCallback = function (this: HTMLElement) {
-    customElements.upgrade(this)
     initializeInstance(this, connect)
   }
   initializeClass(classObject)
