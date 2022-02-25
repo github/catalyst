@@ -1,6 +1,17 @@
 import {controller} from '../lib/controller.js'
 
 describe('controller', () => {
+  let root
+
+  beforeEach(() => {
+    root = document.createElement('div')
+    document.body.appendChild(root)
+  })
+
+  afterEach(() => {
+    root.remove()
+  })
+
   it('calls register', async () => {
     class ControllerRegisterElement extends HTMLElement {}
     controller(ControllerRegisterElement)
