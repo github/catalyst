@@ -90,6 +90,6 @@ describe('controller', () => {
     )
 
     // eslint-disable-next-line github/unescaped-html-literal
-    document.body.innerHTML = '<parent-element><child-element></child-element></parent-element>'
+    root.innerHTML = '<parent-element><child-element></child-element></parent-element>'
   })
 })
