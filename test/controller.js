@@ -76,4 +76,20 @@ describe('controller', () => {
 
     expect(instance.foo).to.have.been.called(1)
   })
+
+  it('upgrades child decendants when connected', done => {
+    controller(class ChildElementElement extends HTMLElement {})
+    controller(
+      class ParentElementElement extends HTMLElement {
+        connectedCallback() {
+          const child = this.querySelector('child-element')
+          expect(child.matches(':defined')).to.equal(true)
+          done()
+        }
+      }
+    )
+
+    // eslint-disable-next-line github/unescaped-html-literal
+    document.body.innerHTML = '<parent-element><child-element></child-element></parent-element>'
+  })
 })
