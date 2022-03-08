@@ -29,6 +29,29 @@ class FuzzySearchElement extends HTMLElement {
 }
 ```
 
+Alternatively, if you'd like more precise control over the exact way debouncing happens (for example you'd like to make the debounce timeout dynamic, or sometimes call _without_ debouncing), you can have two methods following the pattern of `foo`/`fooNow` or `foo`/`fooSync`, where the non-suffixed method dispatches asynchronously to the `Now`/`Sync` suffixed method, a little like this:
+
+```typescript
+import {controller} from '@github/catalyst'
+
+@controller
+class FuzzySearchElement extends HTMLElement {
+
+  #searchAnimationFrame = 0
+  search(event: Event) {
+    clearAnimationFrame(this.#searchAnimationFrame)
+    this.#searchAnimationFrame = requestAnimationFrame(() => this.searchNow(event: Event))
+  }
+  
+  searchNow(event: Event) {
+    const value = event.currentTarget.value
+    // This function is very computationally intensive, so we should run it as little as possible
+    this.filterAllItemsWithValue(value)
+  }
+
+}
+```
+
 ### Aborting Network Requests
 
 When making network requests using `fetch`, based on user input, you can cancel old requests as new ones come in. This is useful for performance as well as UI responsiveness, as old requests that aren't cancelled might complete later than newer ones, and causing the UI to jump around. Aborting network requests requires you to use [`AbortController`](https://developer.mozilla.org/en-US/docs/Web/API/AbortController) (a web platform feature).
