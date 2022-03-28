@@ -34,7 +34,10 @@ export function attr<K extends string>(proto: Record<K, attrValue>, key: K): voi
  * This is automatically called as part of `@controller`. If a class uses the
  * `@controller` decorator it should not call this manually.
  */
+const initialized = new WeakSet<Element>()
 export function initializeAttrs(instance: HTMLElement, names?: Iterable<string>): void {
+  if (initialized.has(instance)) return
+  initialized.add(instance)
   if (!names) names = getAttrNames(Object.getPrototypeOf(instance))
   for (const key of names) {
     const value = (<Record<PropertyKey, unknown>>(<unknown>instance))[key]
