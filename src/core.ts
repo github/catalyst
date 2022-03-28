@@ -17,6 +17,19 @@ export function initializeInstance(instance: HTMLElement, connect?: (this: HTMLE
   if (instance.shadowRoot) bindShadow(instance.shadowRoot)
 }
 
+export function initializeAttributeChanged(
+  instance: HTMLElement,
+  name: string,
+  oldValue: unknown,
+  newValue: unknown,
+  attributeChangedCallback?: (this: HTMLElement, name: string, oldValue: unknown, newValue: unknown) => void
+): void {
+  initializeAttrs(instance)
+  if (name !== 'data-catalyst' && attributeChangedCallback) {
+    attributeChangedCallback.call(instance, name, oldValue, newValue)
+  }
+}
+
 export function initializeClass(classObject: CustomElement): void {
   defineObservedAttributes(classObject)
   register(classObject)

@@ -1,4 +1,4 @@
-import {initializeInstance, initializeClass} from './core.js'
+import {initializeInstance, initializeClass, initializeAttributeChanged} from './core.js'
 import type {CustomElement} from './custom-element.js'
 /**
  * Controller is a decorator to be used over a class that extends HTMLElement.
@@ -10,6 +10,15 @@ export function controller(classObject: CustomElement): void {
   const connect = classObject.prototype.connectedCallback
   classObject.prototype.connectedCallback = function (this: HTMLElement) {
     initializeInstance(this, connect)
+  }
+  const attributeChanged = classObject.prototype.attributeChangedCallback
+  classObject.prototype.attributeChangedCallback = function (
+    this: HTMLElement,
+    name: string,
+    oldValue: unknown,
+    newValue: unknown
+  ) {
+    initializeAttributeChanged(this, name, oldValue, newValue, attributeChanged)
   }
   initializeClass(classObject)
 }
