@@ -7,7 +7,7 @@ import {findTarget, findTargets} from './findtarget.js'
  * property field. In other words, `@target foo` becomes a getter for
  * `findTarget(this, 'foo')`.
  */
-export function target<K extends string>(proto: Record<K, unknown>, key: K): void {
+export function target<K extends string>(proto: Record<K, unknown>, key: K) {
   return Object.defineProperty(proto, key, {
     configurable: true,
     get() {
@@ -23,7 +23,7 @@ export function target<K extends string>(proto: Record<K, unknown>, key: K): voi
  * property field. In other words, `@targets foo` becomes a getter for
  * `findTargets(this, 'foo')`.
  */
-export function targets<K extends string>(proto: Record<K, unknown>, key: K): void {
+export function targets<K extends string>(proto: Record<K, unknown>, key: K) {
   return Object.defineProperty(proto, key, {
     configurable: true,
     get() {
