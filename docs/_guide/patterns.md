@@ -96,14 +96,14 @@ class RemoveSearchElement extends HTMLElement {
 
 ### Registering global or many event listeners
 
-Generally speaking, you'll want to use ["Actions"]({{ site.baseurl }}/guide/actions) to register event listeners with your Controller, but Actions only work for components nested within your Controller. It may also be necessary to listen for events on the Document, Window, or across well-known adjacent elements. We can manually call `addEventListener` for these types, including during the `connectedCallback` phase. Cleanup for `addEventListener` can be a bit error prone, but [`AbortController`](https://developer.mozilla.org/en-US/docs/Web/API/AbortController) can be useful here to pass a signal that the element is cleaning up:
+Generally speaking, you'll want to use ["Actions"]({{ site.baseurl }}/guide/actions) to register event listeners with your Controller, but Actions only work for components nested within your Controller. It may also be necessary to listen for events on the Document, Window, or across well-known adjacent elements. We can manually call `addEventListener` for these types, including during the `connectedCallback` phase. Cleanup for `addEventListener` can be a bit error prone, but [`AbortController`](https://developer.mozilla.org/en-US/docs/Web/API/AbortController) can be useful here to pass a signal that the element is cleaning up. AbortControllers should be created once per `connectedCallback`, as they are not re-usable, while Controllers _can_ be reused.
 
 
 ```typescript
 @controller
 class UnsavedChangesElement extends HTMLElement {
 
-  #eventAbortController: AbortController|null
+  #eventAbortController: AbortController|null = null
 
   connectedCallback(event: Event) {
     // Create the new AbortController and get the new signal
