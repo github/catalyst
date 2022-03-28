@@ -1,4 +1,5 @@
 import {controller} from '../lib/controller.js'
+import {attr} from '../lib/attr.js'
 
 describe('controller', () => {
   let root
@@ -101,5 +102,36 @@ describe('controller', () => {
 
     // eslint-disable-next-line github/unescaped-html-literal
     root.innerHTML = '<parent-element><child-element></child-element></parent-element>'
+  })
+
+  describe('attrs', () => {
+    let attrValues = []
+    class AttributeTestElement extends HTMLElement {
+      foo = 'baz'
+      attributeChangedCallback() {
+        attrValues.push(this.getAttribute('data-foo'))
+        attrValues.push(this.foo)
+      }
+    }
+    controller(AttributeTestElement)
+    attr(AttributeTestElement.prototype, 'foo')
+
+    beforeEach(() => {
+      attrValues = []
+    })
+
+    it('initializes attrs as attributes in attributeChangedCallback', () => {
+      const el = document.createElement('attribute-test')
+      el.foo = 'bar'
+      el.attributeChangedCallback()
+      expect(attrValues).to.eql(['bar', 'bar'])
+    })
+
+    it('initializes attributes as attrs in attributeChangedCallback', () => {
+      const el = document.createElement('attribute-test')
+      el.setAttribute('data-foo', 'bar')
+      el.attributeChangedCallback()
+      expect(attrValues).to.eql(['bar', 'bar'])
+    })
   })
 })
