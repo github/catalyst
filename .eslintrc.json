@@ -3,8 +3,9 @@
   "plugins": ["github"],
   "extends": ["plugin:github/recommended", "plugin:github/typescript", "plugin:github/browser"],
   "rules": {
-    "no-invalid-this": "off",
-    "@typescript-eslint/no-invalid-this": ["error"],
+    "import/no-unresolved": "off",
+    "github/no-inner-html": "off",
+    "i18n-text/no-en": "off",
     "import/extensions": ["error", "ignorePackages"],
     "@typescript-eslint/consistent-type-imports": ["error", {"prefer": "type-imports"}]
   },
@@ -24,6 +25,9 @@
     },
     {
       "files": "*.cjs",
+      "rules": {
+        "import/no-commonjs": "off"
+      },
       "env": {
         "node": true
       }

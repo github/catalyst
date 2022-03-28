@@ -1,6 +1,6 @@
 function storeColorSchemePreference() {
   // Get color scheme preference from URL
-  const url = new URL(window.location.href)
+  const url = new URL(window.location.href, window.location.origin)
   const params = new URLSearchParams(url.search)
 
   // Return early if there’s nothing to store
