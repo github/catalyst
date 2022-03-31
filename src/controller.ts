@@ -6,19 +6,22 @@ import type {CustomElement} from './custom-element.js'
  * registry, as well as ensuring `bind(this)` is called on `connectedCallback`,
  * wrapping the classes `connectedCallback` method if needed.
  */
-export function controller(classObject: CustomElement): void {
-  const connect = classObject.prototype.connectedCallback
-  classObject.prototype.connectedCallback = function (this: HTMLElement) {
-    initializeInstance(this, connect)
+
+ export function controller(options: any = {}) {
+  return function (classObject: CustomElement): void {
+    const connect = classObject.prototype.connectedCallback
+    classObject.prototype.connectedCallback = function (this: HTMLElement) {
+      initializeInstance(this, connect)
+    }
+    const attributeChanged = classObject.prototype.attributeChangedCallback
+    classObject.prototype.attributeChangedCallback = function (
+      this: HTMLElement,
+      name: string,
+      oldValue: unknown,
+      newValue: unknown
+    ) {
+      initializeAttributeChanged(this, name, oldValue, newValue, attributeChanged)
+    }
+    initializeClass(classObject, options)
   }
-  const attributeChanged = classObject.prototype.attributeChangedCallback
-  classObject.prototype.attributeChangedCallback = function (
-    this: HTMLElement,
-    name: string,
-    oldValue: unknown,
-    newValue: unknown
-  ) {
-    initializeAttributeChanged(this, name, oldValue, newValue, attributeChanged)
-  }
-  initializeClass(classObject)
 }

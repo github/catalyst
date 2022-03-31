@@ -30,9 +30,9 @@ export function initializeAttributeChanged(
   }
 }
 
-export function initializeClass(classObject: CustomElement): void {
+export function initializeClass(classObject: CustomElement, options: any): void {
   defineObservedAttributes(classObject)
-  register(classObject)
+  register(classObject, options)
 }
 
 export function initialized(el: Element): boolean {
