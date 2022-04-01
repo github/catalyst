@@ -7,7 +7,7 @@ import type {CustomElement} from './custom-element.js'
  * wrapping the classes `connectedCallback` method if needed.
  */
 
-function controllerWapper(...args: any): any { 
+function controllerWapper(...args: any): any {
   /* 
     a wapper to handle the controller decorator when used as
     @controller or @controller({extends: x}).
@@ -15,7 +15,7 @@ function controllerWapper(...args: any): any {
     Notes about args value:
       - IF used as @controller THEN args[0] = classObject
       - IF used as @controller({extends: x}) THEN args[0] = {extends: x}
-  */ 
+  */
 
   // handle @controller
   if (args[0].prototype instanceof HTMLElement) {
@@ -28,7 +28,7 @@ function controllerWapper(...args: any): any {
   }
 }
 
-function controller (classObject: CustomElement, options: any = {}): void {
+function controller(classObject: CustomElement, options: any = {}): void {
   const connect = classObject.prototype.connectedCallback
   classObject.prototype.connectedCallback = function (this: HTMLElement) {
     initializeInstance(this, connect)
