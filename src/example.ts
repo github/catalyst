@@ -1,17 +1,31 @@
-import { controller } from "./controller.js"
+import {controller} from './controller.js'
 
-@controller({extends: "p"})
-class HelloWorldElement extends HTMLParagraphElement {
-    connectedCallback(){
-        this.innerHTML = "Hello World"
-    }
+@controller
+export class HelloWorldElement extends HTMLElement {
+  connectedCallback() {
+    this.innerHTML = 'Hello World'
+  }
 }
 
 @controller
-class HelloWorld2Element extends HTMLElement {
-    connectedCallback(){
-        this.innerHTML = "Hello World2"
-    }
+export class HelloWorld2Element extends HelloWorldElement {
+  connectedCallback() {
+    this.innerHTML = 'Hello World2'
+  }
+}
+
+@controller({extends: 'p'})
+export class HelloWorld3Element extends HTMLParagraphElement {
+  connectedCallback() {
+    this.innerHTML = 'Hello World3'
+  }
+}
+
+@controller({extends: 'p'})
+export class HelloWorld4Element extends HelloWorld3Element {
+  connectedCallback() {
+    this.innerHTML = 'Hello World4'
+  }
 }
 
 /*
