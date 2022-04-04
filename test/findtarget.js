@@ -1,3 +1,4 @@
+import {fake, replace} from 'sinon'
 import {expect} from '@open-wc/testing'
 import {findTarget, findTargets} from '../lib/findtarget.js'
 
@@ -16,22 +17,20 @@ describe('findTarget', () => {
 
   it('calls querySelectorAll with the controller name and target name', () => {
     const instance = document.createElement('find-target-test-element')
-    chai.spy.on(instance, 'querySelectorAll', () => [])
+    replace(instance, 'querySelectorAll', fake.returns([]))
     findTarget(instance, 'foo')
-    expect(instance.querySelectorAll).to.have.been.called.once.with.exactly(
-      '[data-target~="find-target-test-element.foo"]'
-    )
+    expect(instance.querySelectorAll).to.have.been.calledOnceWith('[data-target~="find-target-test-element.foo"]')
   })
 
   it('returns the first element where closest tag is the controller', () => {
     const els = [document.createElement('div'), document.createElement('div')]
     const instance = document.createElement('find-target-test-element')
-    chai.spy.on(instance, 'querySelectorAll', () => els)
-    chai.spy.on(els[0], 'closest', () => null)
-    chai.spy.on(els[1], 'closest', () => instance)
+    replace(instance, 'querySelectorAll', fake.returns(els))
+    replace(els[0], 'closest', fake.returns(null))
+    replace(els[1], 'closest', fake.returns(instance))
     const target = findTarget(instance, 'foo')
-    expect(els[0].closest).to.have.been.called.once.with.exactly('find-target-test-element')
-    expect(els[1].closest).to.have.been.called.once.with.exactly('find-target-test-element')
+    expect(els[0].closest).to.have.been.calledOnceWith('find-target-test-element')
+    expect(els[1].closest).to.have.been.calledOnceWith('find-target-test-element')
     expect(target).to.equal(els[1])
   })
 
