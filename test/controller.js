@@ -1,3 +1,4 @@
+import {expect} from '@open-wc/testing'
 import {controller} from '../lib/controller.js'
 import {attr} from '../lib/attr.js'
 

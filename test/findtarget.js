@@ -1,3 +1,4 @@
+import {expect} from '@open-wc/testing'
 import {findTarget, findTargets} from '../lib/findtarget.js'
 
 describe('findTarget', () => {

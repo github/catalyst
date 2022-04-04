@@ -1,3 +1,4 @@
+import {expect} from '@open-wc/testing'
 import {autoShadowRoot} from '../lib/auto-shadow-root.js'
 
 describe('autoShadowRoot', () => {

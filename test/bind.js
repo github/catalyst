@@ -1,3 +1,4 @@
+import {expect} from '@open-wc/testing'
 import {bind, listenForBind} from '../lib/bind.js'
 
 describe('bind', () => {
