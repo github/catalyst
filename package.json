@@ -37,6 +37,7 @@
     "@lhci/cli": "^0.7.0",
     "@typescript-eslint/eslint-plugin": "^5.16.0",
     "@typescript-eslint/parser": "^5.16.0",
+    "@web/test-runner": "^0.13.27",
     "chai": "^4.3.0",
     "chai-spies": "^1.0.0",
     "chromium": "^3.0.3",
