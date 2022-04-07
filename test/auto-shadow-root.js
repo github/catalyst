@@ -1,3 +1,5 @@
+import {expect} from '@open-wc/testing'
+import {replace, fake} from 'sinon'
 import {autoShadowRoot} from '../lib/auto-shadow-root.js'
 
 describe('autoShadowRoot', () => {
@@ -74,15 +76,19 @@ describe('autoShadowRoot', () => {
     instance.appendChild(template)
 
     let shadowRoot = null
-    chai.spy.on(instance, 'attachShadow', (...args) => {
-      shadowRoot = Element.prototype.attachShadow.apply(instance, args)
-      return shadowRoot
-    })
+    replace(
+      instance,
+      'attachShadow',
+      fake((...args) => {
+        shadowRoot = Element.prototype.attachShadow.apply(instance, args)
+        return shadowRoot
+      })
+    )
 
     autoShadowRoot(instance)
 
     expect(instance).to.have.property('shadowRoot').equal(null)
-    expect(instance.attachShadow).to.have.been.called.once.with.exactly({mode: 'closed'})
+    expect(instance.attachShadow).to.have.been.calledOnceWith({mode: 'closed'})
     expect(shadowRoot.textContent).to.equal('Hello World')
   })
 })

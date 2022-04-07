@@ -1,3 +1,4 @@
+import {expect} from '@open-wc/testing'
 import {register} from '../lib/register.js'
 
 describe('register', () => {

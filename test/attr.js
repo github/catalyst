@@ -1,3 +1,4 @@
+import {expect} from '@open-wc/testing'
 import {initializeAttrs, defineObservedAttributes, attr} from '../lib/attr.js'
 
 describe('initializeAttrs', () => {

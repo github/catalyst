@@ -1,3 +1,5 @@
+import {expect} from '@open-wc/testing'
+import {replace, fake} from 'sinon'
 import {controller} from '../lib/controller.js'
 import {attr} from '../lib/attr.js'
 
@@ -30,7 +32,13 @@ describe('controller', () => {
   })
 
   it('binds controllers before custom connectedCallback behaviour', async () => {
-    controller(class ControllerBindOrderElement extends HTMLElement {})
+    controller(
+      class ControllerBindOrderElement extends HTMLElement {
+        foo() {
+          return 'foo'
+        }
+      }
+    )
     controller(
       class ControllerBindOrderSubElement extends HTMLElement {
         connectedCallback() {
@@ -40,14 +48,14 @@ describe('controller', () => {
     )
 
     const instance = document.createElement('controller-bind-order')
-    chai.spy.on(instance, 'foo')
+    replace(instance, 'foo', fake(instance.foo))
     root.appendChild(instance)
 
     const sub = document.createElement('controller-bind-order-sub')
     sub.setAttribute('data-action', 'loaded:controller-bind-order#foo')
     instance.appendChild(sub)
 
-    expect(instance.foo).to.have.been.called(1)
+    expect(instance.foo).to.have.callCount(1)
   })
 
   it('binds shadowRoots after connectedCallback behaviour', async () => {
@@ -59,26 +67,36 @@ describe('controller', () => {
           button.setAttribute('data-action', 'click:controller-bind-shadow#foo')
           this.shadowRoot.appendChild(button)
         }
+
+        foo() {
+          return 'foo'
+        }
       }
     )
     const instance = document.createElement('controller-bind-shadow')
-    chai.spy.on(instance, 'foo')
+    replace(instance, 'foo', fake(instance.foo))
     root.appendChild(instance)
 
     instance.shadowRoot.querySelector('button').click()
 
-    expect(instance.foo).to.have.been.called(1)
+    expect(instance.foo).to.have.callCount(1)
   })
 
   it('binds auto shadowRoots', async () => {
-    controller(class ControllerBindAutoShadowElement extends HTMLElement {})
+    controller(
+      class ControllerBindAutoShadowElement extends HTMLElement {
+        foo() {
+          return 'foo'
+        }
+      }
+    )
     const instance = document.createElement('controller-bind-auto-shadow')
     const template = document.createElement('template')
     template.setAttribute('data-shadowroot', 'open')
     // eslint-disable-next-line github/unescaped-html-literal
     template.innerHTML = '<button data-action="click:controller-bind-auto-shadow#foo"></button>'
     instance.appendChild(template)
-    chai.spy.on(instance, 'foo')
+    replace(instance, 'foo', fake(instance.foo))
     root.appendChild(instance)
 
     expect(instance.shadowRoot).to.exist
@@ -86,7 +104,7 @@ describe('controller', () => {
     expect(instance.shadowRoot.children).to.have.lengthOf(1)
     instance.shadowRoot.querySelector('button').click()
 
-    expect(instance.foo).to.have.been.called(1)
+    expect(instance.foo).to.have.callCount(1)
   })
 
   it('upgrades child decendants when connected', () => {
