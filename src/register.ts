@@ -18,7 +18,11 @@ export function register(classObject: CustomElement): void {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     window[classObject.name] = customElements.get(name)
-  } catch {
-    // silently ignore
+  } catch (e: any) {
+    // The only reason for window.customElements.define to throw a `NotSupportedError`
+    // is if the element has already been defined.
+    if (e instanceof DOMException && e.name === 'NotSupportedError') return
+
+    throw e
   }
 }
