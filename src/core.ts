@@ -5,6 +5,7 @@ import {defineObservedAttributes, initializeAttrs} from './attr.js'
 import type {CustomElement} from './custom-element.js'
 
 const instances = new WeakSet<Element>()
+const symbol = Symbol.for('catalyst')
 
 export function initializeInstance(instance: HTMLElement, connect?: (this: HTMLElement) => void): void {
   instance.toggleAttribute('data-catalyst', true)
@@ -37,4 +38,19 @@ export function initializeClass(classObject: CustomElement): void {
 
 export function initialized(el: Element): boolean {
   return instances.has(el)
+}
+
+export function meta(proto: Record<PropertyKey, unknown>, name: string): Set<string> {
+  if (!Object.prototype.hasOwnProperty.call(proto, symbol)) {
+    const parent = proto[symbol] as Map<string, Set<string>> | undefined
+    const map = (proto[symbol] = new Map<string, Set<string>>())
+    if (parent) {
+      for (const [key, value] of parent) {
+        map.set(key, new Set(value))
+      }
+    }
+  }
+  const map = proto[symbol] as Map<string, Set<string>>
+  if (!map.has(name)) map.set(name, new Set<string>())
+  return map.get(name)!
 }

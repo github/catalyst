@@ -1,6 +1,7 @@
 import type {CustomElement} from './custom-element.js'
+import {meta} from './core.js'
 
-const attrs = new WeakMap<Record<PropertyKey, unknown>, string[]>()
+const attrKey = 'attr'
 type attrValue = string | number | boolean
 
 /**
@@ -11,8 +12,7 @@ type attrValue = string | number | boolean
  * Number or Boolean. This matches the behavior of `initializeAttrs`.
  */
 export function attr<K extends string>(proto: Record<K, attrValue>, key: K): void {
-  if (!attrs.has(proto)) attrs.set(proto, [])
-  attrs.get(proto)!.push(key)
+  meta(proto, attrKey).add(key)
 }
 
 /**
@@ -38,7 +38,7 @@ const initialized = new WeakSet<Element>()
 export function initializeAttrs(instance: HTMLElement, names?: Iterable<string>): void {
   if (initialized.has(instance)) return
   initialized.add(instance)
-  if (!names) names = getAttrNames(Object.getPrototypeOf(instance))
+  if (!names) names = meta(Object.getPrototypeOf(instance), attrKey)
   for (const key of names) {
     const value = (<Record<PropertyKey, unknown>>(<unknown>instance))[key]
     const name = attrToAttributeName(key)
@@ -79,19 +79,6 @@ export function initializeAttrs(instance: HTMLElement, names?: Iterable<string>)
   }
 }
 
-function getAttrNames(classObjectProto: Record<PropertyKey, unknown>): Set<string> {
-  const names: Set<string> = new Set()
-  let proto: Record<PropertyKey, unknown> | typeof HTMLElement = classObjectProto
-
-  while (proto && proto !== HTMLElement) {
-    const attrNames = attrs.get(<Record<PropertyKey, unknown>>proto) || []
-    for (const name of attrNames) names.add(name)
-    proto = Object.getPrototypeOf(proto)
-  }
-
-  return names
-}
-
 function attrToAttributeName(name: string): string {
   return `data-${name.replace(/([A-Z]($|[a-z]))/g, '-$1')}`.replace(/--/g, '-').toLowerCase()
 }
@@ -101,8 +88,7 @@ export function defineObservedAttributes(classObject: CustomElement): void {
   Object.defineProperty(classObject, 'observedAttributes', {
     configurable: true,
     get() {
-      const attrMap = getAttrNames(classObject.prototype)
-      return [...attrMap].map(attrToAttributeName).concat(observed)
+      return [...meta(classObject.prototype, attrKey)].map(attrToAttributeName).concat(observed)
     },
     set(attributes: string[]) {
       observed = attributes

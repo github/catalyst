@@ -183,7 +183,7 @@ describe('attr', () => {
     expect(instance).to.have.property('foo', '')
     expect(instance).to.have.property('bar', 'hello')
     expect(instance).to.have.property('baz', 'world')
-    expect(instance.getAttributeNames()).to.eql(['data-baz', 'data-foo', 'data-bar'])
+    expect(instance.getAttributeNames()).to.eql(['data-foo', 'data-bar', 'data-baz'])
     expect(instance.getAttribute('data-foo')).to.equal('')
     expect(instance.getAttribute('data-bar')).to.equal('hello')
     expect(instance.getAttribute('data-baz')).to.equal('world')
