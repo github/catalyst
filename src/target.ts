@@ -1,4 +1,5 @@
 import {findTarget, findTargets} from './findtarget.js'
+import {meta} from './core.js'
 
 /**
  * Target is a decorator which - when assigned to a property field on the
@@ -8,6 +9,7 @@ import {findTarget, findTargets} from './findtarget.js'
  * `findTarget(this, 'foo')`.
  */
 export function target<K extends string>(proto: Record<K, unknown>, key: K): void {
+  meta(proto, 'target').add(key)
   Object.defineProperty(proto, key, {
     configurable: true,
     get() {
@@ -24,6 +26,7 @@ export function target<K extends string>(proto: Record<K, unknown>, key: K): voi
  * `findTargets(this, 'foo')`.
  */
 export function targets<K extends string>(proto: Record<K, unknown>, key: K): void {
+  meta(proto, 'targets').add(key)
   Object.defineProperty(proto, key, {
     configurable: true,
     get() {
