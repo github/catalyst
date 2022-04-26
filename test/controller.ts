@@ -16,15 +16,18 @@ describe('controller', () => {
   })
 
   it('calls register', async () => {
+    @controller
     class ControllerRegisterElement extends HTMLElement {}
-    controller(ControllerRegisterElement)
     const instance = document.createElement('controller-register')
     root.appendChild(instance)
     expect(instance).to.be.instanceof(ControllerRegisterElement)
   })
 
   it('adds data-catalyst to elements', async () => {
-    controller(class ControllerDataAttrElement extends HTMLElement {})
+    @controller
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    class ControllerDataAttrElement extends HTMLElement {}
+
     const instance = document.createElement('controller-data-attr')
     root.appendChild(instance)
     expect(instance.hasAttribute('data-catalyst')).to.equal(true)
@@ -32,20 +35,20 @@ describe('controller', () => {
   })
 
   it('binds controllers before custom connectedCallback behaviour', async () => {
-    controller(
-      class ControllerBindOrderElement extends HTMLElement {
-        foo() {
-          return 'foo'
-        }
+    @controller
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    class ControllerBindOrderElement extends HTMLElement {
+      foo() {
+        return 'foo'
       }
-    )
-    controller(
-      class ControllerBindOrderSubElement extends HTMLElement {
-        connectedCallback() {
-          this.dispatchEvent(new CustomEvent('loaded'))
-        }
+    }
+    @controller
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    class ControllerBindOrderSubElement extends HTMLElement {
+      connectedCallback() {
+        this.dispatchEvent(new CustomEvent('loaded'))
       }
-    )
+    }
 
     const instance = document.createElement('controller-bind-order')
     replace(instance, 'foo', fake(instance.foo))
@@ -59,20 +62,20 @@ describe('controller', () => {
   })
 
   it('binds shadowRoots after connectedCallback behaviour', async () => {
-    controller(
-      class ControllerBindShadowElement extends HTMLElement {
-        connectedCallback() {
-          this.attachShadow({mode: 'open'})
-          const button = document.createElement('button')
-          button.setAttribute('data-action', 'click:controller-bind-shadow#foo')
-          this.shadowRoot.appendChild(button)
-        }
-
-        foo() {
-          return 'foo'
-        }
+    @controller
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    class ControllerBindShadowElement extends HTMLElement {
+      connectedCallback() {
+        this.attachShadow({mode: 'open'})
+        const button = document.createElement('button')
+        button.setAttribute('data-action', 'click:controller-bind-shadow#foo')
+        this.shadowRoot.appendChild(button)
       }
-    )
+
+      foo() {
+        return 'foo'
+      }
+    }
     const instance = document.createElement('controller-bind-shadow')
     replace(instance, 'foo', fake(instance.foo))
     root.appendChild(instance)
@@ -83,13 +86,13 @@ describe('controller', () => {
   })
 
   it('binds auto shadowRoots', async () => {
-    controller(
-      class ControllerBindAutoShadowElement extends HTMLElement {
-        foo() {
-          return 'foo'
-        }
+    @controller
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    class ControllerBindAutoShadowElement extends HTMLElement {
+      foo() {
+        return 'foo'
       }
-    )
+    }
     const instance = document.createElement('controller-bind-auto-shadow')
     const template = document.createElement('template')
     template.setAttribute('data-shadowroot', 'open')
@@ -108,15 +111,17 @@ describe('controller', () => {
   })
 
   it('upgrades child decendants when connected', () => {
-    controller(class ChildElementElement extends HTMLElement {})
-    controller(
-      class ParentElementElement extends HTMLElement {
-        connectedCallback() {
-          const child = this.querySelector('child-element')
-          expect(child.matches(':defined')).to.equal(true)
-        }
+    @controller
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    class ChildElementElement extends HTMLElement {}
+    @controller
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    class ParentElementElement extends HTMLElement {
+      connectedCallback() {
+        const child = this.querySelector('child-element')
+        expect(child.matches(':defined')).to.equal(true)
       }
-    )
+    }
 
     // eslint-disable-next-line github/unescaped-html-literal
     root.innerHTML = '<parent-element><child-element></child-element></parent-element>'
@@ -124,6 +129,7 @@ describe('controller', () => {
 
   describe('attrs', () => {
     let attrValues = []
+    @controller
     class AttributeTestElement extends HTMLElement {
       foo = 'baz'
       attributeChangedCallback() {
@@ -131,7 +137,6 @@ describe('controller', () => {
         attrValues.push(this.foo)
       }
     }
-    controller(AttributeTestElement)
     attr(AttributeTestElement.prototype, 'foo')
 
     beforeEach(() => {
