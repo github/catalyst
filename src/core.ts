@@ -4,40 +4,78 @@ import {autoShadowRoot} from './auto-shadow-root.js'
 import {defineObservedAttributes, initializeAttrs} from './attr.js'
 import type {CustomElement} from './custom-element.js'
 
-const instances = new WeakSet<Element>()
 const symbol = Symbol.for('catalyst')
 
-export function initializeInstance(instance: HTMLElement, connect?: (this: HTMLElement) => void): void {
-  instance.toggleAttribute('data-catalyst', true)
-  customElements.upgrade(instance)
-  instances.add(instance)
-  autoShadowRoot(instance)
-  initializeAttrs(instance)
-  bind(instance)
-  if (connect) connect.call(instance)
-  if (instance.shadowRoot) bindShadow(instance.shadowRoot)
-}
+export class CatalystDelegate {
+  constructor(classObject: CustomElement) {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const delegate = this
 
-export function initializeAttributeChanged(
-  instance: HTMLElement,
-  name: string,
-  oldValue: unknown,
-  newValue: unknown,
-  attributeChangedCallback?: (this: HTMLElement, name: string, oldValue: unknown, newValue: unknown) => void
-): void {
-  initializeAttrs(instance)
-  if (name !== 'data-catalyst' && attributeChangedCallback) {
-    attributeChangedCallback.call(instance, name, oldValue, newValue)
+    const connectedCallback = classObject.prototype.connectedCallback
+    classObject.prototype.connectedCallback = function (this: HTMLElement) {
+      delegate.connectedCallback(this, connectedCallback)
+    }
+
+    const disconnectedCallback = classObject.prototype.disconnectedCallback
+    classObject.prototype.disconnectedCallback = function (this: HTMLElement) {
+      delegate.disconnectedCallback(this, disconnectedCallback)
+    }
+
+    const attributeChangedCallback = classObject.prototype.attributeChangedCallback
+    classObject.prototype.attributeChangedCallback = function (
+      this: HTMLElement,
+      name: string,
+      oldValue: string | null,
+      newValue: string | null
+    ) {
+      delegate.attributeChangedCallback(this, name, oldValue, newValue, attributeChangedCallback)
+    }
+
+    let observedAttributes = classObject.observedAttributes || []
+    Object.defineProperty(classObject, 'observedAttributes', {
+      configurable: true,
+      get() {
+        return delegate.observedAttributes(this, observedAttributes)
+      },
+      set(attributes: string[]) {
+        observedAttributes = attributes
+      }
+    })
+
+    defineObservedAttributes(classObject)
+    register(classObject)
   }
-}
 
-export function initializeClass(classObject: CustomElement): void {
-  defineObservedAttributes(classObject)
-  register(classObject)
-}
+  observedAttributes(instance: HTMLElement, observedAttributes: string[]) {
+    return observedAttributes
+  }
 
-export function initialized(el: Element): boolean {
-  return instances.has(el)
+  connectedCallback(instance: HTMLElement, connectedCallback: () => void) {
+    instance.toggleAttribute('data-catalyst', true)
+    customElements.upgrade(instance)
+    autoShadowRoot(instance)
+    initializeAttrs(instance)
+    bind(instance)
+    connectedCallback?.call(instance)
+    if (instance.shadowRoot) bindShadow(instance.shadowRoot)
+  }
+
+  disconnectedCallback(element: HTMLElement, disconnectedCallback: () => void) {
+    disconnectedCallback?.call(element)
+  }
+
+  attributeChangedCallback(
+    instance: HTMLElement,
+    name: string,
+    oldValue: string | null,
+    newValue: string | null,
+    attributeChangedCallback: (...args: unknown[]) => void
+  ) {
+    initializeAttrs(instance)
+    if (name !== 'data-catalyst' && attributeChangedCallback) {
+      attributeChangedCallback.call(instance, name, oldValue, newValue)
+    }
+  }
 }
 
 export function meta(proto: Record<PropertyKey, unknown>, name: string): Set<string> {
