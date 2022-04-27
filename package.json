@@ -27,29 +27,34 @@
     "build:docs": "cd docs && JEKYLL_ENV=production bundle exec jekyll build",
     "clean": "tsc --build --clean",
     "lint": "eslint . --ignore-path .gitignore",
-    "pretest": "npm run build",
-    "test": "npm run lint && karma start test/karma.config.cjs",
-    "postpublish": "npm publish --ignore-scripts --@github:registry='https://npm.pkg.github.com'"
+    "postpublish": "npm publish --ignore-scripts --@github:registry='https://npm.pkg.github.com'",
+    "presize": "npm run build",
+    "size": "size-limit",
+    "pretest": "npm run size && npm run lint",
+    "test": "web-test-runner test/* --node-resolve"
   },
   "prettier": "@github/prettier-config",
   "devDependencies": {
     "@github/prettier-config": "^0.0.4",
     "@lhci/cli": "^0.7.0",
+    "@open-wc/testing": "^3.1.2",
+    "@size-limit/preset-small-lib": "^7.0.8",
     "@typescript-eslint/eslint-plugin": "^5.16.0",
     "@typescript-eslint/parser": "^5.16.0",
-    "chai": "^4.3.0",
-    "chai-spies": "^1.0.0",
-    "chromium": "^3.0.3",
+    "@web/dev-server-esbuild": "^0.3.0",
+    "@web/test-runner": "^0.13.27",
     "eslint": "^8.12.0",
     "eslint-plugin-github": "^4.3.6",
-    "karma": "^6.1.1",
-    "karma-chai": "^0.1.0",
-    "karma-chai-spies": "^0.1.4",
-    "karma-chrome-launcher": "^3.1.0",
-    "karma-mocha": "^2.0.1",
-    "karma-mocha-reporter": "^2.2.5",
-    "mocha": "^8.3.0",
+    "sinon": "^13.0.1",
+    "size-limit": "^7.0.8",
     "tslib": "^2.3.1",
     "typescript": "^4.6.3"
-  }
+  },
+  "size-limit": [
+    {
+      "path": "lib/index.js",
+      "import": "{controller, attr, target, targets}",
+      "limit": "1.6kb"
+    }
+  ]
 }

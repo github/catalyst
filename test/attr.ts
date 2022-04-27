@@ -1,3 +1,4 @@
+import {expect} from '@open-wc/testing'
 import {initializeAttrs, defineObservedAttributes, attr} from '../lib/attr.js'
 
 describe('initializeAttrs', () => {
@@ -154,13 +155,15 @@ describe('initializeAttrs', () => {
 })
 
 describe('attr', () => {
-  class AttrTestElement extends HTMLElement {}
-  attr(AttrTestElement.prototype, 'foo')
-  attr(AttrTestElement.prototype, 'bar')
+  class AttrTestElement extends HTMLElement {
+    @attr foo
+    @attr bar
+  }
   window.customElements.define('attr-test-element', AttrTestElement)
 
-  class ExtendedAttrTestElement extends AttrTestElement {}
-  attr(ExtendedAttrTestElement.prototype, 'baz')
+  class ExtendedAttrTestElement extends AttrTestElement {
+    @attr baz
+  }
   window.customElements.define('extended-attr-test-element', ExtendedAttrTestElement)
 
   it('populates the "default" list for initializeAttrs', () => {
@@ -182,7 +185,7 @@ describe('attr', () => {
     expect(instance).to.have.property('foo', '')
     expect(instance).to.have.property('bar', 'hello')
     expect(instance).to.have.property('baz', 'world')
-    expect(instance.getAttributeNames()).to.eql(['data-baz', 'data-foo', 'data-bar'])
+    expect(instance.getAttributeNames()).to.eql(['data-foo', 'data-bar', 'data-baz'])
     expect(instance.getAttribute('data-foo')).to.equal('')
     expect(instance.getAttribute('data-bar')).to.equal('hello')
     expect(instance.getAttribute('data-baz')).to.equal('world')
@@ -213,25 +216,28 @@ describe('defineObservedAttributes', () => {
   })
 
   it('will reflect values from attr calls', () => {
-    class TestElement extends HTMLElement {}
+    class TestElement extends HTMLElement {
+      @attr foo
+    }
     defineObservedAttributes(TestElement)
-    attr(TestElement.prototype, 'foo')
     expect(TestElement.observedAttributes).to.eql(['data-foo'])
   })
 
   it('will reflect values even if set after definition', () => {
-    class TestElement extends HTMLElement {}
+    class TestElement extends HTMLElement {
+      @attr foo
+    }
     defineObservedAttributes(TestElement)
-    attr(TestElement.prototype, 'foo')
     TestElement.observedAttributes = ['a', 'b', 'c']
     expect(TestElement.observedAttributes).to.eql(['data-foo', 'a', 'b', 'c'])
   })
 
   it('will reflect values from extended elements', () => {
-    class TestElement extends HTMLElement {}
+    class TestElement extends HTMLElement {
+      @attr foo
+    }
     class ExtendedTestElement extends TestElement {}
     defineObservedAttributes(ExtendedTestElement)
-    attr(TestElement.prototype, 'foo')
     expect(ExtendedTestElement.observedAttributes).to.eql(['data-foo'])
   })
 })
