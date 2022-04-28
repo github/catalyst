@@ -1,6 +1,5 @@
 import {fake, replace} from 'sinon'
-import {expect} from '@open-wc/testing'
-import {findTarget, findTargets} from '../lib/findtarget.js'
+import {findTarget, findTargets} from '../src/findtarget.js'
 
 describe('findTarget', () => {
   window.customElements.define('find-target-test-element', class extends HTMLElement {})

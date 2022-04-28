@@ -1,7 +1,7 @@
 import {expect} from '@open-wc/testing'
 import {replace, fake} from 'sinon'
-import {controller} from '../lib/controller.js'
-import {attr} from '../lib/attr.js'
+import {controller} from '../src/controller.js'
+import {attr} from '../src/attr.js'
 
 describe('controller', () => {
   let root

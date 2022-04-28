@@ -1,6 +1,6 @@
 import {expect} from '@open-wc/testing'
 import {replace, fake} from 'sinon'
-import {bind, listenForBind} from '../lib/bind.js'
+import {bind, listenForBind} from '../src/bind.js'
 
 describe('bind', () => {
   window.customElements.define(

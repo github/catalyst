@@ -1,6 +1,6 @@
 import {expect} from '@open-wc/testing'
 import {replace, fake} from 'sinon'
-import {autoShadowRoot} from '../lib/auto-shadow-root.js'
+import {autoShadowRoot} from '../src/auto-shadow-root.js'
 
 describe('autoShadowRoot', () => {
   window.customElements.define('autoshadowroot-test-element', class extends HTMLElement {})

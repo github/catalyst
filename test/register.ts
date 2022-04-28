@@ -1,5 +1,5 @@
 import {expect} from '@open-wc/testing'
-import {register} from '../lib/register.js'
+import {register} from '../src/register.js'
 
 describe('register', () => {
   it('registers the class as a custom element, normalising the class name', () => {

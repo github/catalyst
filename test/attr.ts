@@ -1,5 +1,5 @@
 import {expect} from '@open-wc/testing'
-import {initializeAttrs, defineObservedAttributes, attr} from '../lib/attr.js'
+import {initializeAttrs, defineObservedAttributes, attr} from '../src/attr.js'
 
 describe('initializeAttrs', () => {
   class InitializeAttrTestElement extends HTMLElement {}
