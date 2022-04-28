@@ -1,19 +1,22 @@
-import {expect} from '@open-wc/testing'
+import {expect, fixture, html} from '@open-wc/testing'
 import {initializeAttrs, defineObservedAttributes, attr} from '../src/attr.js'
 
 describe('initializeAttrs', () => {
   class InitializeAttrTestElement extends HTMLElement {}
   window.customElements.define('initialize-attr-test-element', InitializeAttrTestElement)
 
+  let instance
+  beforeEach(async () => {
+    instance = await fixture(html`<initialize-attr-test-element />`)
+  })
+
   it('creates a getter/setter pair for each given attr name', () => {
-    const instance = document.createElement('initialize-attr-test-element')
     expect(instance).to.not.have.ownPropertyDescriptor('foo')
     initializeAttrs(instance, ['foo'])
     expect(instance).to.have.ownPropertyDescriptor('foo')
   })
 
   it('reflects the `data-*` attribute name of the given key', () => {
-    const instance = document.createElement('initialize-attr-test-element')
     initializeAttrs(instance, ['foo'])
     expect(instance.foo).to.equal('')
     instance.foo = 'bar'
@@ -24,7 +27,6 @@ describe('initializeAttrs', () => {
   })
 
   it('sets the attribute to a previously defined value on the key', () => {
-    const instance = document.createElement('initialize-attr-test-element')
     instance.foo = 'hello'
     initializeAttrs(instance, ['foo'])
     expect(instance.foo).to.equal('hello')
@@ -33,7 +35,6 @@ describe('initializeAttrs', () => {
   })
 
   it('prioritises the value in the attribute over the property', () => {
-    const instance = document.createElement('initialize-attr-test-element')
     instance.foo = 'goodbye'
     instance.setAttribute('data-foo', 'hello')
     initializeAttrs(instance, ['foo'])
@@ -44,7 +45,6 @@ describe('initializeAttrs', () => {
 
   describe('types', () => {
     it('infers number types from property and casts as number always', () => {
-      const instance = document.createElement('initialize-attr-test-element')
       instance.foo = 1
       initializeAttrs(instance, ['foo'])
       expect(instance.foo).to.equal(1)
@@ -63,7 +63,6 @@ describe('initializeAttrs', () => {
     })
 
     it('infers boolean types from property and uses has/toggleAttribute', () => {
-      const instance = document.createElement('initialize-attr-test-element')
       instance.foo = false
       initializeAttrs(instance, ['foo'])
       expect(instance.foo).to.equal(false)
@@ -86,7 +85,6 @@ describe('initializeAttrs', () => {
     })
 
     it('defaults to inferring string type for non-boolean non-number types', () => {
-      const instance = document.createElement('initialize-attr-test-element')
       instance.foo = /^a regexp$/
       initializeAttrs(instance, ['foo'])
       expect(instance.foo).to.equal('/^a regexp$/')
@@ -97,7 +95,6 @@ describe('initializeAttrs', () => {
 
   describe('naming', () => {
     it('converts camel cased property names to their HTML dasherized equivalents', () => {
-      const instance = document.createElement('initialize-attr-test-element')
       initializeAttrs(instance, ['fooBarBazBing'])
       expect(instance.fooBarBazBing).to.equal('')
       instance.fooBarBazBing = 'bar'
@@ -105,7 +102,6 @@ describe('initializeAttrs', () => {
     })
 
     it('will intuitively dasherize acryonyms', () => {
-      const instance = document.createElement('initialize-attr-test-element')
       initializeAttrs(instance, ['URLBar'])
       expect(instance.URLBar).to.equal('')
       instance.URLBar = 'bar'
@@ -113,7 +109,6 @@ describe('initializeAttrs', () => {
     })
 
     it('dasherizes cap suffixed names correctly', () => {
-      const instance = document.createElement('initialize-attr-test-element')
       initializeAttrs(instance, ['ClipX'])
       expect(instance.ClipX).to.equal('')
       instance.ClipX = 'bar'
@@ -127,8 +122,11 @@ describe('initializeAttrs', () => {
     }
     customElements.define('class-field-attr-test-element', ClassFieldAttrTestElement)
 
+    beforeEach(async () => {
+      instance = await fixture(html`<class-field-attr-test-element />`)
+    })
+
     it('overrides any getters assigned in constructor (like class fields)', () => {
-      const instance = document.createElement('class-field-attr-test-element')
       initializeAttrs(instance, ['foo'])
       instance.foo = 2
       expect(instance.foo).to.equal(2)
@@ -138,14 +136,12 @@ describe('initializeAttrs', () => {
     })
 
     it('defaults to class field value attribute not present', () => {
-      const instance = document.createElement('class-field-attr-test-element')
       initializeAttrs(instance, ['foo'])
       expect(instance.foo).to.equal(1)
       expect(instance.getAttribute('data-foo')).to.equal('1')
     })
 
     it('ignores class field value if element has attribute already', () => {
-      const instance = document.createElement('class-field-attr-test-element')
       instance.setAttribute('data-foo', '2')
       initializeAttrs(instance, ['foo'])
       expect(instance.foo).to.equal(2)
@@ -166,8 +162,12 @@ describe('attr', () => {
   }
   window.customElements.define('extended-attr-test-element', ExtendedAttrTestElement)
 
+  let instance
+  beforeEach(async () => {
+    instance = await fixture(html`<attr-test-element />`)
+  })
+
   it('populates the "default" list for initializeAttrs', () => {
-    const instance = document.createElement('attr-test-element')
     instance.foo = 'hello'
     initializeAttrs(instance)
     expect(instance).to.have.property('foo', 'hello')
@@ -177,8 +177,8 @@ describe('attr', () => {
     expect(instance.getAttribute('data-bar')).to.equal('')
   })
 
-  it('includes attrs from extended elements', () => {
-    const instance = document.createElement('extended-attr-test-element')
+  it('includes attrs from extended elements', async () => {
+    instance = await fixture(html`<extended-attr-test-element />`)
     instance.bar = 'hello'
     instance.baz = 'world'
     initializeAttrs(instance)
@@ -191,8 +191,8 @@ describe('attr', () => {
     expect(instance.getAttribute('data-baz')).to.equal('world')
   })
 
-  it('can be initialized multiple times without error', () => {
-    const instance = document.createElement('initialize-attr-test-element')
+  it('can be initialized multiple times without error', async () => {
+    instance = await fixture(html`<initialize-attr-test-element />`)
     expect(instance).to.not.have.ownPropertyDescriptor('foo')
     initializeAttrs(instance, ['foo'])
     expect(instance).to.have.ownPropertyDescriptor('foo')
