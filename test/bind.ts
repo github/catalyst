@@ -1,37 +1,23 @@
-import {expect} from '@open-wc/testing'
+import {expect, fixture, html} from '@open-wc/testing'
 import {replace, fake} from 'sinon'
-import {bind, listenForBind} from '../lib/bind.js'
+import {bind, listenForBind} from '../src/bind.js'
 
 describe('bind', () => {
   window.customElements.define(
     'bind-test-element',
     class extends HTMLElement {
-      foo() {
-        return 'foo'
-      }
-      bar() {
-        return 'bar'
-      }
-      handleEvent() {
-        return 'handleEvent'
-      }
+      foo = fake()
+      bar = fake()
+      handleEvent = fake()
     }
   )
 
-  let root
-
-  beforeEach(() => {
-    root = document.createElement('div')
-    document.body.appendChild(root)
-  })
-
-  afterEach(() => {
-    root.remove()
+  let instance
+  beforeEach(async () => {
+    instance = await fixture(html`<bind-test-element />`)
   })
 
   it('binds events on elements based on their data-action attribute', () => {
-    const instance = document.createElement('bind-test-element')
-    replace(instance, 'foo', fake(instance.foo))
     const el = document.createElement('div')
     el.setAttribute('data-action', 'click:bind-test-element#foo')
     instance.appendChild(el)
@@ -42,8 +28,6 @@ describe('bind', () => {
   })
 
   it('allows for the presence of `:` in an event name', () => {
-    const instance = document.createElement('bind-test-element')
-    replace(instance, 'foo', fake(instance.foo))
     const el = document.createElement('div')
     el.setAttribute('data-action', 'custom:event:bind-test-element#foo')
     instance.appendChild(el)
@@ -54,8 +38,6 @@ describe('bind', () => {
   })
 
   it('binds events on the controller to itself', () => {
-    const instance = document.createElement('bind-test-element')
-    replace(instance, 'foo', fake(instance.foo))
     instance.setAttribute('data-action', 'click:bind-test-element#foo')
     bind(instance)
     expect(instance.foo).to.have.callCount(0)
@@ -64,8 +46,6 @@ describe('bind', () => {
   })
 
   it('does not bind elements whose closest selector is not this controller', () => {
-    const instance = document.createElement('bind-test-element')
-    replace(instance, 'foo', fake(instance.foo))
     const el = document.createElement('div')
     el.getAttribute('data-action', 'click:bind-test-element#foo')
     const container = document.createElement('div')
@@ -76,8 +56,6 @@ describe('bind', () => {
   })
 
   it('does not bind elements whose data-action does not match controller tagname', () => {
-    const instance = document.createElement('bind-test-element')
-    replace(instance, 'foo', fake(instance.foo))
     const el = document.createElement('div')
     el.setAttribute('data-action', 'click:other-controller#foo')
     instance.appendChild(el)
@@ -88,8 +66,6 @@ describe('bind', () => {
   })
 
   it('does not bind methods that dont exist', () => {
-    const instance = document.createElement('bind-test-element')
-    replace(instance, 'foo', fake(instance.foo))
     const el = document.createElement('div')
     el.setAttribute('data-action', 'click:bind-test-element#frob')
     instance.appendChild(el)
@@ -99,8 +75,6 @@ describe('bind', () => {
   })
 
   it('can bind multiple event types', () => {
-    const instance = document.createElement('bind-test-element')
-    replace(instance, 'foo', fake(instance.foo))
     const el = document.createElement('div')
     el.setAttribute('data-action', 'click:bind-test-element#foo submit:bind-test-element#foo')
     instance.appendChild(el)
@@ -115,8 +89,6 @@ describe('bind', () => {
   })
 
   it('binds to `handleEvent` is function name is omitted', () => {
-    const instance = document.createElement('bind-test-element')
-    replace(instance, 'handleEvent', fake(instance.handleEvent))
     const el = document.createElement('div')
     el.setAttribute('data-action', 'click:bind-test-element submit:bind-test-element')
     instance.appendChild(el)
@@ -131,9 +103,6 @@ describe('bind', () => {
   })
 
   it('can bind multiple actions separated by line feed', () => {
-    const instance = document.createElement('bind-test-element')
-    replace(instance, 'foo', fake(instance.foo))
-    replace(instance, 'bar', fake(instance.bar))
     const el = document.createElement('div')
     el.setAttribute('data-action', `click:bind-test-element#foo\nclick:bind-test-element#bar`)
     instance.appendChild(el)
@@ -147,8 +116,6 @@ describe('bind', () => {
   })
 
   it('can bind multiple elements to the same event', () => {
-    const instance = document.createElement('bind-test-element')
-    replace(instance, 'foo', fake(instance.foo))
     const el1 = document.createElement('div')
     const el2 = document.createElement('div')
     el1.setAttribute('data-action', 'click:bind-test-element#foo')
@@ -163,8 +130,6 @@ describe('bind', () => {
   })
 
   it('binds elements added to elements subtree', async () => {
-    const instance = document.createElement('bind-test-element')
-    replace(instance, 'foo', fake(instance.foo))
     const el1 = document.createElement('div')
     const el2 = document.createElement('div')
     el1.setAttribute('data-action', 'click:bind-test-element#foo')
@@ -187,8 +152,6 @@ describe('bind', () => {
   })
 
   it('can bind elements within the shadowDOM', () => {
-    const instance = document.createElement('bind-test-element')
-    replace(instance, 'foo', fake(instance.foo))
     instance.attachShadow({mode: 'open'})
     const el1 = document.createElement('div')
     const el2 = document.createElement('div')
@@ -204,8 +167,6 @@ describe('bind', () => {
   })
 
   it('binds elements added to shadowDOM', async () => {
-    const instance = document.createElement('bind-test-element')
-    replace(instance, 'foo', fake(instance.foo))
     instance.attachShadow({mode: 'open'})
     const el1 = document.createElement('div')
     const el2 = document.createElement('div')
@@ -225,12 +186,9 @@ describe('bind', () => {
   })
 
   describe('listenForBind', () => {
-    it('re-binds actions that are denoted by HTML that is dynamically injected into the controller', async function () {
-      const instance = document.createElement('bind-test-element')
+    it('re-binds actions that are denoted by HTML that is dynamically injected into the controller', async () => {
       bind(instance)
-      replace(instance, 'foo', fake(instance.foo))
-      root.appendChild(instance)
-      listenForBind(root)
+      listenForBind(instance.ownerDocument)
       const button = document.createElement('button')
       button.setAttribute('data-action', 'click:bind-test-element#foo')
       instance.appendChild(button)
@@ -241,12 +199,8 @@ describe('bind', () => {
       expect(instance.foo).to.have.callCount(1)
     })
 
-    it('will not re-bind actions after unsubscribe() is called', async function () {
-      const instance = document.createElement('bind-test-element')
-      replace(instance, 'foo', fake(instance.foo))
-      root.appendChild(instance)
-      listenForBind(root).unsubscribe()
-      listenForBind(document).unsubscribe()
+    it('will not re-bind actions after unsubscribe() is called', async () => {
+      listenForBind(instance.ownerDocument).unsubscribe()
       const button = document.createElement('button')
       button.setAttribute('data-action', 'click:bind-test-element#foo')
       instance.appendChild(button)
@@ -257,19 +211,15 @@ describe('bind', () => {
       expect(instance.foo).to.have.callCount(0)
     })
 
-    it('will not bind elements that havent already had `bind()` called', async function () {
+    it('will not bind elements that havent already had `bind()` called', async () => {
       customElements.define(
         'bind-test-not-element',
         class BindTestNotController extends HTMLElement {
-          foo() {
-            return 'foo'
-          }
+          foo = fake()
         }
       )
-      const instance = document.createElement('bind-test-not-element')
-      replace(instance, 'foo', fake(instance.foo))
-      root.appendChild(instance)
-      listenForBind(root)
+      instance = await fixture(html`<bind-test-not-element />`)
+      listenForBind(instance.ownerDocument)
       const button = document.createElement('button')
       button.setAttribute('data-action', 'click:bind-test-not-element#foo')
       instance.appendChild(button)
@@ -280,25 +230,22 @@ describe('bind', () => {
       expect(instance.foo).to.have.callCount(0)
     })
 
-    it('will not re-bind elements that just had `bind()` called', async function () {
+    it('will not re-bind elements that just had `bind()` called', async () => {
       customElements.define(
         'bind-test-not-rebind-element',
         class BindTestNotController extends HTMLElement {
+          foo = fake()
           connectedCallback() {
             bind(this)
           }
-          foo() {
-            return 'foo'
-          }
         }
       )
-      const instance = document.createElement('bind-test-not-rebind-element')
-      replace(instance, 'foo', fake(instance.foo))
-      listenForBind(root)
+      instance = await fixture(html`<bind-test-not-rebind-element />`)
+      listenForBind(instance.ownerDocument)
       const button = document.createElement('button')
       button.setAttribute('data-action', 'click:bind-test-not-rebind-element#foo')
       instance.appendChild(button)
-      root.appendChild(instance)
+      replace(instance, 'foo', fake(instance.foo))
       // wait for processQueue
       await Promise.resolve()
       button.click()
@@ -306,12 +253,10 @@ describe('bind', () => {
     })
   })
 
-  it('re-binds actions deeply in the HTML', async function () {
-    const instance = document.createElement('bind-test-element')
+  it('re-binds actions deeply in the HTML', async () => {
+    instance = await fixture(html`<bind-test-element />`)
     bind(instance)
-    replace(instance, 'foo', fake(instance.foo))
-    root.appendChild(instance)
-    listenForBind(root)
+    listenForBind(instance.ownerDocument)
     instance.innerHTML = `
         <div>
           <div>
@@ -326,31 +271,28 @@ describe('bind', () => {
     expect(instance.foo).to.have.callCount(1)
   })
 
-  it('will not fire if the binding attribute is removed', () => {
-    const instance = document.createElement('bind-test-element')
-    replace(instance, 'foo', fake(instance.foo))
-    const el1 = document.createElement('div')
-    el1.setAttribute('data-action', 'click:bind-test-element#foo')
-    instance.appendChild(el1)
+  it('will not fire if the binding attribute is removed', async () => {
+    instance = await fixture(html`<bind-test-element>
+      <div data-action="click:bind-test-element#foo"></div>
+    </bind-test-element>`)
     bind(instance)
     expect(instance.foo).to.have.callCount(0)
-    el1.click()
+    const el = instance.querySelector('div')
+    el.click()
     expect(instance.foo).to.have.callCount(1)
-    el1.setAttribute('data-action', 'click:other-element#foo')
-    el1.click()
+    el.setAttribute('data-action', 'click:other-element#foo')
+    el.click()
     expect(instance.foo).to.have.callCount(1)
   })
 
-  it('will rebind elements if the attribute changes', async function () {
-    const instance = document.createElement('bind-test-element')
-    replace(instance, 'foo', fake(instance.foo))
-    root.appendChild(instance)
-    const button = document.createElement('button')
-    button.setAttribute('data-action', 'submit:bind-test-element#foo')
-    instance.appendChild(button)
+  it('will rebind elements if the attribute changes', async () => {
+    instance = await fixture(html`<bind-test-element>
+      <button data="action" ="submit:bind-test-element#foo"></button>
+    </bind-test-element>`)
     bind(instance)
-    listenForBind(root)
+    listenForBind(instance.ownerDocument)
     await Promise.resolve()
+    const button = instance.querySelector('button')
     button.click()
     expect(instance.foo).to.have.callCount(0)
     button.setAttribute('data-action', 'click:bind-test-element#foo')

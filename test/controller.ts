@@ -1,25 +1,15 @@
-import {expect} from '@open-wc/testing'
+import {expect, fixture, html} from '@open-wc/testing'
 import {replace, fake} from 'sinon'
-import {controller} from '../lib/controller.js'
-import {attr} from '../lib/attr.js'
+import {controller} from '../src/controller.js'
+import {attr} from '../src/attr.js'
 
 describe('controller', () => {
-  let root
-
-  beforeEach(() => {
-    root = document.createElement('div')
-    document.body.appendChild(root)
-  })
-
-  afterEach(() => {
-    root.remove()
-  })
+  let instance
 
   it('calls register', async () => {
     @controller
     class ControllerRegisterElement extends HTMLElement {}
-    const instance = document.createElement('controller-register')
-    root.appendChild(instance)
+    instance = await fixture(html`<controller-register />`)
     expect(instance).to.be.instanceof(ControllerRegisterElement)
   })
 
@@ -28,8 +18,7 @@ describe('controller', () => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     class ControllerDataAttrElement extends HTMLElement {}
 
-    const instance = document.createElement('controller-data-attr')
-    root.appendChild(instance)
+    instance = await fixture(html`<controller-data-attr />`)
     expect(instance.hasAttribute('data-catalyst')).to.equal(true)
     expect(instance.getAttribute('data-catalyst')).to.equal('')
   })
@@ -38,9 +27,7 @@ describe('controller', () => {
     @controller
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     class ControllerBindOrderElement extends HTMLElement {
-      foo() {
-        return 'foo'
-      }
+      foo = fake()
     }
     @controller
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -49,15 +36,11 @@ describe('controller', () => {
         this.dispatchEvent(new CustomEvent('loaded'))
       }
     }
-
-    const instance = document.createElement('controller-bind-order')
-    replace(instance, 'foo', fake(instance.foo))
-    root.appendChild(instance)
-
-    const sub = document.createElement('controller-bind-order-sub')
-    sub.setAttribute('data-action', 'loaded:controller-bind-order#foo')
-    instance.appendChild(sub)
-
+    instance = await fixture(html`
+      <controller-bind-order>
+        <controller-bind-order-sub data-action="loaded:controller-bind-order#foo" />
+      </controller-bind-order>
+    `)
     expect(instance.foo).to.have.callCount(1)
   })
 
@@ -76,9 +59,8 @@ describe('controller', () => {
         return 'foo'
       }
     }
-    const instance = document.createElement('controller-bind-shadow')
+    instance = await fixture(html`<controller-bind-shadow />`)
     replace(instance, 'foo', fake(instance.foo))
-    root.appendChild(instance)
 
     instance.shadowRoot.querySelector('button').click()
 
@@ -93,14 +75,14 @@ describe('controller', () => {
         return 'foo'
       }
     }
-    const instance = document.createElement('controller-bind-auto-shadow')
-    const template = document.createElement('template')
-    template.setAttribute('data-shadowroot', 'open')
-    // eslint-disable-next-line github/unescaped-html-literal
-    template.innerHTML = '<button data-action="click:controller-bind-auto-shadow#foo"></button>'
-    instance.appendChild(template)
+    instance = await fixture(html`
+      <controller-bind-auto-shadow>
+        <template data-shadowroot="open">
+          <button data-action="click:controller-bind-auto-shadow#foo" />
+        </template>
+      </controller-bind-auto-shadow>
+    `)
     replace(instance, 'foo', fake(instance.foo))
-    root.appendChild(instance)
 
     expect(instance.shadowRoot).to.exist
     expect(instance).to.have.property('shadowRoot').not.equal(null)
@@ -110,7 +92,7 @@ describe('controller', () => {
     expect(instance.foo).to.have.callCount(1)
   })
 
-  it('upgrades child decendants when connected', () => {
+  it('upgrades child decendants when connected', async () => {
     @controller
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     class ChildElementElement extends HTMLElement {}
@@ -123,8 +105,11 @@ describe('controller', () => {
       }
     }
 
-    // eslint-disable-next-line github/unescaped-html-literal
-    root.innerHTML = '<parent-element><child-element></child-element></parent-element>'
+    instance = await fixture(html`
+      <parent-element>
+        <child-element />
+      </parent-element>
+    `)
   })
 
   describe('attrs', () => {
@@ -143,17 +128,17 @@ describe('controller', () => {
       attrValues = []
     })
 
-    it('initializes attrs as attributes in attributeChangedCallback', () => {
-      const el = document.createElement('attribute-test')
-      el.foo = 'bar'
-      el.attributeChangedCallback()
+    it('initializes attrs as attributes in attributeChangedCallback', async () => {
+      instance = await fixture(html`<attribute-test></attribute-test>`)
+      instance.foo = 'bar'
+      instance.attributeChangedCallback()
       expect(attrValues).to.eql(['bar', 'bar'])
     })
 
-    it('initializes attributes as attrs in attributeChangedCallback', () => {
-      const el = document.createElement('attribute-test')
-      el.setAttribute('data-foo', 'bar')
-      el.attributeChangedCallback()
+    it('initializes attributes as attrs in attributeChangedCallback', async () => {
+      instance = await fixture(html`<attribute-test />`)
+      instance.setAttribute('data-foo', 'bar')
+      instance.attributeChangedCallback()
       expect(attrValues).to.eql(['bar', 'bar'])
     })
   })

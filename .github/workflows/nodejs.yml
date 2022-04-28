@@ -26,5 +26,9 @@ jobs:
         node-version: 13.11.0
     - name: Install dependencies
       run: npm i
+    - name: Lint Codebase
+      run: npm run lint
     - name: Run Node.js Tests
       run: npm run test
+    - name: Check Bundle Size
+      run: npm run size

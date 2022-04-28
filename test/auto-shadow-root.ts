@@ -1,27 +1,52 @@
-import {expect} from '@open-wc/testing'
+import {expect, fixture, html} from '@open-wc/testing'
 import {replace, fake} from 'sinon'
-import {autoShadowRoot} from '../lib/auto-shadow-root.js'
+import {autoShadowRoot} from '../src/auto-shadow-root.js'
 
 describe('autoShadowRoot', () => {
-  window.customElements.define('autoshadowroot-test-element', class extends HTMLElement {})
+  window.customElements.define('shadowroot-test-element', class extends HTMLElement {})
 
-  let root
-
-  beforeEach(() => {
-    root = document.createElement('div')
-    document.body.appendChild(root)
+  let instance
+  beforeEach(async () => {
+    instance = await fixture(html`<shadowroot-test-element />`)
   })
 
-  afterEach(() => {
-    root.remove()
+  it('automatically declares shadowroot for elements with `template[data-shadowroot]` children', async () => {
+    instance = await fixture(html`<shadowroot-test-element>
+      <template data-shadowroot="open">Hello World</template>
+    </shadowroot-test-element>`)
+    autoShadowRoot(instance)
+
+    expect(instance).to.have.property('shadowRoot').not.equal(null)
+    expect(instance.shadowRoot.textContent).to.equal('Hello World')
   })
 
-  it('automatically declares shadowroot for elements with `template[data-shadowroot]` children', () => {
-    const instance = document.createElement('shadowroot-test-element')
-    const template = document.createElement('template')
-    template.innerHTML = 'Hello World'
-    template.setAttribute('data-shadowroot', 'open')
-    instance.appendChild(template)
+  it('does not attach shadowroot without a template`data-shadowroot` child', async () => {
+    instance = await fixture(html`<shadowroot-test-element>
+      <template data-notshadowroot="open">Hello</template>
+      <div data-shadowroot="open">World</div>
+    </shadowroot-test-element>`)
+
+    autoShadowRoot(instance)
+
+    expect(instance).to.have.property('shadowRoot').equal(null)
+  })
+
+  it('does not attach shadowroots which are not direct children of the element', async () => {
+    instance = await fixture(html`<shadowroot-test-element>
+      <div>
+        <template data-shadowroot="open">Hello World</template>
+      </div>
+    </shadowroot-test-element>`)
+
+    autoShadowRoot(instance)
+
+    expect(instance).to.have.property('shadowRoot').equal(null)
+  })
+
+  it('attaches shadowRoot nodes open by default', async () => {
+    instance = await fixture(html`<shadowroot-test-element>
+      <template data-shadowroot>Hello World</template>
+    </shadowroot-test-element>`)
 
     autoShadowRoot(instance)
 
@@ -29,52 +54,10 @@ describe('autoShadowRoot', () => {
     expect(instance.shadowRoot.textContent).to.equal('Hello World')
   })
 
-  it('does not attach shadowroot without a template`data-shadowroot` child', () => {
-    const instance = document.createElement('shadowroot-test-element')
-    const template = document.createElement('template')
-    template.setAttribute('data-notshadowroot', 'open')
-    const otherTemplate = document.createElement('div')
-    otherTemplate.setAttribute('data-shadowroot', 'open')
-    instance.appendChild(template, otherTemplate)
-
-    autoShadowRoot(instance)
-
-    expect(instance).to.have.property('shadowRoot').equal(null)
-  })
-
-  it('does not attach shadowroots which are not direct children of the element', () => {
-    const instance = document.createElement('shadowroot-test-element')
-    const div = document.createElement('div')
-    const template = document.createElement('template')
-    template.setAttribute('data-notshadowroot', 'open')
-    div.appendChild(template)
-    instance.appendChild(div)
-
-    autoShadowRoot(instance)
-
-    expect(instance).to.have.property('shadowRoot').equal(null)
-  })
-
-  it('attaches shadowRoot nodes open by default', () => {
-    const instance = document.createElement('shadowroot-test-element')
-    const template = document.createElement('template')
-    template.innerHTML = 'Hello World'
-    template.setAttribute('data-shadowroot', '')
-    instance.appendChild(template)
-
-    autoShadowRoot(instance)
-
-    expect(instance).to.have.property('shadowRoot').not.equal(null)
-    expect(instance.shadowRoot.textContent).to.equal('Hello World')
-  })
-
-  it('attaches shadowRoot nodes closed if `data-shadowroot` is `closed`', () => {
-    const instance = document.createElement('shadowroot-test-element')
-    const template = document.createElement('template')
-    template.innerHTML = 'Hello World'
-    template.setAttribute('data-shadowroot', 'closed')
-    instance.appendChild(template)
-
+  it('attaches shadowRoot nodes closed if `data-shadowroot` is `closed`', async () => {
+    instance = await fixture(html`<shadowroot-test-element>
+      <template data-shadowroot="closed">Hello World</template>
+    </shadowroot-test-element>`)
     let shadowRoot = null
     replace(
       instance,
@@ -89,6 +72,6 @@ describe('autoShadowRoot', () => {
 
     expect(instance).to.have.property('shadowRoot').equal(null)
     expect(instance.attachShadow).to.have.been.calledOnceWith({mode: 'closed'})
-    expect(shadowRoot.textContent).to.equal('Hello World')
+    expect(shadowRoot!.textContent).to.equal('Hello World')
   })
 })
