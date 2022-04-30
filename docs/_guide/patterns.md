@@ -29,6 +29,29 @@ class FuzzySearchElement extends HTMLElement {
 }
 ```
 
+Alternatively, if you'd like more precise control over the exact way debouncing happens (for example you'd like to make the debounce timeout dynamic, or sometimes call _without_ debouncing), you can have two methods following the pattern of `foo`/`fooNow` or `foo`/`fooSync`, where the non-suffixed method dispatches asynchronously to the `Now`/`Sync` suffixed method, a little like this:
+
+```typescript
+import {controller} from '@github/catalyst'
+
+@controller
+class FuzzySearchElement extends HTMLElement {
+
+  #searchAnimationFrame = 0
+  search(event: Event) {
+    clearAnimationFrame(this.#searchAnimationFrame)
+    this.#searchAnimationFrame = requestAnimationFrame(() => this.searchNow(event: Event))
+  }
+  
+  searchNow(event: Event) {
+    const value = event.currentTarget.value
+    // This function is very computationally intensive, so we should run it as little as possible
+    this.filterAllItemsWithValue(value)
+  }
+
+}
+```
+
 ### Aborting Network Requests
 
 When making network requests using `fetch`, based on user input, you can cancel old requests as new ones come in. This is useful for performance as well as UI responsiveness, as old requests that aren't cancelled might complete later than newer ones, and causing the UI to jump around. Aborting network requests requires you to use [`AbortController`](https://developer.mozilla.org/en-US/docs/Web/API/AbortController) (a web platform feature).
@@ -67,6 +90,40 @@ class RemoveSearchElement extends HTMLElement {
 
     // ... Add cleanup logic here, such as removing `loading` classes.
 
+  }
+}
+```
+
+### Registering global or many event listeners
+
+Generally speaking, you'll want to use ["Actions"]({{ site.baseurl }}/guide/actions) to register event listeners with your Controller, but Actions only work for components nested within your Controller. It may also be necessary to listen for events on the Document, Window, or across well-known adjacent elements. We can manually call `addEventListener` for these types, including during the `connectedCallback` phase. Cleanup for `addEventListener` can be a bit error prone, but [`AbortController`](https://developer.mozilla.org/en-US/docs/Web/API/AbortController) can be useful here to pass a signal that the element is cleaning up. AbortControllers should be created once per `connectedCallback`, as they are not re-usable, while Controllers _can_ be reused.
+
+
+```typescript
+@controller
+class UnsavedChangesElement extends HTMLElement {
+
+  #eventAbortController: AbortController|null = null
+
+  connectedCallback(event: Event) {
+    // Create the new AbortController and get the new signal
+    const {signal} = (this.#eventAbortController = new AbortController())
+    
+    // You can `signal` as an option to any `addEventListener` call:
+    window.addEventListener('hashchange', this, { signal })
+    window.addEventListener('blur', this, { signal })
+    window.addEventListener('popstate', this, { signal })
+    window.addEventListener('pagehide', this, { signal })
+  }
+  
+  disconnectedCallback() {
+    // This will clean up any `addEventListener` calls which were given the `signal`
+    this.#eventAbortController?.abort()
+  }
+  
+  handleEvent(event) {
+    // `handleEvent` will be called when each one of the event listeners
+    // defined in `connectedCallback` is dispatched.
   }
 }
 ```

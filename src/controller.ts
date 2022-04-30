@@ -1,4 +1,4 @@
-import {initializeInstance, initializeClass} from './core.js'
+import {CatalystDelegate} from './core.js'
 import type {CustomElement} from './custom-element.js'
 /**
  * Controller is a decorator to be used over a class that extends HTMLElement.
@@ -7,9 +7,5 @@ import type {CustomElement} from './custom-element.js'
  * wrapping the classes `connectedCallback` method if needed.
  */
 export function controller(classObject: CustomElement): void {
-  const connect = classObject.prototype.connectedCallback
-  classObject.prototype.connectedCallback = function (this: HTMLElement) {
-    initializeInstance(this, connect)
-  }
-  initializeClass(classObject)
+  new CatalystDelegate(classObject)
 }
