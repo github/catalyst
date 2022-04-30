@@ -10,10 +10,17 @@ import {dasherize} from './dasherize.js'
  */
 export function register(classObject: CustomElement): void {
   const name = dasherize(classObject.name).replace(/-element$/, '')
-  if (!window.customElements.get(name)) {
+
+  try {
+    window.customElements.define(name, classObject)
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    window[classObject.name] = classObject
-    window.customElements.define(name, classObject)
+    window[classObject.name] = customElements.get(name)
+  } catch (e: unknown) {
+    // The only reason for window.customElements.define to throw a `NotSupportedError`
+    // is if the element has already been defined.
+    if (e instanceof DOMException && e.name === 'NotSupportedError') return
+
+    throw e
   }
 }
