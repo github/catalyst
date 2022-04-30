@@ -30,7 +30,6 @@
     "postpublish": "npm publish --ignore-scripts --@github:registry='https://npm.pkg.github.com'",
     "presize": "npm run build",
     "size": "size-limit",
-    "pretest": "npm run size && npm run lint",
     "test": "web-test-runner test/* --node-resolve"
   },
   "prettier": "@github/prettier-config",

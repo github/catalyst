@@ -1,4 +1,5 @@
 import type {CustomElement} from './custom-element.js'
+import {dasherize} from './dasherize.js'
 import {meta} from './core.js'
 
 const attrKey = 'attr'
@@ -79,9 +80,7 @@ export function initializeAttrs(instance: HTMLElement, names?: Iterable<string>)
   }
 }
 
-function attrToAttributeName(name: string): string {
-  return `data-${name.replace(/([A-Z]($|[a-z]))/g, '-$1')}`.replace(/--/g, '-').toLowerCase()
-}
+const attrToAttributeName = (name: string) => `data-${dasherize(name)}`
 
 export function defineObservedAttributes(classObject: CustomElement): void {
   let observed = classObject.observedAttributes || []
