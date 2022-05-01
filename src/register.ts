@@ -8,7 +8,7 @@ import {dasherize} from './dasherize.js'
  *
  * Example: HelloController => hello-controller
  */
-export function register(classObject: CustomElement): void {
+export function register(classObject: CustomElement): CustomElement {
   const name = dasherize(classObject.name).replace(/-element$/, '')
 
   try {
@@ -19,8 +19,7 @@ export function register(classObject: CustomElement): void {
   } catch (e: unknown) {
     // The only reason for window.customElements.define to throw a `NotSupportedError`
     // is if the element has already been defined.
-    if (e instanceof DOMException && e.name === 'NotSupportedError') return
-
-    throw e
+    if (!(e instanceof DOMException && e.name === 'NotSupportedError')) throw e
   }
+  return classObject
 }
