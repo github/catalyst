@@ -16,6 +16,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm test
+      - run: npm build
       - run: npm version ${TAG_NAME} --git-tag-version=false
         env:
           TAG_NAME: ${{ github.event.release.tag_name }}
