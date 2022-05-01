@@ -28,7 +28,6 @@
     "clean": "tsc --build --clean",
     "lint": "eslint . --ignore-path .gitignore",
     "prepack": "npm run build",
-    "postpublish": "npm publish --ignore-scripts --@github:registry='https://npm.pkg.github.com'",
     "presize": "npm run build",
     "size": "size-limit",
     "test": "web-test-runner test/* --node-resolve"
