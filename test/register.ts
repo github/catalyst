@@ -70,4 +70,16 @@ describe('register', () => {
     class FirstSuffixElement {}
     expect(window.customElements.get('first-suffix')).to.equal(FirstSuffixElement)
   })
+
+  it('automatically drops the `Controller` suffix', () => {
+    @register
+    class SecondSuffixController {}
+    expect(window.customElements.get('second-suffix')).to.equal(SecondSuffixController)
+  })
+
+  it('automatically drops the `Component` suffix', () => {
+    @register
+    class ThirdSuffixComponent {}
+    expect(window.customElements.get('third-suffix')).to.equal(ThirdSuffixComponent)
+  })
 })

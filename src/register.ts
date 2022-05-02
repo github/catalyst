@@ -1,5 +1,5 @@
-import type {CustomElement} from './custom-element.js'
 import {dasherize} from './dasherize.js'
+import type {CustomElement} from './custom-element.js'
 
 /**
  * Register the controller as a custom element.
@@ -9,7 +9,7 @@ import {dasherize} from './dasherize.js'
  * Example: HelloController => hello-controller
  */
 export function register(classObject: CustomElement): CustomElement {
-  const name = dasherize(classObject.name).replace(/-element$/, '')
+  const name = dasherize(classObject.name).replace(/-(element|controller|component)$/, '')
 
   try {
     window.customElements.define(name, classObject)
