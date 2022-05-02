@@ -27,10 +27,10 @@ class HelloWorldElement extends HTMLElement {
 
 Catalyst will automatically convert the classes name; removing the trailing `Element` suffix and lowercasing all capital letters, separating them with a dash.
 
-By convention Catalyst controllers end in `Element`; Catalyst will omit this when generating a tag name. The `Element` suffix is _not_ required - just convention. All examples in this guide use `Element` suffixed names.
+Catalyst controllers can end in `Element`, `Controller`, or `Component` and Catalyst will remove this suffix when generating a tag name. Adding one of these suffixes is _not_ required - just convention. All examples in this guide use `Element` suffixed names.
 
 {% capture callout %}
-Remember! A class name _must_ include at least two CamelCased words (not including the `Element` suffix). One-word elements will raise exceptions. Example of good names: `UserListElement`, `SubTaskElement`, `PagerContainerElement`
+Remember! A class name _must_ include at least two CamelCased words (not including the `Element`, `Controller` or `Component` suffix). One-word elements will raise exceptions. Example of good names: `UserListElement`, `SubTaskController`, `PagerContainerComponent`
 {% endcapture %}{% include callout.md %}
 
 
