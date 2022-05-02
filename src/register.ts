@@ -9,7 +9,7 @@ import {dasherize} from './dasherize.js'
  * Example: HelloController => hello-controller
  */
 export function register(classObject: CustomElementClass): CustomElementClass {
-  const name = dasherize(classObject.name).replace(/-element$/, '')
+  const name = dasherize(classObject.name).replace(/-(element|controller|component)$/, '')
 
   try {
     window.customElements.define(name, classObject)
