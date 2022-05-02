@@ -7,13 +7,18 @@ subtitle: Common naming and patterns
 
 Catalyst strives for convention over code. Here are a few conventions we recommend when writing Catalyst code:
 
-### Use `Element` to suffix your controller class
+### Use `Element` or `Component` to suffix your controller class
 
-Built in HTML elements all extend from the `HTMLElement` constructor, and are all suffixed with `Element` (for example `HTMLElement`, `SVGElement`, `HTMLInputElement` and so on). Catalyst components should be no different, they should behave as closely to the built-ins as possible.
+Built in HTML elements all extend from the `HTMLElement` constructor, and are all suffixed with `Element` (for example `HTMLElement`, `SVGElement`, `HTMLInputElement` and so on). Catalyst components can be suffixed with `Element`, `Component` or `Controller`. We think elements should behave as closely to the built-ins as possible, so we like to use `Element`, but the other suffixes might be useful for symettry with other server side comoponent frameworks such as [ViewComponent](https://viewcomponent.org/).
 
 ```typescript
 @controller
-class UserListElement extends HTMLElement {}
+class UserListElement extends HTMLElement {} // `<user-list />`
+```
+
+```typescript
+@controller
+class UserListComponent extends HTMLElement {} // `<user-list />`
 ```
 
 ### The best class-names are two word descriptions
