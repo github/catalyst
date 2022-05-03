@@ -53,7 +53,7 @@
     {
       "path": "lib/index.js",
       "import": "{controller, attr, target, targets}",
-      "limit": "1.64kb"
+      "limit": "2kb"
     }
   ]
 }
