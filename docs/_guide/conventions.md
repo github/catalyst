@@ -7,7 +7,7 @@ Catalyst strives for convention over code. Here are a few conventions we recomme
 
 ### Suffix your controllers consistently, for symmetry
 
-Catalyst components can be suffixed with `Element`, `Component` or `Controller`. We think elements should behave as closely to the built-ins as possible, so we like to use `Element` (existing elements do this, for example `HTMLDivElement`, `SVGElement`). If you're using a server side comoponent framework such as [ViewComponent](https://viewcomponent.org/), it's probably better to suffix `Component` for symmetry with that component framework.
+Catalyst components can be suffixed with `Element`, `Component` or `Controller`. We think elements should behave as closely to the built-ins as possible, so we like to use `Element` (existing elements do this, for example `HTMLDivElement`, `SVGElement`). If you're using a server side comoponent framework such as [ViewComponent](https://viewcomponent.org/), it's probably better to suffix `Component` for symmetry with that framework.
 
 ```typescript
 @controller
