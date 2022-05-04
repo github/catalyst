@@ -64,20 +64,18 @@ When using SWC you can use the `keep_classnames` option just like Terser. As SWC
 
 #### Other alternatives
 
-If your tool chain does not support opting out of minification, or if you would prefer to keep name minification on, you can instead selectively re-assign the `name` field to Catalyst controllers:
+If your tool chain does not support opting out of minification, or if you would prefer to keep name minification on, you can manually pass the element name as a parameter to the `@controller` decorator.  Note, the name passed in will not be modified in any way when registering the custom element, and should be `dash-cased`.
 
 ```ts
-@controller
+@controller('user-list')
 class UserList extends HTMLElement {
-  static name = 'UserList'
 }
 ```
 
 TypeScript decorators only support _class declarations_ which means you will still need to keep the class name between `class` and `extends`. For example the following will be a SyntaxError:
 
 ```ts
-@controller
+@controller('user-list')
 class extends HTMLElement {
-  static name = 'UserList'
 }
 ```
