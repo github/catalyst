@@ -1,6 +1,5 @@
 import {register} from './register.js'
 import {bind, bindShadow} from './bind.js'
-import {autoShadowRoot} from './auto-shadow-root.js'
 import {defineObservedAttributes, initializeAttrs} from './attr.js'
 import type {CustomElement} from './custom-element.js'
 
@@ -53,7 +52,6 @@ export class CatalystDelegate {
   connectedCallback(instance: HTMLElement, connectedCallback: () => void) {
     instance.toggleAttribute('data-catalyst', true)
     customElements.upgrade(instance)
-    autoShadowRoot(instance)
     initializeAttrs(instance)
     bind(instance)
     connectedCallback?.call(instance)
