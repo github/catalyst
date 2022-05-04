@@ -45,16 +45,14 @@ The `@controller` decorator ties together the various other decorators within Ca
  - Calls `defineObservedAttributes` with the class to add map any `@attr` decorators. See [attrs]({{ site.baseurl }}/guide/attrs) for more on this.
  - Injects the following code inside of the `connectedCallback()` function of your class:
    - `bind(this)`; ensures that as your element connects it picks up any `data-action` handlers. See [actions]({{ site.baseurl }}/guide/actions) for more on this.
-   - `autoShadowRoot(this)`; ensures that your element loads any `data-shadowroot` templates. See [rendering]({{ site.baseurl }}/guide/rendering) for more on this.
    - `initializeAttrs(this)`; ensures that your element binds any `data-*` attributes to props. See [attrs]({{ site.baseurl }}/guide/attrs) for more on this.
  
 You can do all of this manually; for example here's the above `HelloWorldElement`, written without the `@controller` annotation:
 
 ```js
-import {bind, autoShadowRoot, initializeAttrs, defineObservedAttributes} from '@github/catalyst'
+import {bind, initializeAttrs, defineObservedAttributes} from '@github/catalyst'
 class HelloWorldElement extends HTMLElement {
   connectedCallback() {
-    autoShadowRoot(this)
     initializeAttrs(this)
     this.innerHTML = 'Hello World!'
     bind(this)
