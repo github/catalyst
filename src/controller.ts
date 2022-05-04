@@ -6,7 +6,9 @@ import type {CustomElement} from './custom-element.js'
  * registry, as well as ensuring `bind(this)` is called on `connectedCallback`,
  * wrapping the classes `connectedCallback` method if needed.
  */
-export function controller(classObjectOrName: CustomElement | string) {
+export function controller(name: string): (classObject: CustomElement) => void
+export function controller(classObject: CustomElement): void
+export function controller(classObjectOrName: string | CustomElement) {
   if (typeof classObjectOrName === 'string') {
     const name = classObjectOrName
     return (classObject: CustomElement) => {
