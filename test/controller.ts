@@ -142,4 +142,11 @@ describe('controller', () => {
       expect(attrValues).to.eql(['bar', 'bar'])
     })
   })
+
+  it('allows element name to be overridden', async () => {
+    @controller('other-name')
+    class CustomRegisterElement extends HTMLElement {}
+    instance = await fixture(html`<other-name />`)
+    expect(instance).to.be.instanceof(CustomRegisterElement)
+  })
 })

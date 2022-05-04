@@ -6,6 +6,13 @@ import type {CustomElement} from './custom-element.js'
  * registry, as well as ensuring `bind(this)` is called on `connectedCallback`,
  * wrapping the classes `connectedCallback` method if needed.
  */
-export function controller(classObject: CustomElement): void {
-  new CatalystDelegate(classObject)
+export function controller(classObjectOrName: CustomElement | string) {
+  if (typeof classObjectOrName === 'string') {
+    const name = classObjectOrName
+    return (classObject: CustomElement) => {
+      new CatalystDelegate(classObject, name)
+    }
+  }
+
+  new CatalystDelegate(classObjectOrName)
 }

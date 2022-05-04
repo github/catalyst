@@ -7,7 +7,7 @@ import type {CustomElement} from './custom-element.js'
 const symbol = Symbol.for('catalyst')
 
 export class CatalystDelegate {
-  constructor(classObject: CustomElement) {
+  constructor(classObject: CustomElement, elementName?: string) {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const delegate = this
 
@@ -43,7 +43,7 @@ export class CatalystDelegate {
     })
 
     defineObservedAttributes(classObject)
-    register(classObject)
+    register(classObject, elementName)
   }
 
   observedAttributes(instance: HTMLElement, observedAttributes: string[]) {
