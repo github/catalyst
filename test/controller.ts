@@ -65,30 +65,6 @@ describe('controller', () => {
     expect(instance.foo).to.have.callCount(1)
   })
 
-  it('binds auto shadowRoots', async () => {
-    @controller
-    class ControllerBindAutoShadowElement extends HTMLElement {
-      foo() {
-        return 'foo'
-      }
-    }
-    instance = await fixture<ControllerBindAutoShadowElement>(html`
-      <controller-bind-auto-shadow>
-        <template data-shadowroot="open">
-          <button data-action="click:controller-bind-auto-shadow#foo" />
-        </template>
-      </controller-bind-auto-shadow>
-    `)
-    replace(instance, 'foo', fake(instance.foo))
-
-    expect(instance.shadowRoot).to.exist
-    expect(instance).to.have.property('shadowRoot').not.equal(null)
-    expect(instance.shadowRoot!.children).to.have.lengthOf(1)
-    instance.shadowRoot!.querySelector('button')!.click()
-
-    expect(instance.foo).to.have.callCount(1)
-  })
-
   it('upgrades child decendants when connected', async () => {
     @controller
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
