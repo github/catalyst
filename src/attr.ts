@@ -1,4 +1,4 @@
-import type {CustomElement} from './custom-element.js'
+import type {CustomElementClass} from './custom-element.js'
 import {dasherize} from './dasherize.js'
 import {meta} from './core.js'
 
@@ -82,7 +82,7 @@ export function initializeAttrs(instance: HTMLElement, names?: Iterable<string>)
 
 const attrToAttributeName = (name: string) => `data-${dasherize(name)}`
 
-export function defineObservedAttributes(classObject: CustomElement): void {
+export function defineObservedAttributes(classObject: CustomElementClass): void {
   let observed = classObject.observedAttributes || []
   Object.defineProperty(classObject, 'observedAttributes', {
     configurable: true,

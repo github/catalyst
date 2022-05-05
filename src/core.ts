@@ -2,12 +2,12 @@ import {register} from './register.js'
 import {bind, bindShadow} from './bind.js'
 import {autoShadowRoot} from './auto-shadow-root.js'
 import {defineObservedAttributes, initializeAttrs} from './attr.js'
-import type {CustomElement} from './custom-element.js'
+import type {CustomElementClass} from './custom-element.js'
 
 const symbol = Symbol.for('catalyst')
 
 export class CatalystDelegate {
-  constructor(classObject: CustomElement) {
+  constructor(classObject: CustomElementClass) {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const delegate = this
 

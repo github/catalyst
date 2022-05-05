@@ -1,4 +1,4 @@
-import type {CustomElement} from './custom-element.js'
+import type {CustomElementClass} from './custom-element.js'
 import {dasherize} from './dasherize.js'
 
 /**
@@ -8,7 +8,7 @@ import {dasherize} from './dasherize.js'
  *
  * Example: HelloController => hello-controller
  */
-export function register(classObject: CustomElement): CustomElement {
+export function register(classObject: CustomElementClass): CustomElementClass {
   const name = dasherize(classObject.name).replace(/-element$/, '')
 
   try {
