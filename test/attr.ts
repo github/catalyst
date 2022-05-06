@@ -1,8 +1,8 @@
 import {expect, fixture, html} from '@open-wc/testing'
-import {attr} from '../src/attr.js'
 import {controller} from '../src/controller.js'
+import {attr} from '../src/attr.js'
 
-describe('Attrable', () => {
+describe('Attr', () => {
   @controller
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   class InitializeAttrTest extends HTMLElement {
