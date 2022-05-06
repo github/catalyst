@@ -1,9 +1,10 @@
 import {expect, fixture, html} from '@open-wc/testing'
-import {attr, Attrable} from '../src/attr.js'
-import {use} from '../src/use.js'
+import {attr} from '../src/attr.js'
+import {controller} from '../src/controller.js'
 
 describe('Attrable', () => {
-  @use(Attrable)
+  @controller
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   class InitializeAttrTest extends HTMLElement {
     @attr foo = 'hello'
     bar = 1
@@ -20,7 +21,6 @@ describe('Attrable', () => {
       this.#baz = value
     }
   }
-  window.customElements.define('initialize-attr-test', InitializeAttrTest)
 
   let instance
   beforeEach(async () => {
@@ -100,11 +100,11 @@ describe('Attrable', () => {
 
   describe('types', () => {
     it('infers number types from property and casts as number always', async () => {
-      @use(Attrable)
+      @controller
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       class NumberAttrTest extends HTMLElement {
         @attr foo = 1
       }
-      window.customElements.define('number-attr-test', NumberAttrTest)
       instance = await fixture(html`<number-attr-test />`)
 
       expect(instance).to.have.property('foo', 1)
@@ -126,11 +126,11 @@ describe('Attrable', () => {
     })
 
     it('infers boolean types from property and uses has/toggleAttribute', async () => {
-      @use(Attrable)
+      @controller
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       class BooleanAttrTest extends HTMLElement {
         @attr foo = false
       }
-      window.customElements.define('boolean-attr-test', BooleanAttrTest)
 
       instance = await fixture(html`<boolean-attr-test />`)
 
@@ -159,11 +159,11 @@ describe('Attrable', () => {
 
     it('defaults to inferring string type for non-boolean non-number types', async () => {
       const regexp = /^a regexp$/
-      @use(Attrable)
+      @controller
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       class RegExpAttrTest extends HTMLElement {
         @attr foo = regexp
       }
-      window.customElements.define('reg-exp-attr-test', RegExpAttrTest)
       instance = await fixture(html`<reg-exp-attr-test />`)
 
       expect(instance).to.have.property('foo', '/^a regexp$/')
@@ -178,7 +178,8 @@ describe('Attrable', () => {
 
     it('defers to custom set logic if present', async () => {
       const regexp = /^a regexp$/
-      @use(Attrable)
+      @controller
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       class RegExpCastAttrTest extends HTMLElement {
         #reg = regexp
         @attr
@@ -189,7 +190,6 @@ describe('Attrable', () => {
           this.#reg = value instanceof RegExp ? value : new RegExp(String(value).replace(/^\/|\/$/g, ''))
         }
       }
-      window.customElements.define('reg-exp-cast-attr-test', RegExpCastAttrTest)
       instance = await fixture(html`<reg-exp-cast-attr-test />`)
 
       expect(instance).to.have.property('foo', regexp)
@@ -200,7 +200,8 @@ describe('Attrable', () => {
     })
 
     it('avoids infinite loops', async () => {
-      @use(Attrable)
+      @controller
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       class LoopAttrTest extends HTMLElement {
         count = 0
         @attr
@@ -211,7 +212,6 @@ describe('Attrable', () => {
           this.count += 1
         }
       }
-      window.customElements.define('loop-attr-test', LoopAttrTest)
       instance = await fixture(html`<loop-attr-test />`)
 
       expect(instance).to.have.property('foo')
@@ -223,13 +223,13 @@ describe('Attrable', () => {
   })
 
   describe('naming', () => {
-    @use(Attrable)
+    @controller
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     class NamingAttrTest extends HTMLElement {
       @attr fooBarBazBing = 'a'
       @attr URLBar = 'b'
       @attr ClipX = 'c'
     }
-    window.customElements.define('naming-attr-test', NamingAttrTest)
 
     beforeEach(async () => {
       instance = await fixture(html`<naming-attr-test />`)
