@@ -1,40 +1,22 @@
 import {expect, fixture, html} from '@open-wc/testing'
-import {target, targets, Targetable} from '../src/target.js'
-import {use} from '../src/use.js'
+import {target, targets} from '../src/target.js'
+import {controller} from '../src/controller.js'
 
 describe('Targetable', () => {
-  @use(Targetable)
+  @controller
   class TargetTest extends HTMLElement {
     @target foo
     bar = 'hello'
-    count = 0
-    #baz
-    get baz() {
-      return this.#baz
-    }
-    @target set baz(value: Element) {
-      this.count += 1
-      this.#baz = value
-    }
+    @target baz
     @target qux
     @target shadow
 
     @target bing
     @targets foos
     bars = 'hello'
-    counts = 0
-    #bazs
-    get bazs() {
-      return this.#bazs
-    }
-    @target set bazs(value: Element) {
-      this.counts += 1
-      this.#bazs = value
-    }
     @target quxs
     @target shadows
   }
-  window.customElements.define('target-test', TargetTest)
 
   let instance
   beforeEach(async () => {
