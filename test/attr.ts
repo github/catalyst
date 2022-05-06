@@ -60,14 +60,6 @@ describe('Attrable', () => {
     expect(instance).to.have.property('baz', 'universe')
   })
 
-  it('resets to the default value when the attribute is removed', async () => {
-    instance.setAttribute('data-foo', 'goodbye')
-    expect(instance).to.have.property('foo', 'goodbye')
-    instance.removeAttribute('data-foo')
-    await Promise.resolve()
-    expect(instance).to.have.property('foo', 'hello')
-  })
-
   it('changes the attribute when the property changes', () => {
     instance.foo = 'goodbye'
     expect(instance).to.have.attribute('data-foo', 'goodbye')
@@ -75,56 +67,7 @@ describe('Attrable', () => {
     expect(instance).to.have.attribute('data-baz', 'universe')
   })
 
-  it('calls underlying get/set', async () => {
-    instance.getCount = 0
-    instance.setCount = 0
-    instance.baz
-    expect(instance).to.have.property('getCount', 1)
-    expect(instance).to.have.property('setCount', 0)
-    instance.baz = 2
-    expect(instance).to.have.property('getCount', 1)
-    expect(instance).to.have.property('setCount', 1)
-  })
-
-  it('does not overly eagerly call get/set on attribute change', async () => {
-    instance.getCount = 0
-    instance.setCount = 0
-    instance.setAttribute('data-baz', 'one')
-    instance.setAttribute('data-baz', 'one')
-    instance.setAttribute('data-baz', 'one')
-    instance.setAttribute('data-baz', 'one')
-    await Promise.resolve()
-    expect(instance).to.have.property('getCount', 0)
-    expect(instance).to.have.property('setCount', 4)
-  })
-
   describe('types', () => {
-    it('infers number types from property and casts as number always', async () => {
-      @controller
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      class NumberAttrTest extends HTMLElement {
-        @attr foo = 1
-      }
-      instance = await fixture(html`<number-attr-test />`)
-
-      expect(instance).to.have.property('foo', 1)
-      expect(instance).to.have.attribute('data-foo', '1')
-      instance.setAttribute('data-foo', '7')
-      await Promise.resolve()
-      expect(instance).to.have.property('foo', 7)
-      instance.setAttribute('data-foo', '-3.14')
-      await Promise.resolve()
-      expect(instance).to.have.property('foo', -3.14)
-      instance.setAttribute('data-foo', 'Not a Number')
-      await Promise.resolve()
-      expect(instance).to.have.property('foo').satisfy(Number.isNaN)
-      instance.foo = 3.14
-      expect(instance.getAttribute('data-foo')).to.equal('3.14')
-      instance.removeAttribute('data-foo')
-      await Promise.resolve()
-      expect(instance).to.have.property('foo', 1)
-    })
-
     it('infers boolean types from property and uses has/toggleAttribute', async () => {
       @controller
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -155,48 +98,6 @@ describe('Attrable', () => {
       instance.removeAttribute('data-foo')
       await Promise.resolve()
       expect(instance).to.have.property('foo', false)
-    })
-
-    it('defaults to inferring string type for non-boolean non-number types', async () => {
-      const regexp = /^a regexp$/
-      @controller
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      class RegExpAttrTest extends HTMLElement {
-        @attr foo = regexp
-      }
-      instance = await fixture(html`<reg-exp-attr-test />`)
-
-      expect(instance).to.have.property('foo', '/^a regexp$/')
-      expect(instance).to.have.attribute('data-foo', '/^a regexp$/')
-      instance.setAttribute('data-foo', '/^another$/')
-      await Promise.resolve()
-      expect(instance).to.have.property('foo', '/^another$/')
-      instance.removeAttribute('data-foo')
-      await Promise.resolve()
-      expect(instance).to.have.property('foo', regexp)
-    })
-
-    it('defers to custom set logic if present', async () => {
-      const regexp = /^a regexp$/
-      @controller
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      class RegExpCastAttrTest extends HTMLElement {
-        #reg = regexp
-        @attr
-        get foo() {
-          return this.#reg
-        }
-        set foo(value) {
-          this.#reg = value instanceof RegExp ? value : new RegExp(String(value).replace(/^\/|\/$/g, ''))
-        }
-      }
-      instance = await fixture(html`<reg-exp-cast-attr-test />`)
-
-      expect(instance).to.have.property('foo', regexp)
-      expect(instance).to.have.attribute('data-foo', '/^a regexp$/')
-      instance.setAttribute('data-foo', '/^another$/')
-      await Promise.resolve()
-      expect(instance).to.have.property('foo').a('regexp').property('source', '^another$')
     })
 
     it('avoids infinite loops', async () => {
