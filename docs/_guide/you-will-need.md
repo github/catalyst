@@ -73,11 +73,22 @@ class UserList extends HTMLElement {
 }
 ```
 
-TypeScript decorators only support _class declarations_ which means you will still need to keep the class name between `class` and `extends`. For example the following will be a SyntaxError:
+TypeScript will need the `useDefineForClassFields` set to `true` for the above to work, alternatively you can use the following syntax with `useDefineForClassFields` kept off:
 
 ```ts
 @controller
-class extends HTMLElement {
+class UserList extends HTMLElement {
+  static get name() { return 'UserList' }
+}
+```
+
+You'll need to keep the class name either way. TypeScript decorators only support _class declarations_ which require a name between `class` and `extends`. For example the following will be a SyntaxError:
+
+```ts
+@controller
+class extends HTMLElement { // You can't do this!
   static name = 'UserList'
 }
 ```
+
+
