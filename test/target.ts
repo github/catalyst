@@ -4,7 +4,8 @@ import {controller} from '../src/controller.js'
 
 describe('Targetable', () => {
   @controller
-  class TargetTest extends HTMLElement {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  class TargetTestElement extends HTMLElement {
     @target foo
     bar = 'hello'
     @target baz
