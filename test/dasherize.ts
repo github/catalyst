@@ -8,10 +8,11 @@ describe('dasherize', () => {
     ['FooBar', 'foo-bar'],
     ['autofocusWhenReady', 'autofocus-when-ready'],
     ['URLBar', 'url-bar'],
-    ['ClipX', 'clip-x']
+    ['ClipX', 'clip-x'],
+    [Symbol('helloWorld'), 'hello-world']
   ]
 
   tests.map(([input, output]) =>
-    it(`transforms ${input} to ${output}`, () => expect(dasherize(input)).to.equal(output))
+    it(`transforms ${String(input)} to ${output}`, () => expect(dasherize(input)).to.equal(output))
   )
 })
