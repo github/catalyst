@@ -1,124 +1,115 @@
 import {expect, fixture, html} from '@open-wc/testing'
-import {fake, replace} from 'sinon'
-import {findTarget, findTargets} from '../src/findtarget.js'
+import {target, targets, Targetable} from '../src/target.js'
+import {use} from '../src/use.js'
 
-describe('findTarget', () => {
-  window.customElements.define('find-target-test-element', class extends HTMLElement {})
+describe('Targetable', () => {
+  @use(Targetable)
+  class TargetTest extends HTMLElement {
+    @target foo
+    bar = 'hello'
+    count = 0
+    #baz
+    get baz() {
+      return this.#baz
+    }
+    @target set baz(value: Element) {
+      this.count += 1
+      this.#baz = value
+    }
+    @target qux
+    @target shadow
+
+    @target bing
+    @targets foos
+    bars = 'hello'
+    counts = 0
+    #bazs
+    get bazs() {
+      return this.#bazs
+    }
+    @target set bazs(value: Element) {
+      this.counts += 1
+      this.#bazs = value
+    }
+    @target quxs
+    @target shadows
+  }
+  window.customElements.define('target-test', TargetTest)
 
   let instance
-
-  it('calls querySelectorAll with the controller name and target name', async () => {
-    instance = await fixture(html`<find-target-test-element />`)
-    replace(instance, 'querySelectorAll', fake.returns([]))
-    findTarget(instance, 'foo')
-    expect(instance.querySelectorAll).to.have.been.calledOnceWith('[data-target~="find-target-test-element.foo"]')
+  beforeEach(async () => {
+    instance = await fixture(html`<target-test>
+      <target-test>
+        <div id="el1" data-target="target-test.barfoo target-test.foobar"></div>
+        <div id="el2" data-target="target-test.foo" data-targets="target-test.foos"></div>
+        <div id="el3" data-target="target-test.bing"></div>
+      </target-test>
+      <div id="el4" data-target="target-test.foo" data-targets="target-test.foos"></div>
+      <div id="el5" data-target="target-test.baz" data-targets="target-test.foos"></div>
+      <div id="el6" data-target="target-test.bar target-test.bing"></div>
+      <div id="el7" data-target="target-test.bazbaz"></div>
+      <div id="el8" data-target="other-target.qux target-test.qux"></div>
+    </target-test>`)
   })
 
-  it('returns the first element where closest tag is the controller', async () => {
-    instance = await fixture(html`
-      <find-target-test-element>
-        <find-target-test-element>
-          <div id="1" data-target="find-target-test-element.foo"></div>
-        </find-target-test-element>
-        <div id="2" data-target="find-target-test-element.foo"></div>
-      </find-target-test-element>
-    `)
-    expect(findTarget(instance, 'foo')).to.have.attribute('id', '2')
+  describe('target', () => {
+    it('returns the first element where closest tag is the controller', async () => {
+      expect(instance).to.have.property('foo').exist.with.attribute('id', 'el4')
+      expect(instance.querySelector('target-test')).to.have.property('foo').exist.with.attribute('id', 'el2')
+    })
+
+    it('does not assign to non-target decorated properties', async () => {
+      expect(instance).to.have.property('bar', 'hello')
+    })
+
+    it('returns the first element that has the exact target name', async () => {
+      expect(instance).to.have.property('baz').exist.with.attribute('id', 'el5')
+    })
+
+    it('returns target when there are mutliple target values', async () => {
+      expect(instance).to.have.property('bing').exist.with.attribute('id', 'el6')
+    })
+
+    it('returns targets when there are mutliple target values with different controllers', async () => {
+      expect(instance).to.have.property('qux').exist.with.attribute('id', 'el8')
+    })
+
+    it('returns targets from the shadowRoot, if available', async () => {
+      instance.attachShadow({mode: 'open'})
+      const el = document.createElement('div')
+      el.setAttribute('data-target', 'target-test.shadow')
+      instance.shadowRoot.appendChild(el)
+      expect(instance).to.have.property('shadow', el)
+    })
+
+    it('prioritises shadowRoot targets over others', async () => {
+      instance.attachShadow({mode: 'open'})
+      const shadowEl = document.createElement('div')
+      shadowEl.setAttribute('data-target', 'target-test.foo')
+      instance.shadowRoot.appendChild(shadowEl)
+      expect(instance).to.have.property('foo', shadowEl)
+    })
   })
 
-  it('returns the first element that has the exact target name', async () => {
-    instance = await fixture(html`
-      <find-target-test-element>
-        <div id="1" data-target="find-target-test-element.foobar"></div>
-        <div id="2" data-target="find-target-test-element.foo"></div>
-      </find-target-test-element>
-    `)
-    expect(findTarget(instance, 'foo')).to.have.attribute('id', '2')
-  })
+  describe('targets', () => {
+    it('returns all elements where closest tag is the controller', async () => {
+      expect(instance).to.have.property('foos').with.lengthOf(2)
+      expect(instance).to.have.nested.property('foos[0]').with.attribute('id', 'el4')
+      expect(instance).to.have.nested.property('foos[1]').with.attribute('id', 'el5')
+    })
 
-  it('returns targets when there are mutliple target values', async () => {
-    instance = await fixture(html`
-      <find-target-test-element>
-        <div id="1" data-target="find-target-test-element.barfoo find-target-test-element.foobar"></div>
-        <div id="2" data-target="find-target-test-element.foo"></div>
-      </find-target-test-element>
-    `)
-    expect(findTarget(instance, 'foo')).to.have.attribute('id', '2')
-    expect(findTarget(instance, 'barfoo')).to.have.attribute('id', '1')
-    expect(findTarget(instance, 'barfoo')).to.equal(findTarget(instance, 'foobar'))
-  })
+    it('returns all elements inside a shadow root', async () => {
+      instance.attachShadow({mode: 'open'})
+      const els = [document.createElement('div'), document.createElement('div'), document.createElement('div')]
+      for (const el of els) el.setAttribute('data-targets', 'target-test.foos')
+      instance.shadowRoot.append(...els)
 
-  it('returns targets when there are mutliple target values with different controllers', async () => {
-    instance = await fixture(html`
-      <find-target-test-element>
-        <div id="1" data-target="other-controller.barfoo find-target-test-element.foobar"></div>
-      </find-target-test-element>
-    `)
-    expect(findTarget(instance, 'foobar')).to.have.attribute('id', '1')
-    expect(findTarget(instance, 'barfoo')).to.equal(undefined)
-  })
-
-  it('returns targets from the shadowRoot, if available', async () => {
-    instance = await fixture(html`<find-target-test-element></find-target-test-element>`)
-    instance.attachShadow({mode: 'open'})
-    const el = document.createElement('div')
-    el.setAttribute('data-target', 'find-target-test-element.foobar')
-
-    instance.shadowRoot.appendChild(el)
-
-    expect(findTarget(instance, 'foobar')).to.equal(el)
-  })
-
-  it('prioritises shadowRoot targets over others', async () => {
-    instance = await fixture(html` <find-target-test-element>
-      <div data-target="find-target-test-element.foobar"></div>
-    </find-target-test-element>`)
-    instance.attachShadow({mode: 'open'})
-    const shadowEl = document.createElement('div')
-    shadowEl.setAttribute('data-target', 'find-target-test-element.foobar')
-    instance.shadowRoot.appendChild(shadowEl)
-    expect(findTarget(instance, 'foobar')).to.equal(shadowEl)
-  })
-})
-
-describe('findTargets', () => {
-  let instance
-
-  it('calls querySelectorAll with the controller name and target name', async () => {
-    instance = await fixture(html`<find-target-test-element>
-      <div id="1" data-targets="find-target-test-element.foo"></div>
-      <div id="2" data-targets="find-target-test-element.foo"></div>
-      <div id="3" data-targets="find-target-test-element.bar"></div>
-    </find-target-test-element>`)
-    const els = findTargets(instance, 'foo')
-    expect(els).to.have.lengthOf(2)
-    expect(els[0]).to.have.attribute('id', '1')
-    expect(els[1]).to.have.attribute('id', '2')
-  })
-
-  it('returns all elements where closest tag is the controller', async () => {
-    instance = await fixture(html`<find-target-test-element>
-      <div id="1" data-targets="find-target-test-element.foo"></div>
-      <div id="2" data-targets="find-target-test-element.foo"></div>
-      <find-target-test-element>
-        <div id="3" data-targets="find-target-test-element.foo"></div>
-      </find-target-test-element>
-    </find-target-test-element>`)
-    const els = findTargets(instance, 'foo')
-    expect(els).to.have.lengthOf(2)
-    expect(els[0]).to.have.attribute('id', '1')
-    expect(els[1]).to.have.attribute('id', '2')
-  })
-
-  it('returns all elements inside a shadow root', async () => {
-    instance = await fixture(html`<find-target-test-element></find-target-test-element>`)
-    instance.attachShadow({mode: 'open'})
-    const els = [document.createElement('div'), document.createElement('div'), document.createElement('div')]
-    for (const el of els) el.setAttribute('data-targets', 'find-target-test-element.foo')
-
-    instance.shadowRoot.append(els[1])
-    instance.append(els[0], els[2])
-
-    expect(findTargets(instance, 'foo')).to.eql([els[1], els[0], els[2]])
+      expect(instance).to.have.property('foos').with.lengthOf(5)
+      expect(instance).to.have.nested.property('foos[0]', els[0])
+      expect(instance).to.have.nested.property('foos[1]', els[1])
+      expect(instance).to.have.nested.property('foos[2]', els[2])
+      expect(instance).to.have.nested.property('foos[3]').with.attribute('id', 'el4')
+      expect(instance).to.have.nested.property('foos[4]').with.attribute('id', 'el5')
+    })
   })
 })
