@@ -205,7 +205,7 @@ describe('ability', () => {
       })
 
       it('does not error if shadowdom is disabled', async () => {
-       await fixture(html`<disabled-shadow-ability></disabled-shadow-ability>`)
+        await fixture(html`<disabled-shadow-ability></disabled-shadow-ability>`)
         expect(attachShadowFake).to.be.have.callCount(0)
       })
     })
