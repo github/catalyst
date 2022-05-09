@@ -1,6 +1,6 @@
 import {expect, fixture, html} from '@open-wc/testing'
 import {restore, fake} from 'sinon'
-import {createAbility, attachShadowCallback, attachInternalsCallback, updateCallback} from '../src/ability.js'
+import {createAbility, attachShadowCallback, attachInternalsCallback} from '../src/ability.js'
 
 describe('ability', () => {
   let calls = []
@@ -205,7 +205,7 @@ describe('ability', () => {
       })
 
       it('does not error if shadowdom is disabled', async () => {
-        const instance = await fixture(html`<disabled-shadow-ability></disabled-shadow-ability>`)
+       await fixture(html`<disabled-shadow-ability></disabled-shadow-ability>`)
         expect(attachShadowFake).to.be.have.callCount(0)
       })
     })
