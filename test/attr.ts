@@ -6,19 +6,19 @@ describe('Attr', () => {
   @controller
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   class InitializeAttrTest extends HTMLElement {
-    @attr foo = 'hello'
-    bar = 1
+    @attr fooBar = 'hello'
+    fooBaz = 1
 
     getCount = 0
     setCount = 0
-    #baz = 'world'
-    get baz() {
+    #bing = 'world'
+    get bingBaz() {
       this.getCount += 1
-      return this.#baz
+      return this.#bing
     }
-    @attr set baz(value: string) {
+    @attr set bingBaz(value: string) {
       this.setCount += 1
-      this.#baz = value
+      this.#bing = value
     }
   }
 
@@ -32,39 +32,39 @@ describe('Attr', () => {
   })
 
   it('does not alter field values from their initial value', () => {
-    expect(instance).to.have.property('foo', 'hello')
-    expect(instance).to.have.property('bar', 1)
-    expect(instance).to.have.property('baz', 'world')
+    expect(instance).to.have.property('fooBar', 'hello')
+    expect(instance).to.have.property('fooBaz', 1)
+    expect(instance).to.have.property('bingBaz', 'world')
   })
 
   it('reflects the initial value as an attribute, if not present', () => {
-    expect(instance).to.have.attribute('data-foo', 'hello')
-    expect(instance).to.not.have.attribute('data-bar')
-    expect(instance).to.have.attribute('data-baz', 'world')
+    expect(instance).to.have.attribute('data-foo-bar', 'hello')
+    expect(instance).to.not.have.attribute('data-foo-baz')
+    expect(instance).to.have.attribute('data-bing-baz', 'world')
   })
 
   it('prioritises the value in the attribute over the property', async () => {
-    instance = await fixture(html`<initialize-attr-test data-foo="goodbye" data-baz="universe" />`)
-    expect(instance).to.have.property('foo', 'goodbye')
-    expect(instance).to.have.attribute('data-foo', 'goodbye')
-    expect(instance).to.have.property('baz', 'universe')
-    expect(instance).to.have.attribute('data-baz', 'universe')
+    instance = await fixture(html`<initialize-attr-test data-foo-bar="goodbye" data-bing-baz="universe" />`)
+    expect(instance).to.have.property('fooBar', 'goodbye')
+    expect(instance).to.have.attribute('data-foo-bar', 'goodbye')
+    expect(instance).to.have.property('bingBaz', 'universe')
+    expect(instance).to.have.attribute('data-bing-baz', 'universe')
   })
 
   it('changes the property when the attribute changes', async () => {
-    instance.setAttribute('data-foo', 'goodbye')
+    instance.setAttribute('data-foo-bar', 'goodbye')
     await Promise.resolve()
-    expect(instance).to.have.property('foo', 'goodbye')
-    instance.setAttribute('data-baz', 'universe')
+    expect(instance).to.have.property('fooBar', 'goodbye')
+    instance.setAttribute('data-bing-baz', 'universe')
     await Promise.resolve()
-    expect(instance).to.have.property('baz', 'universe')
+    expect(instance).to.have.property('bingBaz', 'universe')
   })
 
   it('changes the attribute when the property changes', () => {
-    instance.foo = 'goodbye'
-    expect(instance).to.have.attribute('data-foo', 'goodbye')
-    instance.baz = 'universe'
-    expect(instance).to.have.attribute('data-baz', 'universe')
+    instance.fooBar = 'goodbye'
+    expect(instance).to.have.attribute('data-foo-bar', 'goodbye')
+    instance.bingBaz = 'universe'
+    expect(instance).to.have.attribute('data-bing-baz', 'universe')
   })
 
   describe('types', () => {
@@ -72,32 +72,34 @@ describe('Attr', () => {
       @controller
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       class BooleanAttrTest extends HTMLElement {
-        @attr foo = false
+        @attr fooBar = false
       }
 
       instance = await fixture(html`<boolean-attr-test />`)
 
-      expect(instance).to.have.property('foo', false)
-      expect(instance).to.not.have.attribute('data-foo')
-      instance.setAttribute('data-foo', '7')
+      expect(instance).to.have.property('fooBar', false)
+      expect(instance).to.not.have.attribute('data-foo-bar')
+      instance.setAttribute('data-foo-bar', '7')
       await Promise.resolve()
-      expect(instance).to.have.property('foo', true)
-      instance.setAttribute('data-foo', 'hello')
+      expect(instance).to.have.property('fooBar', true)
+      instance.setAttribute('data-foo-bar', 'hello')
       await Promise.resolve()
-      expect(instance).to.have.property('foo', true)
-      instance.setAttribute('data-foo', 'false')
+      expect(instance).to.have.property('fooBar', true)
+      instance.setAttribute('data-foo-bar', 'false')
       await Promise.resolve()
-      expect(instance).to.have.property('foo', true)
-      instance.removeAttribute('data-foo')
+      expect(instance).to.have.property('fooBar', true)
+      instance.removeAttribute('data-foo-bar')
       await Promise.resolve()
-      expect(instance).to.have.property('foo', false)
-      instance.foo = true
-      expect(instance).to.have.attribute('data-foo', '')
-      instance.foo = false
-      expect(instance).to.not.have.attribute('data-foo')
-      instance.removeAttribute('data-foo')
+      expect(instance).to.have.property('fooBar', false)
+      instance.fooBar = true
       await Promise.resolve()
-      expect(instance).to.have.property('foo', false)
+      expect(instance).to.have.attribute('data-foo-bar', '')
+      instance.fooBar = false
+      await Promise.resolve()
+      expect(instance).to.not.have.attribute('data-foo-bar')
+      instance.removeAttribute('data-foo-bar')
+      await Promise.resolve()
+      expect(instance).to.have.property('fooBar', false)
     })
 
     it('avoids infinite loops', async () => {
@@ -106,20 +108,20 @@ describe('Attr', () => {
       class LoopAttrTest extends HTMLElement {
         count = 0
         @attr
-        get foo() {
+        get fooBar() {
           return ++this.count
         }
-        set foo(value) {
+        set fooBar(value) {
           this.count += 1
         }
       }
       instance = await fixture(html`<loop-attr-test />`)
 
-      expect(instance).to.have.property('foo')
-      instance.foo = 1
-      instance.setAttribute('data-foo', '2')
-      instance.foo = 3
-      instance.setAttribute('data-foo', '4')
+      expect(instance).to.have.property('fooBar')
+      instance.fooBar = 1
+      instance.setAttribute('data-foo-bar', '2')
+      instance.fooBar = 3
+      instance.setAttribute('data-foo-bar', '4')
     })
   })
 
