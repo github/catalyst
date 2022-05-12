@@ -1,9 +1,10 @@
 import {expect, fixture, html} from '@open-wc/testing'
 import {restore, fake} from 'sinon'
+import type {CustomElement} from '../src/custom-element.js'
 import {createAbility, attachShadowCallback, attachInternalsCallback} from '../src/ability.js'
 
 describe('ability', () => {
-  let calls = []
+  let calls: string[] = []
   const fakeable = createAbility(
     Class =>
       class extends Class {
@@ -22,9 +23,9 @@ describe('ability', () => {
           calls.push('fakeable adoptedCallback')
           super.adoptedCallback?.()
         }
-        attributeChangedCallback(...args) {
+        attributeChangedCallback(name: string, oldValue: string | null, newValue: string | null) {
           calls.push('fakeable attributeChangedCallback')
-          super.attributeChangedCallback?.(...args)
+          super.attributeChangedCallback?.(name, oldValue, newValue)
         }
       }
   )
@@ -46,9 +47,9 @@ describe('ability', () => {
           calls.push('otherfakeable adoptedCallback')
           super.adoptedCallback?.()
         }
-        attributeChangedCallback(...args) {
+        attributeChangedCallback(name: string, oldValue: string | null, newValue: string | null) {
           calls.push('otherfakeable attributeChangedCallback')
-          super.attributeChangedCallback?.(...args)
+          super.attributeChangedCallback?.(name, oldValue, newValue)
         }
       }
   )
@@ -85,9 +86,9 @@ describe('ability', () => {
   it('can be called multiple times, but only applies once', async () => {
     const MultipleFakeable = fakeable(fakeable(fakeable(fakeable(fakeable(Element)))))
     customElements.define('multiple-fakeable', MultipleFakeable)
-    const instance = await fixture(html`<multiple-fakeable />`)
+    const instance: CustomElement = await fixture(html`<multiple-fakeable />`)
     expect(calls).to.eql(['fakeable connectedCallback'])
-    instance.connectedCallback()
+    instance.connectedCallback!()
     expect(calls).to.eql(['fakeable connectedCallback', 'fakeable connectedCallback'])
   })
 
@@ -95,22 +96,22 @@ describe('ability', () => {
     const CoreTest = otherfakeable(fakeable(Element))
     customElements.define('core-test', CoreTest)
 
-    let instance
+    let instance: CustomElement & typeof CoreTest
     beforeEach(async () => {
       instance = await fixture(html`<core-test />`)
     })
 
     it('applies keys from delegate onto subclass upon instantiation', () => {
       expect(instance).to.have.property('foo')
-      expect(instance.foo()).to.equal('foo!')
+      expect((instance as unknown as Record<string, () => void>).foo()).to.equal('foo!')
       expect(instance).to.have.property('bar')
-      expect(instance.bar()).to.equal('bar!')
+      expect((instance as unknown as Record<string, () => void>).bar()).to.equal('bar!')
     })
 
     for (const method of ['connectedCallback', 'disconnectedCallback', 'adoptedCallback', 'attributeChangedCallback']) {
       it(`delegates to other ${method}s before class ${method}`, () => {
         calls = []
-        instance[method]()
+        ;(instance as unknown as Record<string, () => void>)[method]()
         expect(calls).to.eql([`otherfakeable ${method}`, `fakeable ${method}`])
       })
     }
@@ -118,8 +119,8 @@ describe('ability', () => {
 
   describe('ability extension behaviour', () => {
     describe('attachShadowCallback', () => {
-      let attachShadowFake
-      let shadow
+      let attachShadowFake: (shadow: ShadowRoot) => void
+      let shadow: ShadowRoot | null
       beforeEach(() => {
         shadow = null
         attachShadowFake = fake()
@@ -128,8 +129,8 @@ describe('ability', () => {
       const declarable = createAbility(
         Class =>
           class extends Class {
-            [attachShadowCallback](...args) {
-              super[attachShadowCallback](...args)
+            [attachShadowCallback](...args: [ShadowRoot]) {
+              super[attachShadowCallback]!(...args)
               return attachShadowFake.apply(this, args)
             }
           }
@@ -211,8 +212,8 @@ describe('ability', () => {
     })
 
     describe('attachInternalsCallback', () => {
-      let attachInternalsFake
-      let internals
+      let attachInternalsFake: (internals: ElementInternals) => void
+      let internals: ElementInternals | null
       beforeEach(() => {
         internals = null
         attachInternalsFake = fake()
@@ -221,8 +222,8 @@ describe('ability', () => {
       const internable = createAbility(
         Class =>
           class extends Class {
-            [attachInternalsCallback](...args) {
-              super[attachInternalsCallback](...args)
+            [attachInternalsCallback](...args: [ElementInternals]) {
+              super[attachInternalsCallback]!(...args)
               return attachInternalsFake.apply(this, args)
             }
           }
@@ -261,7 +262,7 @@ describe('ability', () => {
       })
 
       it('errors if userland calls attachInternals more than once', async () => {
-        const instance = await fixture(html`<manual-internals-ability></manual-internals-ability>`)
+        const instance = await fixture<CustomElement>(html`<manual-internals-ability></manual-internals-ability>`)
         internals = instance.attachInternals()
         expect(internals).to.exist.and.be.instanceof(ElementInternals)
         expect(attachInternalsFake).to.be.calledOnce.calledOn(instance).and.calledWithExactly(internals)

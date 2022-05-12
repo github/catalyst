@@ -3,9 +3,12 @@ import {replace, fake} from 'sinon'
 import {autoShadowRoot} from '../src/auto-shadow-root.js'
 
 describe('autoShadowRoot', () => {
-  window.customElements.define('shadowroot-test-element', class extends HTMLElement {})
+  class ShadowRootTestElement extends HTMLElement {
+    declare shadowRoot: ShadowRoot
+  }
+  window.customElements.define('shadowroot-test-element', ShadowRootTestElement)
 
-  let instance
+  let instance: ShadowRootTestElement
   beforeEach(async () => {
     instance = await fixture(html`<shadowroot-test-element />`)
   })
@@ -58,7 +61,7 @@ describe('autoShadowRoot', () => {
     instance = await fixture(html`<shadowroot-test-element>
       <template data-shadowroot="closed">Hello World</template>
     </shadowroot-test-element>`)
-    let shadowRoot = null
+    let shadowRoot: ShadowRoot | null = null
     replace(
       instance,
       'attachShadow',

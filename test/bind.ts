@@ -3,18 +3,16 @@ import {replace, fake} from 'sinon'
 import {bind, listenForBind} from '../src/bind.js'
 
 describe('bind', () => {
-  window.customElements.define(
-    'bind-test-element',
-    class extends HTMLElement {
-      foo = fake()
-      bar = fake()
-      handleEvent = fake()
-    }
-  )
+  class BindTestElement extends HTMLElement {
+    foo = fake()
+    bar = fake()
+    handleEvent = fake()
+  }
+  window.customElements.define('bind-test-element', BindTestElement)
 
-  let instance
+  let instance: BindTestElement
   beforeEach(async () => {
-    instance = await fixture(html`<bind-test-element />`)
+    instance = await fixture<BindTestElement>(html`<bind-test-element />`)
   })
 
   it('binds events on elements based on their data-action attribute', () => {
@@ -47,7 +45,7 @@ describe('bind', () => {
 
   it('does not bind elements whose closest selector is not this controller', () => {
     const el = document.createElement('div')
-    el.getAttribute('data-action', 'click:bind-test-element#foo')
+    el.setAttribute('data-action', 'click:bind-test-element#foo')
     const container = document.createElement('div')
     container.append(instance, el)
     bind(instance)
@@ -157,7 +155,7 @@ describe('bind', () => {
     const el2 = document.createElement('div')
     el1.setAttribute('data-action', 'click:bind-test-element#foo')
     el2.setAttribute('data-action', 'submit:bind-test-element#foo')
-    instance.shadowRoot.append(el1, el2)
+    instance.shadowRoot!.append(el1, el2)
     bind(instance)
     expect(instance.foo).to.have.callCount(0)
     el1.click()
@@ -173,8 +171,8 @@ describe('bind', () => {
     el1.setAttribute('data-action', 'click:bind-test-element#foo')
     el2.setAttribute('data-action', 'submit:bind-test-element#foo')
     bind(instance)
-    instance.shadowRoot.append(el1)
-    instance.shadowRoot.append(el2)
+    instance.shadowRoot!.append(el1)
+    instance.shadowRoot!.append(el2)
     // We need to wait for one microtask after injecting the HTML into to
     // controller so that the actions have been bound to the controller.
     await Promise.resolve()
@@ -267,7 +265,7 @@ describe('bind', () => {
     // We need to wait for one microtask after injecting the HTML into to
     // controller so that the actions have been bound to the controller.
     await Promise.resolve()
-    instance.querySelector('button').click()
+    instance.querySelector('button')!.click()
     expect(instance.foo).to.have.callCount(1)
   })
 
@@ -277,7 +275,7 @@ describe('bind', () => {
     </bind-test-element>`)
     bind(instance)
     expect(instance.foo).to.have.callCount(0)
-    const el = instance.querySelector('div')
+    const el = instance.querySelector('div')!
     el.click()
     expect(instance.foo).to.have.callCount(1)
     el.setAttribute('data-action', 'click:other-element#foo')
@@ -292,7 +290,7 @@ describe('bind', () => {
     bind(instance)
     listenForBind(instance.ownerDocument)
     await Promise.resolve()
-    const button = instance.querySelector('button')
+    const button = instance.querySelector('button')!
     button.click()
     expect(instance.foo).to.have.callCount(0)
     button.setAttribute('data-action', 'click:bind-test-element#foo')
