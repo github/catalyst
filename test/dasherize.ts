@@ -2,7 +2,7 @@ import {expect} from '@open-wc/testing'
 import {dasherize} from '../src/dasherize.js'
 
 describe('dasherize', () => {
-  const tests = [
+  const tests: Array<[PropertyKey, string]> = [
     ['json', 'json'],
     ['fooBar', 'foo-bar'],
     ['FooBar', 'foo-bar'],

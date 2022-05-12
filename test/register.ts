@@ -9,19 +9,19 @@ describe('register', () => {
 
   it('registers the class as a custom element, normalising the class name', () => {
     @register
-    class MyFirstClass {}
+    class MyFirstClass extends HTMLElement {}
     expect(window.customElements.get('my-first-class')).to.equal(MyFirstClass)
   })
 
   it('does not register controllers that already exist', () => {
     {
       @register
-      class MySecondClass {}
+      class MySecondClass extends HTMLElement {}
       expect(window.customElements.get('my-second-class')).to.equal(MySecondClass)
     }
     {
       @register
-      class MySecondClass {}
+      class MySecondClass extends HTMLElement {}
       expect(window.customElements.get('my-second-class')).to.not.equal(MySecondClass)
     }
   })
@@ -31,23 +31,23 @@ describe('register', () => {
     replace(
       customElements,
       'get',
-      fake(() => class {})
+      fake(() => class extends HTMLElement {})
     )
     {
       @register
-      class MyThirdClass {}
+      class MyThirdClass extends HTMLElement {}
       expect(customElements.define).to.be.calledOnceWithExactly('my-third-class', MyThirdClass)
     }
     expect(() => {
       @register
-      class MyThirdClass {}
+      class MyThirdClass extends HTMLElement {}
       expect(customElements.define).to.be.calledOnceWithExactly('my-third-class', MyThirdClass)
     }).to.throw(Error)
   })
 
   it('dasherises class names', () => {
     @register
-    class ThisIsAnExampleOfDasherisedClassNames {}
+    class ThisIsAnExampleOfDasherisedClassNames extends HTMLElement {}
     expect(window.customElements.get('this-is-an-example-of-dasherised-class-names')).to.equal(
       ThisIsAnExampleOfDasherisedClassNames
     )
@@ -55,19 +55,19 @@ describe('register', () => {
 
   it('will intuitively dasherize acryonyms', () => {
     @register
-    class URLBar {}
+    class URLBar extends HTMLElement {}
     expect(window.customElements.get('url-bar')).to.equal(URLBar)
   })
 
   it('dasherizes cap suffixed names correctly', () => {
     @register
-    class ClipX {}
+    class ClipX extends HTMLElement {}
     expect(window.customElements.get('clip-x')).to.equal(ClipX)
   })
 
   it('automatically drops the `Element` suffix', () => {
     @register
-    class FirstSuffixElement {}
+    class FirstSuffixElement extends HTMLElement {}
     expect(window.customElements.get('first-suffix')).to.equal(FirstSuffixElement)
   })
 })

@@ -6,20 +6,20 @@ describe('Targetable', () => {
   @controller
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   class TargetTestElement extends HTMLElement {
-    @target foo
+    @target foo!: Element
     bar = 'hello'
-    @target baz
-    @target qux
-    @target shadow
+    @target baz!: Element
+    @target qux!: Element
+    @target shadow!: Element
 
-    @target bing
-    @targets foos
+    @target bing!: Element
+    @targets foos!: Element[]
     bars = 'hello'
-    @target quxs
-    @target shadows
+    @target quxs!: Element[]
+    @target shadows!: Element[]
   }
 
-  let instance
+  let instance: HTMLElement
   beforeEach(async () => {
     instance = await fixture(html`<target-test>
       <target-test>
@@ -61,7 +61,7 @@ describe('Targetable', () => {
       instance.attachShadow({mode: 'open'})
       const el = document.createElement('div')
       el.setAttribute('data-target', 'target-test.shadow')
-      instance.shadowRoot.appendChild(el)
+      instance.shadowRoot!.appendChild(el)
       expect(instance).to.have.property('shadow', el)
     })
 
@@ -69,7 +69,7 @@ describe('Targetable', () => {
       instance.attachShadow({mode: 'open'})
       const shadowEl = document.createElement('div')
       shadowEl.setAttribute('data-target', 'target-test.foo')
-      instance.shadowRoot.appendChild(shadowEl)
+      instance.shadowRoot!.appendChild(shadowEl)
       expect(instance).to.have.property('foo', shadowEl)
     })
   })
@@ -85,7 +85,7 @@ describe('Targetable', () => {
       instance.attachShadow({mode: 'open'})
       const els = [document.createElement('div'), document.createElement('div'), document.createElement('div')]
       for (const el of els) el.setAttribute('data-targets', 'target-test.foos')
-      instance.shadowRoot.append(...els)
+      instance.shadowRoot!.append(...els)
 
       expect(instance).to.have.property('foos').with.lengthOf(5)
       expect(instance).to.have.nested.property('foos[0]', els[0])

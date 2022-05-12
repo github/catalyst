@@ -6,8 +6,8 @@ describe('createMark', () => {
   it('returns a tuple of functions: a mark and getMarks', () => {
     const mark = createMark(() => {})
     expect(mark).to.be.an('array').with.lengthOf(2)
-    expect(mark).to.have.property(0).a('function')
-    expect(mark).to.have.property(1).a('function')
+    expect(mark).to.have.property('0').a('function')
+    expect(mark).to.have.property('1').a('function')
   })
 
   it('attaches a `static` unique symbol to the first function', () => {
@@ -20,7 +20,7 @@ describe('createMark', () => {
   it('can be added to class fields without errors', () => {
     const [mark] = createMark(() => {})
     class FooBar {
-      @mark foo
+      @mark foo: unknown
       @mark bar = 1
       @mark baz = 'hi'
     }
@@ -30,11 +30,15 @@ describe('createMark', () => {
   it('can be added to getters or setters without errors', () => {
     const [mark] = createMark(() => {})
     class FooBar {
-      @mark get foo() {}
-      set foo(v) {}
+      @mark get foo() {
+        return 1
+      }
+      set foo(v: number) {}
 
-      @mark get bar() {}
-      @mark set baz(v) {}
+      @mark get bar() {
+        return 1
+      }
+      @mark set baz(v: number) {}
     }
     new FooBar()
   })
@@ -50,13 +54,17 @@ describe('createMark', () => {
   it('retrieves all marked fields with the get mark function', () => {
     const [mark, getMark] = createMark(() => {})
     class FooBar {
-      @mark foo
+      @mark foo: unknown
       @mark bar = 1
       @mark baz = 'hi'
-      @mark get bing() {}
-      @mark get qux() {}
-      @mark set quuz(v) {}
-      @mark set corge(v) {}
+      @mark get bing() {
+        return 1
+      }
+      @mark get qux() {
+        return 1
+      }
+      @mark set quuz(v: number) {}
+      @mark set corge(v: number) {}
       @mark grault() {}
     }
     expect(getMark(new FooBar())).to.eql(new Set(['foo', 'bar', 'baz', 'bing', 'qux', 'quuz', 'corge', 'grault']))
@@ -75,13 +83,17 @@ describe('createMark', () => {
     const [mark, getMark] = createMark(() => {})
     class FooBar {
       static [mark.static] = ['bar', 'bing', 'quuz', 'grault']
-      @mark foo
+      @mark foo: unknown
       bar = 1
       @mark baz = 'hi'
-      get bing() {}
-      @mark get qux() {}
-      set quuz(v) {}
-      @mark set corge(v) {}
+      get bing() {
+        return 1
+      }
+      @mark get qux() {
+        return 1
+      }
+      set quuz(v: number) {}
+      @mark set corge(v: number) {}
       grault() {}
     }
     const instance = new FooBar()
@@ -92,13 +104,17 @@ describe('createMark', () => {
     const [mark, getMark] = createMark(() => {})
     class FooBar {
       static [mark.static] = ['bar', 'bing', 'quuz', 'grault']
-      @mark foo
+      @mark foo: unknown
       @mark bar = 1
       @mark baz = 'hi'
-      @mark get bing() {}
-      @mark get qux() {}
-      @mark set quuz(v) {}
-      @mark set corge(v) {}
+      @mark get bing() {
+        return 1
+      }
+      @mark get qux() {
+        return 1
+      }
+      @mark set quuz(v: number) {}
+      @mark set corge(v: number) {}
       @mark grault() {}
     }
     expect(getMark(new FooBar())).to.eql(new Set(['foo', 'bar', 'baz', 'bing', 'qux', 'quuz', 'corge', 'grault']))
@@ -109,13 +125,17 @@ describe('createMark', () => {
     const [mark] = createMark(validate)
     const sym = Symbol('garply')
     class FooBar {
-      @mark foo
+      @mark foo: unknown
       @mark bar = 1
       @mark baz = 'hi'
-      @mark get bing() {}
-      @mark get qux() {}
-      @mark set quuz(v) {}
-      @mark set corge(v) {}
+      @mark get bing() {
+        return 1
+      }
+      @mark get qux() {
+        return 1
+      }
+      @mark set quuz(v: number) {}
+      @mark set corge(v: number) {}
       @mark grault() {}
       @mark [sym]() {}
     }
@@ -136,13 +156,17 @@ describe('createMark', () => {
     const [mark, getMark] = createMark(validate)
     class FooBar {
       static [mark.static] = ['foo', 'bar', 'baz', 'bing', 'qux', 'quuz', 'corge', 'grault']
-      foo
+      foo: unknown
       bar = 1
       baz = 'hi'
-      get bing() {}
-      get qux() {}
-      set quuz(v) {}
-      set corge(v) {}
+      get bing() {
+        return 1
+      }
+      get qux() {
+        return 1
+      }
+      set quuz(v: number) {}
+      set corge(v: number) {}
       grault() {}
     }
     getMark(new FooBar())

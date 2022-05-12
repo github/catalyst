@@ -1,16 +1,13 @@
 {
-  "include": ["src"],
+  "include": ["src", "test"],
   "compilerOptions": {
     "baseUrl": ".",
-    "declaration": true,
-    "declarationMap": true,
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "lib": ["es6", "dom", "dom.iterable"],
     "module": "ESNext",
     "moduleResolution": "node",
-    "noEmit": false,
-    "outDir": "./lib",
+    "noEmit": true,
     "sourceMap": true,
     "strict": true,
     "target": "ES2020"
