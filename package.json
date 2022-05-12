@@ -27,6 +27,7 @@
     "build:docs": "cd docs && JEKYLL_ENV=production bundle exec jekyll build",
     "clean": "tsc --build --clean tsconfig.build.json",
     "lint": "eslint . --ignore-path .gitignore",
+    "postlint": "tsc",
     "prepack": "npm run build",
     "presize": "npm run build",
     "size": "size-limit",
