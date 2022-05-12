@@ -4,3 +4,4 @@ _site
 lib/
 .jekyll-cache
 .lighthouseci
+coverage
