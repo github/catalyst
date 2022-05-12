@@ -23,9 +23,9 @@
     "lib"
   ],
   "scripts": {
-    "build": "tsc --build",
+    "build": "tsc --build tsconfig.build.json",
     "build:docs": "cd docs && JEKYLL_ENV=production bundle exec jekyll build",
-    "clean": "tsc --build --clean",
+    "clean": "tsc --build --clean tsconfig.build.json",
     "lint": "eslint . --ignore-path .gitignore",
     "prepack": "npm run build",
     "presize": "npm run build",
