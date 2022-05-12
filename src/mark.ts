@@ -1,9 +1,11 @@
 type PropertyType = 'field' | 'getter' | 'setter' | 'method'
-type PropertyDecorator = (proto: object, key: PropertyKey) => void
+interface PropertyDecorator {
+  (proto: object, key: PropertyKey, descriptor?: PropertyDescriptor): void
+  readonly static: unique symbol
+}
 type GetMarks = (instance: object) => Set<PropertyKey>
 export function createMark(validate: (key: PropertyKey, type: PropertyType) => void): [PropertyDecorator, GetMarks] {
   const marks = new WeakMap<object, Set<PropertyKey>>()
-  const sym = Symbol()
   function get(proto: object): Set<PropertyKey> {
     if (!marks.has(proto)) {
       const parent = Object.getPrototypeOf(proto)
@@ -22,13 +24,15 @@ export function createMark(validate: (key: PropertyKey, type: PropertyType) => v
     validate(key, type)
     get(proto).add(key)
   }
-  marker.static = sym
+  marker.static = Symbol()
 
   return [
-    marker,
+    marker as PropertyDecorator,
     (instance: object): Set<PropertyKey> => {
       const proto = Object.getPrototypeOf(instance)
-      for (const key of proto.constructor[sym] || []) marker(proto, key, Object.getOwnPropertyDescriptor(proto, key))
+      for (const key of proto.constructor[marker.static] || []) {
+        marker(proto, key, Object.getOwnPropertyDescriptor(proto, key))
+      }
       return new Set(get(proto))
     }
   ]
