@@ -1,5 +1,5 @@
 import {expect, fixture, html} from '@open-wc/testing'
-import {replace, fake} from 'sinon'
+import {fake} from 'sinon'
 import {controller} from '../src/controller.js'
 import {bindShadow} from '../src/bind.js'
 
