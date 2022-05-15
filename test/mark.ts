@@ -3,22 +3,35 @@ import {fake} from 'sinon'
 import {createMark} from '../src/mark.js'
 
 describe('createMark', () => {
-  it('returns a tuple of functions: a mark and getMarks', () => {
-    const mark = createMark(() => {})
-    expect(mark).to.be.an('array').with.lengthOf(2)
+  it('returns a tuple of functions: mark, getMarks, initializeMarks', () => {
+    const mark = createMark(
+      () => {},
+      () => ({})
+    )
+    expect(mark).to.be.an('array').with.lengthOf(3)
     expect(mark).to.have.property('0').a('function')
     expect(mark).to.have.property('1').a('function')
+    expect(mark).to.have.property('2').a('function')
   })
 
   it('attaches a `static` unique symbol to the first function', () => {
-    const mark = createMark(() => {})
+    const mark = createMark(
+      () => {},
+      () => ({})
+    )
     expect(mark).to.have.nested.property('0.static').a('symbol')
-    const otherMark = createMark(() => {})
+    const otherMark = createMark(
+      () => {},
+      () => ({})
+    )
     expect(otherMark).to.have.nested.property('0.static').a('symbol').not.equal(mark[0].static)
   })
 
   it('can be added to class fields without errors', () => {
-    const [mark] = createMark(() => {})
+    const [mark] = createMark(
+      () => {},
+      () => ({})
+    )
     class FooBar {
       @mark foo: unknown
       @mark bar = 1
@@ -28,7 +41,10 @@ describe('createMark', () => {
   })
 
   it('can be added to getters or setters without errors', () => {
-    const [mark] = createMark(() => {})
+    const [mark] = createMark(
+      () => {},
+      () => ({})
+    )
     class FooBar {
       @mark get foo() {
         return 1
@@ -44,7 +60,10 @@ describe('createMark', () => {
   })
 
   it('can be added to methods without errors', () => {
-    const [mark] = createMark(() => {})
+    const [mark] = createMark(
+      () => {},
+      () => ({})
+    )
     class Foo {
       @mark foo() {}
     }
@@ -52,7 +71,10 @@ describe('createMark', () => {
   })
 
   it('retrieves all marked fields with the get mark function', () => {
-    const [mark, getMark] = createMark(() => {})
+    const [mark, getMark] = createMark(
+      () => {},
+      () => ({})
+    )
     class FooBar {
       @mark foo: unknown
       @mark bar = 1
@@ -71,7 +93,10 @@ describe('createMark', () => {
   })
 
   it('retrieves marked symbol methods correctly', () => {
-    const [mark, getMark] = createMark(() => {})
+    const [mark, getMark] = createMark(
+      () => {},
+      () => ({})
+    )
     const sym = Symbol('foo')
     class FooBar {
       @mark [sym]() {}
@@ -80,7 +105,10 @@ describe('createMark', () => {
   })
 
   it('retrieves fields declared using the `mark.static` symbol as a static class field', () => {
-    const [mark, getMark] = createMark(() => {})
+    const [mark, getMark] = createMark(
+      () => {},
+      () => ({})
+    )
     class FooBar {
       static [mark.static] = ['bar', 'bing', 'quuz', 'grault']
       @mark foo: unknown
@@ -101,7 +129,10 @@ describe('createMark', () => {
   })
 
   it('will not contain duplicates', () => {
-    const [mark, getMark] = createMark(() => {})
+    const [mark, getMark] = createMark(
+      () => {},
+      () => ({})
+    )
     class FooBar {
       static [mark.static] = ['bar', 'bing', 'quuz', 'grault']
       @mark foo: unknown
@@ -120,63 +151,85 @@ describe('createMark', () => {
     expect(getMark(new FooBar())).to.eql(new Set(['foo', 'bar', 'baz', 'bing', 'qux', 'quuz', 'corge', 'grault']))
   })
 
-  it('calls the given function for each field, with name and type', () => {
+  it('calls the given validate function for each field, with name and kind', () => {
     const validate = fake()
-    const [mark] = createMark(validate)
+    const [mark, getMarks] = createMark(validate, () => {})
     const sym = Symbol('garply')
     class FooBar {
+      static [mark.static] = ['bar', 'bing', 'quuz', 'grault']
       @mark foo: unknown
-      @mark bar = 1
+      bar = 1
       @mark baz = 'hi'
-      @mark get bing() {
+      get bing() {
         return 1
       }
       @mark get qux() {
         return 1
       }
-      @mark set quuz(v: number) {}
+      set quuz(v: number) {}
       @mark set corge(v: number) {}
-      @mark grault() {}
+      grault() {}
       @mark [sym]() {}
     }
-    expect(validate).to.be.calledWith('foo', 'field')
-    expect(validate).to.be.calledWith('bar', 'field')
-    expect(validate).to.be.calledWith('baz', 'field')
-    expect(validate).to.be.calledWith('bing', 'getter')
-    expect(validate).to.be.calledWith('qux', 'getter')
-    expect(validate).to.be.calledWith('quuz', 'setter')
-    expect(validate).to.be.calledWith('corge', 'setter')
-    expect(validate).to.be.calledWith('grault', 'method')
-    expect(validate).to.be.calledWith(sym, 'method')
-    return new FooBar()
+    getMarks(new FooBar())
+    expect(validate).to.be.calledWithExactly({name: 'foo', kind: 'field'})
+    expect(validate).to.be.calledWithExactly({name: 'bar', kind: 'field'})
+    expect(validate).to.be.calledWithExactly({name: 'baz', kind: 'field'})
+    expect(validate).to.be.calledWithExactly({name: 'bing', kind: 'getter'})
+    expect(validate).to.be.calledWithExactly({name: 'qux', kind: 'getter'})
+    expect(validate).to.be.calledWithExactly({name: 'quuz', kind: 'setter'})
+    expect(validate).to.be.calledWithExactly({name: 'corge', kind: 'setter'})
+    expect(validate).to.be.calledWithExactly({name: 'grault', kind: 'method'})
+    expect(validate).to.be.calledWithExactly({name: sym, kind: 'method'})
   })
 
-  it('calls the given function for each static defined field once initialized, with name and type', () => {
+  it('calls the given initialize function for each static defined field once initialized, with name, kind and access', () => {
     const validate = fake()
-    const [mark, getMark] = createMark(validate)
+    const initialize = fake(({access}) => access)
+    const [mark, getMarks, initializeMarks] = createMark(validate, initialize)
+    const sym = Symbol('garply')
     class FooBar {
-      static [mark.static] = ['foo', 'bar', 'baz', 'bing', 'qux', 'quuz', 'corge', 'grault']
-      foo: unknown
+      static [mark.static] = ['bar', 'bing', 'quuz', 'grault']
+      @mark foo: unknown
       bar = 1
-      baz = 'hi'
+      @mark baz = 'hi'
       get bing() {
         return 1
       }
-      get qux() {
+      @mark get qux() {
         return 1
       }
       set quuz(v: number) {}
-      set corge(v: number) {}
+      @mark set corge(v: number) {}
       grault() {}
+      @mark [sym]() {}
     }
-    getMark(new FooBar())
-    expect(validate).to.be.calledWith('foo', 'field')
-    expect(validate).to.be.calledWith('bar', 'field')
-    expect(validate).to.be.calledWith('baz', 'field')
-    expect(validate).to.be.calledWith('bing', 'getter')
-    expect(validate).to.be.calledWith('qux', 'getter')
-    expect(validate).to.be.calledWith('quuz', 'setter')
-    expect(validate).to.be.calledWith('corge', 'setter')
-    expect(validate).to.be.calledWith('grault', 'method')
+    const fooBar = new FooBar()
+    getMarks(fooBar)
+    expect(initialize).to.have.callCount(0)
+    console.log(...getMarks(fooBar))
+    initializeMarks(fooBar)
+    const accessFor = (field: PropertyKey) => Object.getOwnPropertyDescriptor(FooBar.prototype, field)
+    expect(initialize).to.be.calledWithExactly(fooBar, {
+      name: 'foo',
+      kind: 'field',
+      access: {value: void 0, configurable: true, writable: true, enumerable: true}
+    })
+    expect(initialize).to.be.calledWithExactly(fooBar, {
+      name: 'bar',
+      kind: 'field',
+      access: {value: 1, configurable: true, writable: true, enumerable: true}
+    })
+    expect(initialize).to.be.calledWithExactly(fooBar, {
+      name: 'baz',
+      kind: 'field',
+      access: {value: 'hi', configurable: true, writable: true, enumerable: true}
+    })
+    expect(initialize).to.be.calledWithExactly(fooBar, {name: 'bing', kind: 'getter', access: accessFor('bing')})
+    expect(initialize).to.be.calledWithExactly(fooBar, {name: 'qux', kind: 'getter', access: accessFor('qux')})
+    expect(initialize).to.be.calledWithExactly(fooBar, {name: 'quuz', kind: 'setter', access: accessFor('quuz')})
+    expect(initialize).to.be.calledWithExactly(fooBar, {name: 'corge', kind: 'setter', access: accessFor('corge')})
+    expect(initialize).to.be.calledWithExactly(fooBar, {name: 'grault', kind: 'method', access: accessFor('grault')})
+    expect(initialize).to.be.calledWithExactly(fooBar, {name: sym, kind: 'method', access: accessFor(sym)})
   })
 })
