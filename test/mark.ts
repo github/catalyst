@@ -207,7 +207,6 @@ describe('createMark', () => {
     const fooBar = new FooBar()
     getMarks(fooBar)
     expect(initialize).to.have.callCount(0)
-    console.log(...getMarks(fooBar))
     initializeMarks(fooBar)
     const accessFor = (field: PropertyKey) => Object.getOwnPropertyDescriptor(FooBar.prototype, field)
     expect(initialize).to.be.calledWithExactly(fooBar, {
