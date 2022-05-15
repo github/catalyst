@@ -10,7 +10,10 @@ export interface CustomElement extends HTMLElement {
 }
 
 export interface CustomElementClass {
-  new (): CustomElement
+  // TS mandates Constructors that get mixins have `...args: any[]`
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  new (...args: any[]): CustomElement
   observedAttributes?: string[]
+  disabledFeatures?: string[]
   formAssociated?: boolean
 }
