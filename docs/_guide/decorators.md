@@ -37,7 +37,51 @@ class HelloWorldElement extends HTMLElement {
 
 Class Field decorators get given the class and the field name so they can add custom functionality to the field. Because they operate on the fields, they must be put on top of or to the left of the field.
 
-#### Supporting `strictPropertyInitialization`
+### Method Decorators
+
+Method decorators work just like Field Decorators. Put them on top or on the left of the method, like so:
+
+
+```js
+class HelloWorldElement extends HTMLElement {
+
+  @log
+  submit() {
+    // ...
+  }
+
+  // Alternative style
+
+  @log load() {
+    // ...
+  }
+
+}
+```
+
+### Getter/Setter 
+
+Decorators can also be used over a `get` or `set` field. These work just like Field Decorators, but you can put them over one or both the `get` or `set` field. Some decorators might throw an error if you put them over a `get` field, when they expect to be put over a `set` field:
+
+
+```js
+class HelloWorldElement extends HTMLElement {
+
+  @target set something() {
+    // ...
+  }
+
+  // Can be used over just one field
+  @attr get data() {
+    return {}
+  }
+  set data() {
+
+  }
+}
+```
+
+### Supporting `strictPropertyInitialization`
 
 TypeScript comes with various "strict" mode settings, one of which is `strictPropertyInitialization` which lets TypeScript catch potential class properties which might not be assigned during construction of a class. This option conflicts with Catalyst's `@target`/`@targets` decorators, which safely do the assignment but TypeScript's simple heuristics cannot detect this. There are two ways to work around this:
 
@@ -62,28 +106,6 @@ TypeScript comes with various "strict" mode settings, one of which is `strictPro
       }
     }
     ```
-
-### Method Decorators
-
-Catalyst doesn't currently ship with any method decorators, but you might see them in code. They work just like Field Decorators (in fact they're the same thing). Put them on top or on the left of the method, like so:
-
-
-```js
-class HelloWorldElement extends HTMLElement {
-
-  @log
-  submit() {
-    // ...
-  }
-
-  // Alternative style
-
-  @log load() {
-    // ...
-  }
-
-}
-```
 
 ### Function Calling Decorators
 
