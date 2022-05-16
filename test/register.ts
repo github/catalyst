@@ -73,13 +73,13 @@ describe('register', () => {
 
   it('automatically drops the `Controller` suffix', () => {
     @register
-    class SecondSuffixController {}
+    class SecondSuffixController extends HTMLElement {}
     expect(window.customElements.get('second-suffix')).to.equal(SecondSuffixController)
   })
 
   it('automatically drops the `Component` suffix', () => {
     @register
-    class ThirdSuffixComponent {}
+    class ThirdSuffixComponent extends HTMLElement {}
     expect(window.customElements.get('third-suffix')).to.equal(ThirdSuffixComponent)
   })
 })
