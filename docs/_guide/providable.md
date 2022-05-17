@@ -49,7 +49,7 @@ class UserRow extends HTMLElement {
     // This will provide `userId` as '123' to any nested children that request it.
     @provide userId = '123'
     // This will provide `userName` as 'Alex' to any nested children that request it.
-    @provide userId = 'Alex'
+    @provide userName = 'Alex'
 }
 ```
 
