@@ -86,12 +86,14 @@ export const providable = createAbility(
       constructor(...args: any[]) {
         super(...args)
         initProvide(this)
-        if (getProvide(this).size) {
+        const provides = getProvide(this)
+        if (provides.size) {
           if (!contexts.has(this)) contexts.set(this, new Map())
           const instanceContexts = contexts.get(this)!
           this.addEventListener('context-request', event => {
             if (!isContextEvent(event)) return
             const name = event.context.name
+            if (!provides.has(name)) return
             const value = this[name]
             const dispose = () => instanceContexts.get(name)?.delete(callback)
             const eventCallback = event.callback
@@ -100,6 +102,7 @@ export const providable = createAbility(
               if (!instanceContexts.has(name)) instanceContexts.set(name, new Set())
               instanceContexts.get(name)!.add(callback)
             }
+            event.stopPropagation()
             callback(value)
           })
         }

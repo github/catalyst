@@ -17,6 +17,15 @@ describe('Providable', () => {
   window.customElements.define('providable-provider-test', ProvidableProviderTest)
 
   @providable
+  class ProvidableSomeProviderTest extends HTMLElement {
+    @provide foo = 'greetings'
+    bar = 'universe'
+    baz = 18
+    @provide qux = 42
+  }
+  window.customElements.define('providable-some-provider-test', ProvidableSomeProviderTest)
+
+  @providable
   class ProvidableConsumerTest extends HTMLElement {
     @consume foo = 'goodbye'
     @consume bar = 'universe'
@@ -222,6 +231,49 @@ describe('Providable', () => {
       provider.qux = 18
       expect(consumer).to.have.property('qux', 18)
       expect(consumer).to.have.property('count', 3)
+    })
+  })
+
+  describe('consumer with nested provider parents', () => {
+    let provider: ProvidableProviderTest
+    let someProvider: ProvidableSomeProviderTest
+    let consumer: ProvidableConsumerTest
+    beforeEach(async () => {
+      provider = await fixture(html`<providable-provider-test>
+        <main>
+          <article>
+            <providable-some-provider-test>
+              <section>
+                <div>
+                  <providable-consumer-test></providable-consumer-test>
+                </div>
+              </section>
+            </providable-some-provider-test>
+          </article>
+        </main>
+      </providable-provider-test>`)
+      someProvider = provider.querySelector<ProvidableSomeProviderTest>('providable-some-provider-test')!
+      consumer = provider.querySelector<ProvidableConsumerTest>('providable-consumer-test')!
+    })
+
+    it('only recieves provider responses from first matching provider', () => {
+      expect(consumer).to.have.property('foo', 'greetings')
+      expect(consumer).to.have.property('bar', 'world')
+      expect(consumer).to.have.property('baz', 3)
+      expect(consumer).to.have.property(sym).eql({provided: true})
+      expect(consumer).to.have.property('qux').eql(42)
+      expect(consumer).to.have.property('count').eql(1)
+    })
+
+    it('only updates on appropriate provider changing values', () => {
+      expect(consumer).to.have.property('qux').eql(42)
+      expect(consumer).to.have.property('count').eql(1)
+      provider.qux = 12
+      expect(consumer).to.have.property('qux').eql(42)
+      expect(consumer).to.have.property('count').eql(1)
+      someProvider.qux = 88
+      expect(consumer).to.have.property('qux').eql(88)
+      expect(consumer).to.have.property('count').eql(2)
     })
   })
 
