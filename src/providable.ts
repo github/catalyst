@@ -58,7 +58,10 @@ const [consume, getConsume, initConsume] = createMark<CustomElement>(
         (value: unknown, dispose?: () => void) => {
           if (!disposes.has(instance)) disposes.set(instance, new Map())
           const instanceDisposes = disposes.get(instance)!
-          if (instanceDisposes.has(name)) instanceDisposes.get(name)!()
+          if (instanceDisposes.has(name)) {
+            const oldDispose = instanceDisposes.get(name)!
+            if (oldDispose !== dispose) oldDispose()
+          }
           if (dispose) instanceDisposes.set(name, dispose)
           currentValue = value
           access.set?.call(instance, currentValue)
@@ -83,19 +86,24 @@ export const providable = createAbility(
       constructor(...args: any[]) {
         super(...args)
         initProvide(this)
-        if (getProvide(this).size) {
+        const provides = getProvide(this)
+        if (provides.size) {
+          if (!contexts.has(this)) contexts.set(this, new Map())
+          const instanceContexts = contexts.get(this)!
           this.addEventListener('context-request', event => {
             if (!isContextEvent(event)) return
             const name = event.context.name
+            if (!provides.has(name)) return
             const value = this[name]
-            const callback = event.callback
+            const dispose = () => instanceContexts.get(name)?.delete(callback)
+            const eventCallback = event.callback
+            const callback = (newValue: unknown) => eventCallback(newValue, dispose)
             if (event.multiple) {
-              if (!contexts.has(this)) contexts.set(this, new Map())
-              const instanceContexts = contexts.get(this)!
               if (!instanceContexts.has(name)) instanceContexts.set(name, new Set())
               instanceContexts.get(name)!.add(callback)
             }
-            callback(value, () => contexts.get(this)?.get(name)?.delete(callback))
+            event.stopPropagation()
+            callback(value)
           })
         }
       }

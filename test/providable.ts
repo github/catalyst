@@ -17,6 +17,15 @@ describe('Providable', () => {
   window.customElements.define('providable-provider-test', ProvidableProviderTest)
 
   @providable
+  class ProvidableSomeProviderTest extends HTMLElement {
+    @provide foo = 'greetings'
+    bar = 'universe'
+    baz = 18
+    @provide qux = 42
+  }
+  window.customElements.define('providable-some-provider-test', ProvidableSomeProviderTest)
+
+  @providable
   class ProvidableConsumerTest extends HTMLElement {
     @consume foo = 'goodbye'
     @consume bar = 'universe'
@@ -39,8 +48,14 @@ describe('Providable', () => {
 
   describe('consumer without provider', () => {
     let instance: ProvidableConsumerTest
+    let events = fake()
     beforeEach(async () => {
+      events = fake()
+      document.body.addEventListener('context-request', events)
       instance = await fixture(html`<providable-consumer-test />`)
+    })
+    afterEach(() => {
+      document.body.removeEventListener('context-request', events)
     })
 
     it('uses the given values', () => {
@@ -59,11 +74,6 @@ describe('Providable', () => {
     })
 
     it('emits the `context-request` event when connected, for each field', async () => {
-      instance = document.createElement('providable-consumer-test') as ProvidableConsumerTest
-      const events = fake()
-      instance.addEventListener('context-request', events)
-      await fixture(instance)
-
       expect(events).to.have.callCount(5)
       const fooEvent = events.getCall(0).args[0]
       expect(fooEvent).to.be.instanceof(ContextEvent)
@@ -99,6 +109,34 @@ describe('Providable', () => {
       expect(quxEvent).to.have.nested.property('context.initialValue').eql(0)
       expect(quxEvent).to.have.property('multiple', true)
       expect(quxEvent).to.have.property('bubbles', true)
+    })
+
+    it('changes value based on callback new value', async () => {
+      expect(events).to.have.callCount(5)
+      const fooCallback = events.getCall(0).args[0].callback
+      fooCallback('hello')
+      expect(instance).to.have.property('foo', 'hello')
+      fooCallback('goodbye')
+      expect(instance).to.have.property('foo', 'goodbye')
+    })
+
+    it('disposes of past callbacks when given new ones', async () => {
+      const dispose1 = fake()
+      const dispose2 = fake()
+      expect(events).to.have.callCount(5)
+      const fooCallback = events.getCall(0).args[0].callback
+      fooCallback('hello', dispose1)
+      expect(dispose1).to.have.callCount(0)
+      expect(dispose2).to.have.callCount(0)
+      fooCallback('goodbye', dispose1)
+      expect(dispose1).to.have.callCount(0)
+      expect(dispose2).to.have.callCount(0)
+      fooCallback('greetings', dispose2)
+      expect(dispose1).to.have.callCount(1)
+      expect(dispose2).to.have.callCount(0)
+      fooCallback('hola', dispose1)
+      expect(dispose1).to.have.callCount(1)
+      expect(dispose2).to.have.callCount(1)
     })
   })
 
@@ -190,6 +228,52 @@ describe('Providable', () => {
       provider.qux = 17
       expect(consumer).to.have.property('qux', 17)
       expect(consumer).to.have.property('count', 2)
+      provider.qux = 18
+      expect(consumer).to.have.property('qux', 18)
+      expect(consumer).to.have.property('count', 3)
+    })
+  })
+
+  describe('consumer with nested provider parents', () => {
+    let provider: ProvidableProviderTest
+    let someProvider: ProvidableSomeProviderTest
+    let consumer: ProvidableConsumerTest
+    beforeEach(async () => {
+      provider = await fixture(html`<providable-provider-test>
+        <main>
+          <article>
+            <providable-some-provider-test>
+              <section>
+                <div>
+                  <providable-consumer-test></providable-consumer-test>
+                </div>
+              </section>
+            </providable-some-provider-test>
+          </article>
+        </main>
+      </providable-provider-test>`)
+      someProvider = provider.querySelector<ProvidableSomeProviderTest>('providable-some-provider-test')!
+      consumer = provider.querySelector<ProvidableConsumerTest>('providable-consumer-test')!
+    })
+
+    it('only recieves provider responses from first matching provider', () => {
+      expect(consumer).to.have.property('foo', 'greetings')
+      expect(consumer).to.have.property('bar', 'world')
+      expect(consumer).to.have.property('baz', 3)
+      expect(consumer).to.have.property(sym).eql({provided: true})
+      expect(consumer).to.have.property('qux').eql(42)
+      expect(consumer).to.have.property('count').eql(1)
+    })
+
+    it('only updates on appropriate provider changing values', () => {
+      expect(consumer).to.have.property('qux').eql(42)
+      expect(consumer).to.have.property('count').eql(1)
+      provider.qux = 12
+      expect(consumer).to.have.property('qux').eql(42)
+      expect(consumer).to.have.property('count').eql(1)
+      someProvider.qux = 88
+      expect(consumer).to.have.property('qux').eql(88)
+      expect(consumer).to.have.property('count').eql(2)
     })
   })
 
