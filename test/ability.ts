@@ -67,6 +67,13 @@ describe('ability', () => {
     expect(DElement).to.have.property('prototype').instanceof(Element)
   })
 
+  it('retains original class name', () => {
+    const DElement = fakeable(Element)
+    const D2Element = otherfakeable(Element)
+    expect(DElement).to.have.property('name', 'Element')
+    expect(D2Element).to.have.property('name', 'Element')
+  })
+
   it('can be used in decorator position', async () => {
     @fakeable
     class DElement extends HTMLElement {}

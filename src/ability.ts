@@ -9,6 +9,7 @@ export const createAbility = <TExtend, TClass extends CustomElementClass>(
     const markers = abilityMarkers.get(Class)
     if (markers?.has(decorate as Decorator)) return Class as unknown as TExtend
     const NewClass = decorate(Class) as TExtend
+    Object.defineProperty(NewClass, 'name', {value: Class.name})
     const newMarkers = new Set(markers)
     newMarkers.add(decorate as Decorator)
     abilityMarkers.set(NewClass as unknown as CustomElementClass, newMarkers)
