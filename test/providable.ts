@@ -39,8 +39,14 @@ describe('Providable', () => {
 
   describe('consumer without provider', () => {
     let instance: ProvidableConsumerTest
+    let events = fake()
     beforeEach(async () => {
+      events = fake()
+      document.body.addEventListener('context-request', events)
       instance = await fixture(html`<providable-consumer-test />`)
+    })
+    afterEach(() => {
+      document.body.removeEventListener('context-request', events)
     })
 
     it('uses the given values', () => {
@@ -59,11 +65,6 @@ describe('Providable', () => {
     })
 
     it('emits the `context-request` event when connected, for each field', async () => {
-      instance = document.createElement('providable-consumer-test') as ProvidableConsumerTest
-      const events = fake()
-      instance.addEventListener('context-request', events)
-      await fixture(instance)
-
       expect(events).to.have.callCount(5)
       const fooEvent = events.getCall(0).args[0]
       expect(fooEvent).to.be.instanceof(ContextEvent)
@@ -99,6 +100,34 @@ describe('Providable', () => {
       expect(quxEvent).to.have.nested.property('context.initialValue').eql(0)
       expect(quxEvent).to.have.property('multiple', true)
       expect(quxEvent).to.have.property('bubbles', true)
+    })
+
+    it('changes value based on callback new value', async () => {
+      expect(events).to.have.callCount(5)
+      const fooCallback = events.getCall(0).args[0].callback
+      fooCallback('hello')
+      expect(instance).to.have.property('foo', 'hello')
+      fooCallback('goodbye')
+      expect(instance).to.have.property('foo', 'goodbye')
+    })
+
+    it('disposes of past callbacks when given new ones', async () => {
+      const dispose1 = fake()
+      const dispose2 = fake()
+      expect(events).to.have.callCount(5)
+      const fooCallback = events.getCall(0).args[0].callback
+      fooCallback('hello', dispose1)
+      expect(dispose1).to.have.callCount(0)
+      expect(dispose2).to.have.callCount(0)
+      fooCallback('goodbye', dispose1)
+      expect(dispose1).to.have.callCount(0)
+      expect(dispose2).to.have.callCount(0)
+      fooCallback('greetings', dispose2)
+      expect(dispose1).to.have.callCount(1)
+      expect(dispose2).to.have.callCount(0)
+      fooCallback('hola', dispose1)
+      expect(dispose1).to.have.callCount(1)
+      expect(dispose2).to.have.callCount(1)
     })
   })
 
@@ -190,6 +219,9 @@ describe('Providable', () => {
       provider.qux = 17
       expect(consumer).to.have.property('qux', 17)
       expect(consumer).to.have.property('count', 2)
+      provider.qux = 18
+      expect(consumer).to.have.property('qux', 18)
+      expect(consumer).to.have.property('count', 3)
     })
   })
 
