@@ -20,12 +20,6 @@ const internalsCalled = new WeakSet()
 export const controllable = createAbility(
   <T extends CustomElementClass>(Class: T): T & ControllableClass =>
     class extends Class {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore TypeScript doesn't like assigning static name
-      static get name() {
-        return Class.name
-      }
-
       // TS mandates Constructors that get mixins have `...args: any[]`
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       constructor(...args: any[]) {
