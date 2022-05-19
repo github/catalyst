@@ -12,9 +12,9 @@
         "uses-text-compression": "off",
         "render-blocking-resources": "off",
         "uses-rel-preload": "off",
-        "first-contentful-paint": ["error", {"maxNumbericValue": 1000}],
-        "first-meaningful-paint": ["error", {"maxNumericValue": 1000}],
-        "largest-contentful-paint": ["error", {"maxNumericValue": 1000}],
+        "first-contentful-paint": ["error", {"maxNumbericValue": 2000}],
+        "first-meaningful-paint": ["error", {"maxNumericValue": 2000}],
+        "largest-contentful-paint": ["error", {"maxNumericValue": 2200}],
         "deprecations": "off",
         "csp-xss": "off"
       }
