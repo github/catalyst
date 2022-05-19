@@ -33,7 +33,7 @@ jobs:
       - name: Install dependencies
         run: |
           npm ci
-          cd docs && bundle install && cd ..
+          cd docs && rm -rf vendor && cd ..
 
       - name: Build docs
         run: npm run build:docs
