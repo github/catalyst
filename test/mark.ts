@@ -231,4 +231,26 @@ describe('createMark', () => {
     expect(initialize).to.be.calledWithExactly(fooBar, {name: 'grault', kind: 'method', access: accessFor('grault')})
     expect(initialize).to.be.calledWithExactly(fooBar, {name: sym, kind: 'method', access: accessFor(sym)})
   })
+
+  it('can apply multiple different marks to the same property', () => {
+    const [mark1, getMarks1, initializeMarks1] = createMark(
+      fake(),
+      fake(() => ({get: fake(), set: fake()}))
+    )
+    const [mark2, getMarks2, initializeMarks2] = createMark(
+      fake(),
+      fake(() => ({get: fake(), set: fake()}))
+    )
+    class FooBar {
+      @mark1 @mark2 foo: unknown
+      @mark2 @mark1 bar = 'hi'
+      constructor() {
+        initializeMarks1(this)
+        initializeMarks2(this)
+      }
+    }
+    const fooBar = new FooBar()
+    expect(Array.from(getMarks1(fooBar))).to.eql(['foo', 'bar'])
+    expect(Array.from(getMarks2(fooBar))).to.eql(['foo', 'bar'])
+  })
 })

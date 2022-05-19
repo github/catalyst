@@ -60,7 +60,7 @@ export function createMark<T extends object>(
           enumerable: true
         }
         const newDescriptor = initialize(instance, {name, kind: getType(access), access}) || access
-        Object.defineProperty(instance, name, newDescriptor)
+        Object.defineProperty(instance, name, Object.assign({configurable: true, enumerable: true}, newDescriptor))
       }
     }
   ]
