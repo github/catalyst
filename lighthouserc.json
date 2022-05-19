@@ -13,8 +13,8 @@
         "render-blocking-resources": "off",
         "uses-rel-preload": "off",
         "first-contentful-paint": ["error", {"maxNumbericValue": 1000}],
-        "first-meaningful-paint": ["warn", {"minScore": 0.8}],
-        "largest-contentful-paint": ["warn", {"minScore": 0.8}],
+        "first-meaningful-paint": ["error", {"maxNumericValue": 1000}],
+        "largest-contentful-paint": ["error", {"maxNumericValue": 1000}],
         "deprecations": "off",
         "csp-xss": "off"
       }
