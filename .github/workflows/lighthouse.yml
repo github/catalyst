@@ -8,17 +8,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the project
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
-      - name: Use Node.js 14.x (LTS)
-        uses: actions/setup-node@v1
+      - name: Use Node.js 16.x (LTS)
+        uses: actions/setup-node@v3
         with:
-          node-version: 14.x
+          node-version: 16.x
 
-      - name: Use Ruby 2.7
-        uses: actions/setup-ruby@v1
+      - name: Use Ruby 2.7.3
+        uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '2.7'
+          ruby-version: '2.7.3'
+          bundler-cache: true
+          working-directory: docs
 
       - name: Restore npm cache
         uses: actions/cache@v2
@@ -27,18 +29,6 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
-
-      - name: Restore Bundler cache
-        uses: actions/cache@v2
-        with:
-          path: docs/vendor/bundle
-          key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-gems-
-
-      - name: Configure Bundler cache
-        run: |
-          bundle config path vendor/bundle
 
       - name: Install dependencies
         run: |
