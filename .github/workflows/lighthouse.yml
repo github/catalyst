@@ -8,42 +8,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the project
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
-      - name: Use Node.js 14.x (LTS)
-        uses: actions/setup-node@v1
+      - name: Use Node.js 16.x (LTS)
+        uses: actions/setup-node@v3
         with:
-          node-version: 14.x
+          node-version: 16.x
+          cache: 'npm'
+      - run: npm ci
 
-      - name: Use Ruby 2.7
-        uses: actions/setup-ruby@v1
+      - name: Use Ruby 2.7.3
+        uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '2.7'
-
-      - name: Restore npm cache
-        uses: actions/cache@v2
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
-      - name: Restore Bundler cache
-        uses: actions/cache@v2
-        with:
-          path: docs/vendor/bundle
-          key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-gems-
-
-      - name: Configure Bundler cache
-        run: |
-          bundle config path vendor/bundle
-
-      - name: Install dependencies
-        run: |
-          npm ci
-          cd docs && bundle install && cd ..
+          ruby-version: '2.7.3'
+          bundler-cache: true
+          working-directory: docs
 
       - name: Build docs
         run: npm run build:docs
@@ -51,7 +30,7 @@ jobs:
           JEKYLL_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Run Lighthouse CI
-        run: npx @lhci/cli@0.7.x autorun
+        run: npx @lhci/cli@0.9.x autorun
         env:
           JEKYLL_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           LHCI_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

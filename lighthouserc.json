@@ -12,10 +12,11 @@
         "uses-text-compression": "off",
         "render-blocking-resources": "off",
         "uses-rel-preload": "off",
-        "first-contentful-paint": ["warn", {"minScore": 0.8}],
-        "first-meaningful-paint": ["warn", {"minScore": 0.8}],
-        "largest-contentful-paint": ["warn", {"minScore": 0.8}],
-        "deprecations": "off"
+        "first-contentful-paint": ["error", {"minScore": 0.6}],
+        "first-meaningful-paint": ["error", {"maxNumericValue": 3000}],
+        "largest-contentful-paint": ["error", {"maxNumericValue": 3000}],
+        "deprecations": "off",
+        "csp-xss": "off"
       }
     },
     "upload": {
