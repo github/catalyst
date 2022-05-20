@@ -13,8 +13,8 @@ The `@providable` ability allows a Catalyst controller to become a provider or c
 ```typescript
 import {providable, consume, provide, controller} from '@github/catalyst'
 
-@providable
 @controller
+@providable
 class BlockUser extends HTMLElement {
   // This will request `userId`, and default to '' if not provided.
   @consume userId = ''
@@ -28,8 +28,8 @@ class BlockUser extends HTMLElement {
   }
 }
 
-@providable
 @controller
+@providable
 class FollowUser extends HTMLElement {
   // This will request `userId`, and default to '' if not provided.
   @consume userId = ''
@@ -43,8 +43,8 @@ class FollowUser extends HTMLElement {
   }
 }
 
-@providable
 @controller
+@providable
 class UserRow extends HTMLElement {
     // This will provide `userId` as '123' to any nested children that request it.
     @provide userId = '123'
@@ -65,8 +65,8 @@ This shows how the basic pattern works, but `UserRow` having fixed strings isn't
 ```typescript
 import {providable, consume, provide, @attr, controller} from '@github/catalyst'
 
-@providable
 @controller
+@providable
 class UserRow extends HTMLElement {
   @provide @attr userId = ''
   @provide @attr userName = ''
@@ -89,8 +89,8 @@ Values aren't just limited to strings, they can be any type; for example functio
 ```typescript
 import {providable, consume, provide, target, attr, controller} from '@github/catalyst'
 
-@providable
 @controller
+@providable
 class UserList extends HTMLElement {
   @provide @target dialog: UserDialogElement
 }
@@ -107,8 +107,8 @@ class UserDialog extends HTMLElement {
   //...
 }
 
-@providable
 @controller
+@providable
 class FollowUser extends HTMLElement {
   // This will request `userId`, and default to '' if not provided.
   @consume userId = ''
