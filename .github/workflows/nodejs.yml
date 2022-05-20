@@ -3,8 +3,6 @@ name: Build
 on:
   pull_request:
   push:
-    branches:
-      - main
 
 jobs:
   test-node:
@@ -12,20 +10,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout the project
-      uses: actions/checkout@v2
-    - name: Cache node modules
-      uses: actions/cache@v2
+      uses: actions/checkout@v3
+    - name: Use Node.js 16.x (LTS)
+      uses: actions/setup-node@v3
       with:
-        path: ~/.npm
-        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-node-
-    - name: Use Node.js 13.11.0
-      uses: actions/setup-node@v1
-      with:
-        node-version: 13.11.0
-    - name: Install dependencies
-      run: npm i
+        node-version: 16.x
+        cache: 'npm'
+    - run: npm ci
     - name: Lint Codebase
       run: npm run lint
     - name: Run Node.js Tests
