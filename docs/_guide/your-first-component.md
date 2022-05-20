@@ -62,11 +62,11 @@ defineObservedAttributes(HelloWorldElement)
 window.customElements.define('hello-world', HelloWorldElement)
 ```
 
-Using the `@controller` decorator saves on having to write this boilerplate for each element.
+The `@controller` decorator saves on having to write this boilerplate for each element.
 
 ### What about without TypeScript Decorators?
 
-If you don't want to use TypeScript decorators, you can use `controller` as a regular function, and just pass it your class:
+If you don't want to use TypeScript decorators, you can use `controller` as a regular function by passing it to your class:
 
 ```js
 import {controller} from '@github/catalyst'
