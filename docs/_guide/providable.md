@@ -1,7 +1,6 @@
 ---
 chapter: 15
 subtitle: The Provider pattern
-hidden: true
 ---
 
 The [Provider pattern](https://www.patterns.dev/posts/provider-pattern/) allows for deeply nested children to ask ancestors for values. This can be useful for decoupling state inside a component, centralising it higher up in the DOM heirarchy. A top level container component might store values, and many children can consume those values, without having logic duplicated across the app. It's quite an abstract pattern so is better explained with examples...
