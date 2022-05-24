@@ -11,7 +11,7 @@ function closestShadowPiercing(el: Element, tagName: string): Element | null {
   return closest
 }
 
-export const tags = (el: Element, tag: string, parse: Parse) =>
+export const parseElementTags = (el: Element, tag: string, parse: Parse) =>
   (el.getAttribute(tag) || '')
     .trim()
     .split(/\s+/g)
@@ -26,34 +26,34 @@ const observer = new MutationObserver((mutations: MutationRecord[]) => {
 
       if (el instanceof Element && registry.has(tag)) {
         const [parse, found] = registry.get(tag)!
-        for (const [tagName, ...meta] of tags(el, tag, parse)) {
+        for (const [tagName, ...meta] of parseElementTags(el, tag, parse)) {
           const controller = closestShadowPiercing(el, tagName)
           if (controller) found(el, controller, tag, ...meta)
         }
       }
     } else if (mutation.addedNodes.length) {
       for (const node of mutation.addedNodes) {
-        if (node instanceof Element) add(node)
+        if (node instanceof Element) observeElementForTags(node)
       }
     }
   }
 })
 
-export const register = (tag: string, parse: Parse, found: Found) => {
+export const registerTag = (tag: string, parse: Parse, found: Found) => {
   if (registry.has(tag)) throw new Error('duplicate tag')
   registry.set(tag, [parse, found])
 }
 
-export const add = (root: Element | ShadowRoot) => {
+export const observeElementForTags = (root: Element | ShadowRoot) => {
   for (const [tag, [parse, found]] of registry) {
     for (const el of root.querySelectorAll(`[${tag}]`)) {
-      for (const [tagName, ...meta] of tags(el, tag, parse)) {
+      for (const [tagName, ...meta] of parseElementTags(el, tag, parse)) {
         const controller = closestShadowPiercing(el, tagName)
         if (controller) found(el, controller, tag, ...meta)
       }
     }
     if (root instanceof Element && root.hasAttribute(tag)) {
-      for (const [tagName, ...meta] of tags(root, tag, parse)) {
+      for (const [tagName, ...meta] of parseElementTags(root, tag, parse)) {
         const controller = closestShadowPiercing(root, tagName)
         if (controller) found(root, controller, tag, ...meta)
       }
