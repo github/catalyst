@@ -1,15 +1,15 @@
 import {expect, fixture, html} from '@open-wc/testing'
 import {fake} from 'sinon'
-import {controller} from '../src/controller.js'
-import {bindShadow} from '../src/bind.js'
+import {actionable} from '../src/actionable.js'
 
 describe('Actionable', () => {
-  @controller
+  @actionable
   class BindTestElement extends HTMLElement {
     foo = fake()
     bar = fake()
     handleEvent = fake()
   }
+  window.customElements.define('bind-test', BindTestElement)
   let instance: BindTestElement
   beforeEach(async () => {
     instance = await fixture(html`<bind-test data-action="foo:bind-test#foo">
@@ -126,7 +126,25 @@ describe('Actionable', () => {
     el1.setAttribute('data-action', 'click:bind-test#foo')
     el2.setAttribute('data-action', 'submit:bind-test#foo')
     const shadowRoot = instance.attachShadow({mode: 'open'})
-    bindShadow(shadowRoot)
+    shadowRoot.append(el1, el2)
+
+    // We need to wait for one microtask after injecting the HTML into to
+    // controller so that the actions have been bound to the controller.
+    await Promise.resolve()
+
+    expect(instance.foo).to.have.callCount(0)
+    el1.click()
+    expect(instance.foo).to.have.callCount(1)
+    el2.dispatchEvent(new CustomEvent('submit'))
+    expect(instance.foo).to.have.callCount(2)
+  })
+
+  it('can bind elements within a closed shadowDOM', async () => {
+    const el1 = document.createElement('div')
+    const el2 = document.createElement('div')
+    el1.setAttribute('data-action', 'click:bind-test#foo')
+    el2.setAttribute('data-action', 'submit:bind-test#foo')
+    const shadowRoot = instance.attachShadow({mode: 'closed'})
     shadowRoot.append(el1, el2)
 
     // We need to wait for one microtask after injecting the HTML into to
@@ -158,7 +176,6 @@ describe('Actionable', () => {
       const el1 = document.createElement('div')
       const el2 = document.createElement('div')
       const shadowRoot = instance.attachShadow({mode: 'open'})
-      bindShadow(shadowRoot)
       shadowRoot.append(el1, el2)
 
       // We need to wait for one microtask after injecting the HTML into to
