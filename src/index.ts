@@ -1,4 +1,4 @@
-export {bind, listenForBind} from './bind.js'
+export {actionable} from './actionable.js'
 export {register} from './register.js'
 export {findTarget, findTargets} from './findtarget.js'
 export {target, targets} from './target.js'
