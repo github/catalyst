@@ -9,9 +9,13 @@ const parseActionAttribute = (tag: string): [tagName: string, event: string, met
   const methodSep = Math.max(0, tag.lastIndexOf('#')) || tag.length
   return [tag.slice(eventSep + 1, methodSep), tag.slice(0, eventSep), tag.slice(methodSep + 1) || 'handleEvent']
 }
-register('data-action', parseActionAttribute, (el: Element, controller: Element | ShadowRoot, tag: string, event: string) => {
-  el.addEventListener(event, handleEvent)
-})
+register(
+  'data-action',
+  parseActionAttribute,
+  (el: Element, controller: Element | ShadowRoot, tag: string, event: string) => {
+    el.addEventListener(event, handleEvent)
+  }
+)
 
 const actionables = new WeakSet<CustomElement>()
 // Bind a single function to all events to avoid anonymous closure performance penalty.
