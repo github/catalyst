@@ -49,9 +49,7 @@ export class CatalystDelegate {
   connectedCallback(instance: HTMLElement, connectedCallback: () => void) {
     instance.toggleAttribute('data-catalyst', true)
     customElements.upgrade(instance)
-    bind(instance)
     connectedCallback?.call(instance)
-    if (instance.shadowRoot) bindShadow(instance.shadowRoot)
   }
 
   disconnectedCallback(element: HTMLElement, disconnectedCallback: () => void) {
