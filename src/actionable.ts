@@ -4,7 +4,7 @@ import {registerTag, observeElementForTags, parseElementTags} from './tag-observ
 import {controllable, attachShadowCallback} from './controllable.js'
 import {createAbility} from './ability.js'
 
-const parse = (tag: string): [tagName: string, event: string, method: string] => {
+const parseActionAttribute = (tag: string): [tagName: string, event: string, method: string] => {
   const eventSep = tag.lastIndexOf(':')
   const methodSep = Math.max(0, tag.lastIndexOf('#')) || tag.length
   return [tag.slice(eventSep + 1, methodSep), tag.slice(0, eventSep), tag.slice(methodSep + 1) || 'handleEvent']
