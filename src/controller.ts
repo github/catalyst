@@ -1,5 +1,6 @@
 import {CatalystDelegate} from './core.js'
 import type {CustomElementClass} from './custom-element.js'
+import {actionable} from './actionable.js'
 /**
  * Controller is a decorator to be used over a class that extends HTMLElement.
  * It will automatically `register()` the component in the customElement
@@ -7,5 +8,5 @@ import type {CustomElementClass} from './custom-element.js'
  * wrapping the classes `connectedCallback` method if needed.
  */
 export function controller(classObject: CustomElementClass): void {
-  new CatalystDelegate(classObject)
+  new CatalystDelegate(actionable(classObject))
 }
