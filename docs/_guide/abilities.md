@@ -1,7 +1,6 @@
 ---
 chapter: 14
 subtitle: Abilities
-hidden: true
 ---
 
 Under the hood Catalyst's controller decorator is comprised of a handful of separate "abilities". Each of these abilities is created with the `createAbility` function. An "ability" is essentially a mixin or perhaps "higher order class". An ability takes a class and returns an extended class that adds additional behaviours. Importantly abilities are idempotent, meaning applying an ability to a class multiple times is safe and the ability is only applied once. By convention all abilities exported by Catalyst are suffixed with `able` which we think is a nice way to denote that something is an ability and should be used as such. Catalyst also exposes all of the tooling to create your own abilities in your own code which we'd encourage if you find yourself repeating patterns within components (if you think you've got a really useful ability, we'd love for you to contribute it)!
