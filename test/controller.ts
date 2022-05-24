@@ -1,7 +1,6 @@
 import {expect, fixture, html} from '@open-wc/testing'
 import {replace, fake} from 'sinon'
 import {controller} from '../src/controller.js'
-import {attr} from '../src/attr.js'
 
 describe('controller', () => {
   let instance
@@ -82,36 +81,5 @@ describe('controller', () => {
         <child-element />
       </parent-element>
     `)
-  })
-
-  describe('attrs', () => {
-    let attrValues: string[] = []
-    @controller
-    class AttributeTestElement extends HTMLElement {
-      foo = 'baz'
-      attributeChangedCallback() {
-        attrValues.push(this.getAttribute('data-foo')!)
-        attrValues.push(this.foo)
-      }
-    }
-    attr(AttributeTestElement.prototype, 'foo')
-
-    beforeEach(() => {
-      attrValues = []
-    })
-
-    it('initializes attrs as attributes in attributeChangedCallback', async () => {
-      instance = await fixture<AttributeTestElement>(html`<attribute-test></attribute-test>`)
-      instance.foo = 'bar'
-      instance.attributeChangedCallback()
-      expect(attrValues).to.eql(['bar', 'bar'])
-    })
-
-    it('initializes attributes as attrs in attributeChangedCallback', async () => {
-      instance = await fixture<AttributeTestElement>(html`<attribute-test />`)
-      instance.setAttribute('data-foo', 'bar')
-      instance.attributeChangedCallback()
-      expect(attrValues).to.eql(['bar', 'bar'])
-    })
   })
 })
