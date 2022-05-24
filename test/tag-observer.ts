@@ -1,6 +1,6 @@
 import {expect, fixture, html} from '@open-wc/testing'
 import {fake, match} from 'sinon'
-import {register, add} from '../src/tag-observer.js'
+import {registerTag, observeElementForTags} from '../src/tag-observer.js'
 
 describe('tag observer', () => {
   let instance: HTMLElement
@@ -11,20 +11,20 @@ describe('tag observer', () => {
   })
 
   it('can register new tag observers', () => {
-    register('foo', fake(), fake())
+    registerTag('foo', fake(), fake())
   })
 
   it('throws an error when registering a duplicate', () => {
-    register('duplicate', fake(), fake())
-    expect(() => register('duplicate', fake(), fake())).to.throw()
+    registerTag('duplicate', fake(), fake())
+    expect(() => registerTag('duplicate', fake(), fake())).to.throw()
   })
 
   describe('registered behaviour', () => {
     const testParse = fake(v => v.split('.'))
     const testFound = fake()
-    register('data-tagtest', testParse, testFound)
+    registerTag('data-tagtest', testParse, testFound)
     beforeEach(() => {
-      add(instance)
+      observeElementForTags(instance)
     })
 
     it('uses parse to extract tagged element values', () => {
@@ -43,7 +43,7 @@ describe('tag observer', () => {
     it('calls found if added to a node that has tags on itself', () => {
       const div = document.createElement('div')
       div.setAttribute('data-tagtest', 'div.j.k.l')
-      add(div)
+      observeElementForTags(div)
       expect(testParse).to.be.calledWithExactly('div.j.k.l')
       expect(testFound).to.be.calledWithExactly(div, div, 'data-tagtest', 'j', 'k', 'l')
     })
@@ -54,7 +54,7 @@ describe('tag observer', () => {
       const span = document.createElement('span')
       span.setAttribute('data-tagtest', 'div.m.n.o')
       shadow.append(span)
-      add(span)
+      observeElementForTags(span)
       expect(testParse).to.be.calledWithExactly('div.m.n.o')
       expect(testFound).to.be.calledWithExactly(span, div, 'data-tagtest', 'm', 'n', 'o')
     })
@@ -65,7 +65,7 @@ describe('tag observer', () => {
       const span = document.createElement('span')
       span.setAttribute('data-tagtest', 'div.p.q.r')
       shadow.append(span)
-      add(shadow)
+      observeElementForTags(shadow)
       expect(testParse).to.be.calledWithExactly('div.p.q.r')
       expect(testFound).to.be.calledWithExactly(span, div, 'data-tagtest', 'p', 'q', 'r')
     })
