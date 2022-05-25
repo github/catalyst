@@ -21,7 +21,7 @@ This function allows you to make your own [Ability]({{ site.baseurl }}/guide/abi
 
 The above three features of `createAbility` make it really useful when creating mixins for web components, and makes them much easier for developers as they can trust an ability to not be sensitive to these problems.
 
-To create an ability, call the `createAbility` method and pass in a callback function which takes a `CustomElementClass` and returns a new class. You can also provide extra types if your returned class requires them. Here's an example, using TypeScript:
+To create an ability, call the `createAbility` method and pass in a callback function which takes a `CustomElementClass` and returns a new class. You can also provide extra types if your returned class adds new methods or fields. Here's an example, using TypeScript:
 
 
 ```typescript
@@ -35,6 +35,7 @@ interface Fooable {
 
 // Fooable: automatically calls `foo()` on `connectedCallback`
 export const fooable = createAbility(
+  //                                          ↓ Notice the `& { new (): Fooable }`
   <T extends CustomElementClass>(Class: T): T & { new (): Fooable } =>
     class extends Class {
       connectedCallback() {
@@ -45,6 +46,7 @@ export const fooable = createAbility(
         console.log('Foo was called!')
       }
     }
+)
 ```
 
 Inside the `class extends Class` block, you can author custom element logic that you might want to make reusable across a multitude of elements. You can also adjust the input type to subclass `CustomElementClass`, which can be useful for setting up a contract between your Ability and the classes that rely on it:
@@ -58,10 +60,20 @@ interface Fooable {
   foo(): void // This interface has additional methods on top of `CustomElementClass`!
 }
 
+interface FooableClass {
+  new(...args: any[]): Fooable
+}
+
 // Fooable: automatically calls `foo()` on `connectedCallback`
 export const fooable = createAbility(
-  <T extends CustomElementClass & { new (): Fooable }>(Class: T): T =>
+  //                            ↓ Notice the `& FooableClass`
+  <T extends CustomElementClass & FooableClass>(Class: T): T =>
     class extends Class {
+      // TypeScript will expect the constructor to be defined for a mixin
+      constructor(...args: any[]) {
+        super(...args)
+      }
+
       connectedCallback() {
         // Classes that apply this ability _must_ implement `foo()`.
         super.foo()
