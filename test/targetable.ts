@@ -1,25 +1,31 @@
 import {expect, fixture, html} from '@open-wc/testing'
-import {target, targets} from '../src/target.js'
-import {controller} from '../src/controller.js'
+import {target, targets, targetable} from '../src/targetable.js'
 
 describe('Targetable', () => {
-  @controller
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  class TargetTestElement extends HTMLElement {
+  @targetable
+  class TargetTest extends HTMLElement {
     @target foo!: Element
     bar = 'hello'
-    @target baz!: Element
+    count = 0
+    _baz!: Element
+    @target set baz(value: Element) {
+      this.count += 1
+      this._baz = value
+    }
     @target qux!: Element
     @target shadow!: Element
 
     @target bing!: Element
+    @target multiWord!: Element
     @targets foos!: Element[]
     bars = 'hello'
     @target quxs!: Element[]
     @target shadows!: Element[]
+    @targets camelCase!: Element[]
   }
+  window.customElements.define('target-test', TargetTest)
 
-  let instance: HTMLElement
+  let instance: TargetTest
   beforeEach(async () => {
     instance = await fixture(html`<target-test>
       <target-test>
@@ -32,6 +38,10 @@ describe('Targetable', () => {
       <div id="el6" data-target="target-test.bar target-test.bing"></div>
       <div id="el7" data-target="target-test.bazbaz"></div>
       <div id="el8" data-target="other-target.qux target-test.qux"></div>
+      <div id="el9" data-target="target-test.multi-word"></div>
+      <div id="el10" data-target="target-test.multiWord"></div>
+      <div id="el11" data-targets="target-test.camel-case"></div>
+      <div id="el12" data-targets="target-test.camelCase"></div>
     </target-test>`)
   })
 
@@ -72,6 +82,23 @@ describe('Targetable', () => {
       instance.shadowRoot!.appendChild(shadowEl)
       expect(instance).to.have.property('foo', shadowEl)
     })
+
+    it('dasherises target name but falls back to authored case', async () => {
+      expect(instance).to.have.property('multiWord').exist.with.attribute('id', 'el9')
+      instance.querySelector('#el9')!.remove()
+      expect(instance).to.have.property('multiWord').exist.with.attribute('id', 'el10')
+    })
+
+    it('calls setter when new target has been found', async () => {
+      expect(instance).to.have.property('baz').exist.with.attribute('id', 'el5')
+      expect(instance).to.have.property('_baz').exist.with.attribute('id', 'el5')
+      instance.count = 0
+      instance.querySelector('#el4')!.setAttribute('data-target', 'target-test.baz')
+      await Promise.resolve()
+      expect(instance).to.have.property('baz').exist.with.attribute('id', 'el4')
+      expect(instance).to.have.property('_baz').exist.with.attribute('id', 'el4')
+      expect(instance).to.have.property('count', 1)
+    })
   })
 
   describe('targets', () => {
@@ -93,6 +120,12 @@ describe('Targetable', () => {
       expect(instance).to.have.nested.property('foos[2]', els[2])
       expect(instance).to.have.nested.property('foos[3]').with.attribute('id', 'el4')
       expect(instance).to.have.nested.property('foos[4]').with.attribute('id', 'el5')
+    })
+
+    it('returns camel case and dasherised element names', async () => {
+      expect(instance).to.have.property('camelCase').with.lengthOf(2)
+      expect(instance).to.have.nested.property('camelCase[0]').with.attribute('id', 'el11')
+      expect(instance).to.have.nested.property('camelCase[1]').with.attribute('id', 'el12')
     })
   })
 })
