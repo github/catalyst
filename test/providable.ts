@@ -1,9 +1,13 @@
 import {expect, fixture, html} from '@open-wc/testing'
 import {fake} from 'sinon'
 import {provide, consume, providable, ContextEvent} from '../src/providable.js'
+import {target, targetable} from '../src/targetable.js'
+import {attr, attrable} from '../src/attrable.js'
 
 describe('Providable', () => {
   const sym = Symbol('bing')
+  @attrable
+  @targetable
   @providable
   class ProvidableProviderTest extends HTMLElement {
     @provide foo = 'hello'
@@ -13,6 +17,8 @@ describe('Providable', () => {
     }
     @provide [sym] = {provided: true}
     @provide qux = 8
+    @provide @attr testAttribute = ''
+    @provide @target target!: HTMLElement
   }
   window.customElements.define('providable-provider-test', ProvidableProviderTest)
 
@@ -40,6 +46,8 @@ describe('Providable', () => {
     @consume set qux(value: number) {
       this.count += 1
     }
+    @consume target!: HTMLElement
+    @consume testAttribute = ''
     connectedCallback() {
       this.textContent = `${this.foo} ${this.bar}`
     }
@@ -74,7 +82,7 @@ describe('Providable', () => {
     })
 
     it('emits the `context-request` event when connected, for each field', async () => {
-      expect(events).to.have.callCount(5)
+      expect(events).to.have.callCount(7)
       const fooEvent = events.getCall(0).args[0]
       expect(fooEvent).to.be.instanceof(ContextEvent)
       expect(fooEvent).to.have.nested.property('context.name', 'foo')
@@ -106,13 +114,27 @@ describe('Providable', () => {
       const quxEvent = events.getCall(4).args[0]
       expect(quxEvent).to.be.instanceof(ContextEvent)
       expect(quxEvent).to.have.nested.property('context.name', 'qux')
-      expect(quxEvent).to.have.nested.property('context.initialValue').eql(0)
+      expect(quxEvent).to.have.nested.property('context.initialValue', 0)
       expect(quxEvent).to.have.property('multiple', true)
       expect(quxEvent).to.have.property('bubbles', true)
+
+      const targetEvent = events.getCall(5).args[0]
+      expect(targetEvent).to.be.instanceof(ContextEvent)
+      expect(targetEvent).to.have.nested.property('context.name', 'target')
+      expect(targetEvent).to.have.nested.property('context.initialValue', undefined)
+      expect(targetEvent).to.have.property('multiple', true)
+      expect(targetEvent).to.have.property('bubbles', true)
+
+      const attrEvent = events.getCall(6).args[0]
+      expect(attrEvent).to.be.instanceof(ContextEvent)
+      expect(attrEvent).to.have.nested.property('context.name', 'testAttribute')
+      expect(attrEvent).to.have.nested.property('context.initialValue', '')
+      expect(attrEvent).to.have.property('multiple', true)
+      expect(attrEvent).to.have.property('bubbles', true)
     })
 
     it('changes value based on callback new value', async () => {
-      expect(events).to.have.callCount(5)
+      expect(events).to.have.callCount(7)
       const fooCallback = events.getCall(0).args[0].callback
       fooCallback('hello')
       expect(instance).to.have.property('foo', 'hello')
@@ -123,7 +145,7 @@ describe('Providable', () => {
     it('disposes of past callbacks when given new ones', async () => {
       const dispose1 = fake()
       const dispose2 = fake()
-      expect(events).to.have.callCount(5)
+      expect(events).to.have.callCount(7)
       const fooCallback = events.getCall(0).args[0].callback
       fooCallback('hello', dispose1)
       expect(dispose1).to.have.callCount(0)
@@ -144,10 +166,11 @@ describe('Providable', () => {
     let provider: ProvidableProviderTest
     beforeEach(async () => {
       provider = await fixture(
-        html`<providable-provider-test
-          ><div>
-            <span><strong></strong></span></div
-        ></providable-provider-test>`
+        html`<providable-provider-test>
+          <div>
+            <span><strong></strong></span>
+          </div>
+        </providable-provider-test>`
       )
     })
 
@@ -193,7 +216,7 @@ describe('Providable', () => {
     let provider: ProvidableProviderTest
     let consumer: ProvidableConsumerTest
     beforeEach(async () => {
-      provider = await fixture(html`<providable-provider-test>
+      provider = await fixture(html`<providable-provider-test test-attribute="x">
         <main>
           <article>
             <section>
@@ -203,6 +226,7 @@ describe('Providable', () => {
             </section>
           </article>
         </main>
+        <small data-target="providable-provider-test.target"></small>
       </providable-provider-test>`)
       consumer = provider.querySelector<ProvidableConsumerTest>('providable-consumer-test')!
     })
@@ -212,7 +236,9 @@ describe('Providable', () => {
       expect(consumer).to.have.property('bar', 'world')
       expect(consumer).to.have.property('baz', 3)
       expect(consumer).to.have.property(sym).eql({provided: true})
-      expect(consumer).to.have.property('qux').eql(8)
+      expect(consumer).to.have.property('qux', 8)
+      expect(consumer).to.have.property('target', provider.querySelector('small')!)
+      expect(consumer).to.have.property('testAttribute', 'x')
     })
 
     it('updates values provided if they change', () => {
@@ -220,6 +246,20 @@ describe('Providable', () => {
       expect(consumer).to.have.property('foo', 'hello')
       provider.foo = 'greetings'
       expect(consumer).to.have.property('foo', 'greetings')
+    })
+
+    it('updates @provide @attr values if they change', async () => {
+      provider.setAttribute('test-attribute', 'y')
+      await Promise.resolve()
+      expect(consumer).to.have.property('testAttribute', 'y')
+    })
+
+    it('updates @provide @target values if they change', async () => {
+      const big = document.createElement('big')
+      big.setAttribute('data-target', 'providable-provider-test.target')
+      provider.prepend(big)
+      await Promise.resolve()
+      expect(consumer).to.have.property('target', big)
     })
 
     it('calls consumer set callbacks when the value is updated', () => {
