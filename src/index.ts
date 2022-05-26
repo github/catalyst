@@ -1,5 +1,11 @@
-export {actionable} from './actionable.js'
+export {controller} from './controller.js'
+
 export {register} from './register.js'
+export {registerTag, observeElementForTags, parseElementTags} from './tag-observer.js'
+export {createMark} from './mark.js'
+export {dasherize, mustDasherize} from './dasherize.js'
+
+export {actionable} from './actionable.js'
 export {
   target,
   getTarget,
@@ -9,5 +15,6 @@ export {
   targetsChangedCallback,
   targetable
 } from './targetable.js'
-export {controller} from './controller.js'
 export {attr, getAttr, attrable, attrChangedCallback} from './attrable.js'
+
+export type {CustomElement, CustomElementClass} from './custom-element.js'
