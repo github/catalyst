@@ -16,4 +16,6 @@ export interface CustomElementClass {
   observedAttributes?: string[]
   disabledFeatures?: string[]
   formAssociated?: boolean
+
+  attrPrefix?: string
 }

@@ -1,5 +1,5 @@
 import type {CustomElementClass} from './custom-element.js'
-import {dasherize} from './dasherize.js'
+import {mustDasherize} from './dasherize.js'
 import {meta} from './core.js'
 
 const attrKey = 'attr'
@@ -39,10 +39,12 @@ const initialized = new WeakSet<Element>()
 export function initializeAttrs(instance: HTMLElement, names?: Iterable<string>): void {
   if (initialized.has(instance)) return
   initialized.add(instance)
-  if (!names) names = meta(Object.getPrototypeOf(instance), attrKey)
+  const proto = Object.getPrototypeOf(instance)
+  const prefix = proto?.constructor?.attrPrefix ?? 'data-'
+  if (!names) names = meta(proto, attrKey)
   for (const key of names) {
     const value = (<Record<PropertyKey, unknown>>(<unknown>instance))[key]
-    const name = attrToAttributeName(key)
+    const name = mustDasherize(`${prefix}${key}`)
     let descriptor: PropertyDescriptor = {
       configurable: true,
       get(this: HTMLElement): string {
@@ -80,10 +82,12 @@ export function initializeAttrs(instance: HTMLElement, names?: Iterable<string>)
   }
 }
 
-const attrToAttributeName = (name: string) => `data-${dasherize(name)}`
-
 export function defineObservedAttributes(classObject: CustomElementClass): void {
   let observed = classObject.observedAttributes || []
+
+  const prefix = classObject.attrPrefix ?? 'data-'
+  const attrToAttributeName = (name: string) => mustDasherize(`${prefix}${name}`)
+
   Object.defineProperty(classObject, 'observedAttributes', {
     configurable: true,
     get() {
