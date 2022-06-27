@@ -156,4 +156,25 @@ describe('Attr', () => {
       expect(instance.getAttributeNames()).to.include('data-clip-x')
     })
   })
+
+  describe('prefix', () => {
+    @controller
+    class PrefixAttrTest extends HTMLElement {
+      static attrPrefix = 'foo-'
+      @attr fooBarBazBing = 'a'
+      @attr URLBar = 'b'
+      @attr ClipX = 'c'
+    }
+
+    let instance: PrefixAttrTest
+    beforeEach(async () => {
+      instance = await fixture(html`<prefix-attr-test />`)
+    })
+
+    it('respects custom attrPrefix static member', async () => {
+      expect(instance.getAttributeNames()).to.include('foo-foo-bar-baz-bing')
+      expect(instance.getAttributeNames()).to.include('foo-url-bar')
+      expect(instance.getAttributeNames()).to.include('foo-clip-x')
+    })
+  })
 })
