@@ -9,17 +9,15 @@ const ready = new Promise<void>(resolve => {
 })
 
 const firstInteraction = new Promise<void>(resolve => {
-  const handler = () => {
-    resolve()
-    document.removeEventListener('mousedown', handler)
-    document.removeEventListener('touchstart', handler)
-    document.removeEventListener('keydown', handler)
-    document.removeEventListener('pointerdown', handler)
-  }
-  document.addEventListener('mousedown', handler, {once: true})
-  document.addEventListener('touchstart', handler, {passive: true, once: true})
-  document.addEventListener('keydown', handler, {once: true})
-  document.addEventListener('pointerdown', handler, {once: true})
+  const controller = new AbortController()
+  controller.signal.addEventListener('abort', () => resolve())
+  const listenerOptions = {once: true, passive: true, signal: controller.signal}
+  const handler = () => controller.abort()
+
+  document.addEventListener('mousedown', handler, listenerOptions)
+  document.addEventListener('touchstart', handler, listenerOptions)
+  document.addEventListener('keydown', handler, listenerOptions)
+  document.addEventListener('pointerdown', handler, listenerOptions)
 })
 
 const strategies = {
