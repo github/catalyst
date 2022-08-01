@@ -1,10 +1,10 @@
 const dynamicElements = new Map<string, Array<() => void>>()
 
 const ready = new Promise<void>(resolve => {
-  if (document.readyState === 'interactive' || document.readyState === 'complete') {
+  if (document.readyState !== 'loading') {
     resolve()
   } else {
-    document.addEventListener('DOMContentLoaded', () => resolve(), {once: true})
+    document.addEventListener('readystatechange', () => resolve(), {once: true})
   }
 })
 
