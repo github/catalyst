@@ -82,23 +82,23 @@ function scan(node: Element = document.body) {
   )
 }
 
-const elementLoader = new MutationObserver(mutations => {
-  if (!dynamicElements.size) return
-  for (const mutation of mutations) {
-    for (const node of mutation.addedNodes) {
-      if (node instanceof Element) scan(node)
-    }
-  }
-})
+let elementLoader: MutationObserver
 
-let first = true
 export function lazyDefine(tagName: string, callback: () => void) {
   if (!dynamicElements.has(tagName)) dynamicElements.set(tagName, new Set<() => void>())
   dynamicElements.get(tagName)!.add(callback)
 
-  if (first) {
-    scan(document.body)
+  scan(document.body)
+
+  if (!elementLoader) {
+    elementLoader = new MutationObserver(mutations => {
+      if (!dynamicElements.size) return
+      for (const mutation of mutations) {
+        for (const node of mutation.addedNodes) {
+          if (node instanceof Element) scan(node)
+        }
+      }
+    })
     elementLoader.observe(document, {subtree: true, childList: true})
-    first = false
   }
 }
