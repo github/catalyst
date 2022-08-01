@@ -55,7 +55,7 @@ const strategies: Record<string, Strategy> = {
 }
 
 export function addStrategy(name: string, strategy: Strategy) {
-  if (name in strategy) {
+  if (name in strategies) {
     throw new Error(`Strategy ${name} already exists!`)
   }
   strategies[name] = strategy
