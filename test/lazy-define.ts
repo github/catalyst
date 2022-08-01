@@ -48,5 +48,23 @@ describe('lazyDefine', () => {
 
     expect(onDefine).to.be.callCount(1)
   })
-  it("doesn't call the same callback twice", () => {})
+  it("doesn't call the same callback twice", async () => {
+    const onDefine = spy()
+    lazyDefine('twice-defined-element', onDefine)
+    lazyDefine('once-defined-element', onDefine)
+    lazyDefine('twice-defined-element', onDefine)
+    await fixture(html`
+      <once-defined-element></once-defined-element>
+      <once-defined-element></once-defined-element>
+      <once-defined-element></once-defined-element>
+      <twice-defined-element></twice-defined-element>
+      <twice-defined-element></twice-defined-element>
+      <twice-defined-element></twice-defined-element>
+      <twice-defined-element></twice-defined-element>
+    `)
+
+    await new Promise<unknown>(resolve => requestAnimationFrame(resolve))
+
+    expect(onDefine).to.be.callCount(2)
+  })
 })
