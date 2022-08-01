@@ -1,4 +1,4 @@
-const dynamicElements = new Map<string, Array<() => void>>()
+const dynamicElements = new Map<string, Set<() => void>>()
 
 const ready = new Promise<void>(resolve => {
   if (document.readyState !== 'loading') {
@@ -57,8 +57,8 @@ const elementLoader = new MutationObserver(mutations => {
 
 let first = true
 export function whenSeen(tagName: string, callback: () => void) {
-  if (!dynamicElements.has(tagName)) dynamicElements.set(tagName, [])
-  dynamicElements.get(tagName)!.push(callback)
+  if (!dynamicElements.has(tagName)) dynamicElements.set(tagName, new Set<() => void>())
+  dynamicElements.get(tagName)!.add(callback)
 
   if (first) {
     scan(document.body)
