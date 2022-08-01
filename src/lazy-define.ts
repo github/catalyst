@@ -54,13 +54,15 @@ const elementLoader = new MutationObserver(mutations => {
     }
   }
 })
-elementLoader.observe(document, {subtree: true, childList: true})
 
 let first = true
 export function whenSeen(tagName: string, callback: () => void) {
   if (!dynamicElements.has(tagName)) dynamicElements.set(tagName, [])
   dynamicElements.get(tagName)!.push(callback)
 
-  if (first) scan(document.body)
-  first = false
+  if (first) {
+    scan(document.body)
+    elementLoader.observe(document, {subtree: true, childList: true})
+    first = false
+  }
 }
