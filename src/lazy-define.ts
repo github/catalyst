@@ -17,6 +17,7 @@ const firstInteraction = new Promise<void>(resolve => {
   const handler = () => controller.abort()
 
   document.addEventListener('mousedown', handler, listenerOptions)
+  // eslint-disable-next-line github/require-passive-events
   document.addEventListener('touchstart', handler, listenerOptions)
   document.addEventListener('keydown', handler, listenerOptions)
   document.addEventListener('pointerdown', handler, listenerOptions)
