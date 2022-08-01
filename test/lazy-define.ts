@@ -30,5 +30,23 @@ describe('addStrategy', () => {
 })
 
 describe('lazyDefine', () => {
-  it('', () => {})
+  it('scans the whole document on first call', async () => {
+    const onDefine = spy()
+    lazyDefine('scan-document-test', onDefine)
+    await fixture(html`<scan-document-test></scan-document-test>`)
+
+    await new Promise<unknown>(resolve => requestAnimationFrame(resolve))
+
+    expect(onDefine).to.be.callCount(1)
+  })
+  it('initializes dynamic elements that are defined after the document is ready', async () => {
+    const onDefine = spy()
+    await fixture(html`<later-defined-element-test></later-defined-element-test>`)
+    lazyDefine('later-defined-element-test', onDefine)
+
+    await new Promise<unknown>(resolve => requestAnimationFrame(resolve))
+
+    expect(onDefine).to.be.callCount(1)
+  })
+  it("doesn't call the same callback twice", () => {})
 })
