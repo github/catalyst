@@ -1,3 +1,5 @@
+type Strategy = (tagName: string) => Promise<void>
+
 const dynamicElements = new Map<string, Set<() => void>>()
 
 const ready = new Promise<void>(resolve => {
@@ -20,9 +22,17 @@ const firstInteraction = new Promise<void>(resolve => {
   document.addEventListener('pointerdown', handler, listenerOptions)
 })
 
-const strategies = {
-  ready,
-  firstInteraction
+
+const strategies: Record<string, Strategy> = {
+  ready: () => ready,
+  firstInteraction: () => firstInteraction
+}
+
+export function addStrategy(name: string, strategy: Strategy) {
+  if (name in strategy) {
+    throw new Error(`Strategy ${name} already exists!`)
+  }
+  strategies[name] = strategy
 }
 
 const timers = new WeakMap<Element, number>()
@@ -37,7 +47,7 @@ function scan(node: Element = document.body) {
           const strategyName = (child?.getAttribute('data-load-on') || 'ready') as keyof typeof strategies
           const strategy = strategyName in strategies ? strategies[strategyName] : strategies.ready
           // eslint-disable-next-line github/no-then
-          for (const cb of dynamicElements.get(tagName) || []) strategy.then(cb)
+          for (const cb of dynamicElements.get(tagName) || []) strategy(tagName).then(cb)
           dynamicElements.delete(tagName)
           timers.delete(node)
         }
