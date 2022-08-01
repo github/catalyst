@@ -11,13 +11,15 @@ const ready = new Promise<void>(resolve => {
 const firstInteraction = new Promise<void>(resolve => {
   const handler = () => {
     resolve()
-    document.removeEventListener('click', handler)
+    document.removeEventListener('mousedown', handler)
     document.removeEventListener('touchstart', handler)
     document.removeEventListener('keydown', handler)
+    document.removeEventListener('pointerdown', handler)
   }
-  document.addEventListener('click', handler)
-  document.addEventListener('touchstart', handler, {passive: true})
-  document.addEventListener('keydown', handler)
+  document.addEventListener('mousedown', handler, {once: true})
+  document.addEventListener('touchstart', handler, {passive: true, once: true})
+  document.addEventListener('keydown', handler, {once: true})
+  document.addEventListener('pointerdown', handler, {once: true})
 })
 
 const strategies = {
