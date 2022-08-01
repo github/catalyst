@@ -30,41 +30,78 @@ describe('addStrategy', () => {
 })
 
 describe('lazyDefine', () => {
-  it('scans the whole document on first call', async () => {
-    const onDefine = spy()
-    lazyDefine('scan-document-test', onDefine)
-    await fixture(html`<scan-document-test></scan-document-test>`)
+  describe('ready strategy', () => {
+    it('calls define for a lazy component', async () => {
+      const onDefine = spy()
+      lazyDefine('scan-document-test', onDefine)
+      await fixture(html`<scan-document-test></scan-document-test>`)
 
-    await new Promise<unknown>(resolve => requestAnimationFrame(resolve))
+      await new Promise<unknown>(resolve => requestAnimationFrame(resolve))
 
-    expect(onDefine).to.be.callCount(1)
+      expect(onDefine).to.be.callCount(1)
+    })
+
+    it('initializes dynamic elements that are defined after the document is ready', async () => {
+      const onDefine = spy()
+      await fixture(html`<later-defined-element-test></later-defined-element-test>`)
+      lazyDefine('later-defined-element-test', onDefine)
+
+      await new Promise<unknown>(resolve => requestAnimationFrame(resolve))
+
+      expect(onDefine).to.be.callCount(1)
+    })
+
+    it("doesn't call the same callback twice", async () => {
+      const onDefine = spy()
+      lazyDefine('twice-defined-element', onDefine)
+      lazyDefine('once-defined-element', onDefine)
+      lazyDefine('twice-defined-element', onDefine)
+      await fixture(html`
+        <once-defined-element></once-defined-element>
+        <once-defined-element></once-defined-element>
+        <once-defined-element></once-defined-element>
+        <twice-defined-element></twice-defined-element>
+        <twice-defined-element></twice-defined-element>
+        <twice-defined-element></twice-defined-element>
+        <twice-defined-element></twice-defined-element>
+      `)
+
+      await new Promise<unknown>(resolve => requestAnimationFrame(resolve))
+
+      expect(onDefine).to.be.callCount(2)
+    })
   })
-  it('initializes dynamic elements that are defined after the document is ready', async () => {
-    const onDefine = spy()
-    await fixture(html`<later-defined-element-test></later-defined-element-test>`)
-    lazyDefine('later-defined-element-test', onDefine)
 
-    await new Promise<unknown>(resolve => requestAnimationFrame(resolve))
+  describe('firstInteraction strategy', () => {
+    it('calls define for a lazy component', async () => {
+      const onDefine = spy()
+      lazyDefine('scan-document-test', onDefine)
+      await fixture(html`<scan-document-test data-load-on="firstInteraction"></scan-document-test>`)
 
-    expect(onDefine).to.be.callCount(1)
+      await new Promise<unknown>(resolve => requestAnimationFrame(resolve))
+      expect(onDefine).to.be.callCount(0)
+
+      document.dispatchEvent(new Event('mousedown'))
+
+      await new Promise<unknown>(resolve => requestAnimationFrame(resolve))
+      expect(onDefine).to.be.callCount(1)
+    })
   })
-  it("doesn't call the same callback twice", async () => {
-    const onDefine = spy()
-    lazyDefine('twice-defined-element', onDefine)
-    lazyDefine('once-defined-element', onDefine)
-    lazyDefine('twice-defined-element', onDefine)
-    await fixture(html`
-      <once-defined-element></once-defined-element>
-      <once-defined-element></once-defined-element>
-      <once-defined-element></once-defined-element>
-      <twice-defined-element></twice-defined-element>
-      <twice-defined-element></twice-defined-element>
-      <twice-defined-element></twice-defined-element>
-      <twice-defined-element></twice-defined-element>
-    `)
+  describe('visible strategy', () => {
+    it('calls define for a lazy component', async () => {
+      const onDefine = spy()
+      lazyDefine('scan-document-test', onDefine)
+      await fixture(
+        html`<div style="height: calc(100vh + 256px)"></div>
+          <scan-document-test data-load-on="visible"></scan-document-test>`
+      )
+      await new Promise<unknown>(resolve => requestAnimationFrame(resolve))
+      expect(onDefine).to.be.callCount(0)
 
-    await new Promise<unknown>(resolve => requestAnimationFrame(resolve))
+      document.documentElement.scrollTo({top: 10})
 
-    expect(onDefine).to.be.callCount(2)
+      await new Promise<unknown>(resolve => requestAnimationFrame(resolve))
+      expect(onDefine).to.be.callCount(1)
+    })
   })
 })
