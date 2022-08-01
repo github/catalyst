@@ -92,7 +92,7 @@ const elementLoader = new MutationObserver(mutations => {
 })
 
 let first = true
-export function whenSeen(tagName: string, callback: () => void) {
+export function lazyDefine(tagName: string, callback: () => void) {
   if (!dynamicElements.has(tagName)) dynamicElements.set(tagName, new Set<() => void>())
   dynamicElements.get(tagName)!.add(callback)
 
