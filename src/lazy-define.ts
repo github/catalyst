@@ -22,10 +22,36 @@ const firstInteraction = new Promise<void>(resolve => {
   document.addEventListener('pointerdown', handler, listenerOptions)
 })
 
+const visible = (tagName: string): Promise<void> =>
+  new Promise<void>(resolve => {
+    const observer = new IntersectionObserver(
+      entries => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            resolve()
+            observer.disconnect()
+            return
+          }
+        }
+      },
+      {
+        // Currently the threshold is set to 256px from the bottom of the viewport
+        // with a threshold of 0.1. This means the element will not load until about
+        // 2 keyboard-down-arrow presses away from being visible in the viewport,
+        // giving us some time to fetch it before the contents are made visible
+        rootMargin: '0px 0px 256px 0px',
+        threshold: 0.01
+      }
+    )
+    for (const el of document.querySelectorAll(tagName)) {
+      observer.observe(el)
+    }
+  })
 
 const strategies: Record<string, Strategy> = {
   ready: () => ready,
-  firstInteraction: () => firstInteraction
+  firstInteraction: () => firstInteraction,
+  visible
 }
 
 export function addStrategy(name: string, strategy: Strategy) {
