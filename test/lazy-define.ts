@@ -8,7 +8,7 @@ describe('addStrategy', () => {
   let resolve: () => void
 
   beforeEach(() => {
-    strategy = spy(() => promise = new Promise((res) => resolve = res))
+    strategy = spy(() => (promise = new Promise(res => (resolve = res))))
   })
 
   it('adds a new strategy', async () => {
