@@ -55,13 +55,6 @@ const strategies: Record<string, Strategy> = {
   visible
 }
 
-export function addStrategy(name: string, strategy: Strategy) {
-  if (name in strategies) {
-    throw new Error(`Strategy ${name} already exists!`)
-  }
-  strategies[name] = strategy
-}
-
 const timers = new WeakMap<Element, number>()
 function scan(node: Element = document.body) {
   cancelAnimationFrame(timers.get(node) || 0)
