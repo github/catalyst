@@ -56,7 +56,7 @@ const strategies: Record<string, Strategy> = {
 }
 
 const timers = new WeakMap<Element, number>()
-function scan(node: Element = document.body) {
+function scan(node: Element) {
   cancelAnimationFrame(timers.get(node) || 0)
   timers.set(
     node,
