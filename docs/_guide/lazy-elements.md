@@ -5,7 +5,7 @@ subtitle: Dynamically load elements just in time
 
 A common practice in modern web development is to combine all JavaScript code into JS "bundles". By bundling the code together we avoid the network overhead of fetching each file. However the trade-off of bundling is that we might deliver JS code that will never run in the browser.
 
-![](/guide/devtools-coverage.png)
+![A screenshot from Chrome Devtools showing the Coverage panel. The panel has multiple request to JS assets and it shows that most of them have large chunks that are unused.](/catalyst/guide/devtools-coverage.png)
 
 An alternative solution to bundling is to load JavaScript just in time. Downloding the JavaScript for Catalyst controllers when the browser first encounters them can be done with the `lazyDefine` function.
 
