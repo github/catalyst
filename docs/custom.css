@@ -14,6 +14,7 @@ html[data-prefers-color-scheme=light] {
   --color-bg-canvas-tertiary: #f6f8fa;
   --color-text-primary: #24292e;
   --color-markdown-code-bg: rgba(27, 31, 35, 0.05);
+  --color-accent-fg: #0969da;
 }
 /* Prefers dark */
 html[data-prefers-color-scheme=dark] {
@@ -22,6 +23,7 @@ html[data-prefers-color-scheme=dark] {
   --color-bg-canvas-tertiary: #161b22;
   --color-text-primary: #c9d1d9;
   --color-markdown-code-bg: rgba(240, 246, 252, 0.05);
+  --color-accent-fg: #58a6ff;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-prefers-color-scheme=light]) {
@@ -30,12 +32,17 @@ html[data-prefers-color-scheme=dark] {
     --color-bg-canvas-tertiary: #161b22;
     --color-text-primary: #c9d1d9;
     --color-markdown-code-bg: rgba(240, 246, 252, 0.05);
+    --color-accent-fg: #58a6ff;
   }
 }
 
 body {
   background-color: var(--color-bg-canvas);
   color: var(--color-text-primary);
+}
+
+a {
+  color: var(--color-accent-fg)
 }
 
 /* Sidebar */
