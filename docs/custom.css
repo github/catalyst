@@ -1,14 +1,29 @@
-pre { font-size: 100% !important }
-code { font-size: 90% !important }
+pre {
+  font-size: 100% !important;
+}
+code {
+  font-size: 90% !important;
+}
 
-h1, h2, h3, h4, h5 { margin: 1rem 0; width: 100%; }
-ul li { margin-left: 1rem }
+h1,
+h2,
+h3,
+h4,
+h5 {
+  margin: 1rem 0;
+  width: 100%;
+}
+ul li {
+  margin-left: 1rem;
+}
 
-.top-100px { top: 100px }
+.top-100px {
+  top: 100px;
+}
 
 /* No preference or prefers light */
-:root:not([data-prefers-color-scheme=dark]),
-html[data-prefers-color-scheme=light] {
+:root:not([data-prefers-color-scheme='dark']),
+html[data-prefers-color-scheme='light'] {
   --color-bg-canvas: rgb(255, 255, 255);
   --color-bg-canvas-shadow: rgba(255, 255, 255, 0);
   --color-bg-canvas-tertiary: #f6f8fa;
@@ -17,7 +32,7 @@ html[data-prefers-color-scheme=light] {
   --color-accent-fg: #0969da;
 }
 /* Prefers dark */
-html[data-prefers-color-scheme=dark] {
+html[data-prefers-color-scheme='dark'] {
   --color-bg-canvas: rgb(13, 17, 23);
   --color-bg-canvas-shadow: rgba(13, 17, 23, 0);
   --color-bg-canvas-tertiary: #161b22;
@@ -26,7 +41,7 @@ html[data-prefers-color-scheme=dark] {
   --color-accent-fg: #58a6ff;
 }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-prefers-color-scheme=light]) {
+  :root:not([data-prefers-color-scheme='light']) {
     --color-bg-canvas: rgb(13, 17, 23);
     --color-bg-canvas-shadow: rgba(13, 17, 23, 0);
     --color-bg-canvas-tertiary: #161b22;
@@ -42,30 +57,69 @@ body {
 }
 
 a {
-  color: var(--color-accent-fg)
+  color: var(--color-accent-fg);
 }
 
 /* Sidebar */
 /* NB: `!important` is already used; so it’s required here */
-.bg-gray { background-color: var(--color-bg-canvas-tertiary) !important }
+.bg-gray {
+  background-color: var(--color-bg-canvas-tertiary) !important;
+}
 
 /* Code Blocks & Syntax */
-.markdown-body .highlight pre, .markdown-body pre {
+.markdown-body .highlight pre,
+.markdown-body pre {
   background-color: var(--color-bg-canvas-tertiary);
   overflow: auto;
 }
 
 /* Inline Code */
-.markdown-body code, .markdown-body tt { background-color: var(--color-markdown-code-bg) }
+.markdown-body code,
+.markdown-body tt {
+  background-color: var(--color-markdown-code-bg);
+}
 
 /* Tables */
-.markdown-body table tr:nth-of-type(odd) th, .markdown-body table tr:nth-of-type(odd) td { background-color: var(--color-bg-canvas) }
-.markdown-body table tr:nth-of-type(even) th, .markdown-body table tr:nth-of-type(even) td { background-color: var(--color-bg-canvas-tertiary) }
+.markdown-body table tr:nth-of-type(odd) th,
+.markdown-body table tr:nth-of-type(odd) td {
+  background-color: var(--color-bg-canvas);
+}
+.markdown-body table tr:nth-of-type(even) th,
+.markdown-body table tr:nth-of-type(even) td {
+  background-color: var(--color-bg-canvas-tertiary);
+}
 
 /* Override Primer .tooltipped default aria-label */
-.code-tooltip:after { content: attr(data-title); text-align: left; font-size: 100%; }
+.code-tooltip:after {
+  content: attr(data-title);
+  text-align: left;
+  font-size: 100%;
+}
 /* :after text will be announced by AT, this adds a separation between textContent and :after text */
-.code-tooltip:before { content: ': '; font-size: 0; }
+.code-tooltip:before {
+  content: ': ';
+  font-size: 0;
+}
 .code-tooltip {
   scroll-margin-top: 150px;
+}
+
+/* Prev next links */
+.prev-next-link {
+  border-radius: 8px;
+  border: solid 1px;
+  padding: 16px;
+}
+
+.prev-next-link:hover {
+  border-color: var(--color-accent-fg);
+}
+
+.prev-next-link__label {
+  text-transform: uppercase;
+  font-size: 12px;
+}
+
+.prev-next-link__name {
+  color: red;
 }
