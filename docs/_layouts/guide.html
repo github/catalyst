@@ -9,18 +9,20 @@ layout: default
     <div class="container-md markdown-body mb-5">
       <h1 class="mb-4 f0-light">{{ page.title }}</h1>
       {{ content }}
-      <div class="mt-4 d-flex gap-2">
-        {% if page.previous %}
-        <a href="{{page.previous.url}}" class="prev-next-link">
-          <span class="prev-next-link__label">Previous</span>
-          <span class="prev-next-link__name">{{page.previous.subtitle}}</span>
-        </a>
-        {% endif %} {% if page.next %}
-        <a href="{{page.next.url}}" class="prev-next-link">
-          <span class="prev-next-link__label">Next</span>
-          <span class="prev-next-link__name">{{page.next.subtitle}}</span>
-        </a>
-        {% endif %}
+      <div class="mt-4 Box">
+        <nav class="paginate-container Box-body" aria-label="Pagination">
+          <div class="pagination">
+            {% if page.previous %}
+            <span class="previous_page" aria-disabled="true">Previous</span>
+            {% else %}
+            <a class="previous_page" rel="previous" href="{{page.previous.url}}" aria-label="Previous Page">Previous</a>
+            {% endif %} {% if page.next %}
+            <span class="next_page" aria-disabled="true">Next</span>
+            {% else %}
+            <a class="next_page" rel="next" href="{{page.next.url}}" aria-label="Next Page">Next</a>
+            {% endif %}
+          </div>
+        </nav>
       </div>
     </div>
   </section>

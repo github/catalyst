@@ -103,23 +103,3 @@ a {
 .code-tooltip {
   scroll-margin-top: 150px;
 }
-
-/* Prev next links */
-.prev-next-link {
-  border-radius: 8px;
-  border: solid 1px;
-  padding: 16px;
-}
-
-.prev-next-link:hover {
-  border-color: var(--color-accent-fg);
-}
-
-.prev-next-link__label {
-  text-transform: uppercase;
-  font-size: 12px;
-}
-
-.prev-next-link__name {
-  color: red;
-}
