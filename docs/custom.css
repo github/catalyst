@@ -103,3 +103,17 @@ a {
 .code-tooltip {
   scroll-margin-top: 150px;
 }
+
+
+/* Prev and next links */
+.prev-next-links {
+  display: flex;
+  gap: 16px;
+}
+
+.prev-next-links__button {
+  border: solid 1px;
+  padding: 16px;
+  border-radius: 4px;
+  flex: 1;
+}
