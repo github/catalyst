@@ -27,12 +27,12 @@ layout: default
       <div class="mt-4">
         <nav class="prev-next-links" aria-label="Pagination">
           {% if prev %}
-          <a class="prev-next-links__button" rel="previous" href="{{prev.url}}" aria-label="Previous Page">
+          <a class="prev-next-links__button" rel="previous" href="{{ site.baseurl }}{{prev.url}}" aria-label="Previous Page">
             <div class="f6 text-uppercase">Previous</div>
             {{prev.title}}
           </a>
           {% endif %} {% if next %}
-          <a class="prev-next-links__button" rel="next" href="{{next.url}}" aria-label="Next Page">
+          <a class="prev-next-links__button" rel="next" href="{{ site.baseurl }}{{next.url}}" aria-label="Next Page">
             <div class="f6 text-uppercase">Next</div>
             {{next.title}}
           </a>
