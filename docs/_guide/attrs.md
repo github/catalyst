@@ -258,7 +258,7 @@ class HelloWorldElement extends HTMLElement {
     return 'World' // Used to get the intial value
   }
   // Called whenever `name` changes
-  @attr set dataName(newValue: string) {
+  set dataName(newValue: string) {
     this.textContent = `Hello ${newValue}`
   }
 }
