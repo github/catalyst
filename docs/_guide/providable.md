@@ -8,7 +8,7 @@ The [Provider pattern](https://www.patterns.dev/posts/provider-pattern/) allows 
 
 Say for example a set of your components are built to perform actions on a user, but need a User ID. One way to handle this is to set the User ID as an attribute on each element, but this can lead to a lot of duplication. Instead these actions can request the ID from a parent component, which can provide the User ID without creating an explicit relationship (which can lead to brittle code).
 
-The `@providable` ability allows a Catalyst controller to become a provider or consumer (or both) of one or many properties. To provide a property to nested controllers that ask for it, mark a property as `@provide`. To consume a property from a parent, mark a property as `@consume`. Let's try implementing the user actions using `@providable`:
+The `@providable` ability allows a Catalyst controller to become a provider or consumer (or both) of one or many properties. To provide a property to nested controllers that ask for it, mark a property as `@provide` or `@provideAsync`. To consume a property from a parent, mark a property as `@consume`. Let's try implementing the user actions using `@providable`:
 
 ```typescript
 import {providable, consume, provide, controller} from '@github/catalyst'
@@ -60,6 +60,8 @@ class UserRow extends HTMLElement {
 </user-row>
 ```
 
+### Combining Providables with Attributes
+
 This shows how the basic pattern works, but `UserRow` having fixed strings isn't very useful. The `@provide` decorator can be combined with other decorators to make it more powerful, for example `@attr`:
 
 ```typescript
@@ -82,6 +84,8 @@ class UserRow extends HTMLElement {
   <block-user><button data-action="click:block-user"></block-user>
 </user-row>
 ```
+
+### Providing advanced values
 
 Values aren't just limited to strings, they can be any type; for example functions, classes, or even other controllers! We could implement a custom dialog component which exists as a sibling and invoke it using providers and `@target`:
 
@@ -140,6 +144,40 @@ class FollowUser extends HTMLElement {
   <user-dialog data-target="user-list.dialog"><!-- ... --></user-dialog>
 
 </user-list>
+```
+
+### Asynchronous Providers
+
+Sometimes you might want to have a provider do some asynchronous work - such as fetch some data over the network, and only provide the fully resolved value. In this case you can use the `@provideAsync` decorator. This decorator resolves the value before giving it to the consumer, so the consumer never deals with the Promise!
+
+```ts
+import {providable, consume, provideAsync, target, attr, controller} from '@github/catalyst'
+
+@controller
+@providable
+class ServerState extends HTMLElement {
+  @provideAsync get hitCount(): Promise<number> {
+    return (async () => {
+      const res = await fetch('/hitcount')
+      const json = await res.json()
+      return json.hits
+    })()
+  }
+}
+
+@controller
+class HitCount extends HTMLElement {
+  @consume set hitCount(count: number) {
+    this.innerHTML = html`${count} hits!`
+  }
+}
+```
+```html
+<server-state>
+  <hit-count>
+    Loading...
+  </hit-count>
+</server-state>
 ```
 
 If you're interested to find out how the Provider pattern works, you can look at the [context community-protocol as part of webcomponents-cg](https://github.com/webcomponents-cg/community-protocols/blob/main/proposals/context.md).
