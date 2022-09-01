@@ -1,6 +1,6 @@
 import {expect, fixture, html} from '@open-wc/testing'
 import {fake} from 'sinon'
-import {provide, consume, providable, ContextEvent} from '../src/providable.js'
+import {provide, provideAsync, consume, providable, ContextEvent} from '../src/providable.js'
 
 describe('Providable', () => {
   const sym = Symbol('bing')
@@ -15,6 +15,18 @@ describe('Providable', () => {
     @provide qux = 8
   }
   window.customElements.define('providable-provider-test', ProvidableProviderTest)
+
+  @providable
+  class AsyncProvidableProviderTest extends HTMLElement {
+    @provideAsync foo = Promise.resolve('hello')
+    @provideAsync bar = Promise.resolve('world')
+    @provideAsync get baz() {
+      return Promise.resolve(3)
+    }
+    @provideAsync [sym] = Promise.resolve({provided: true})
+    @provideAsync qux = Promise.resolve(8)
+  }
+  window.customElements.define('async-providable-provider-test', AsyncProvidableProviderTest)
 
   @providable
   class ProvidableSomeProviderTest extends HTMLElement {
@@ -274,6 +286,26 @@ describe('Providable', () => {
       someProvider.qux = 88
       expect(consumer).to.have.property('qux').eql(88)
       expect(consumer).to.have.property('count').eql(2)
+    })
+  })
+
+  describe('async provider', () => {
+    let provider: AsyncProvidableProviderTest
+    let consumer: ProvidableConsumerTest
+    beforeEach(async () => {
+      provider = await fixture(html`<async-providable-provider-test>
+        <providable-consumer-test></providable-consumer-test>
+      </async-providable-provider-test>`)
+      consumer = provider.querySelector<ProvidableConsumerTest>('providable-consumer-test')!
+    })
+
+    it('passes resovled values to consumer', async () => {
+      expect(consumer).to.have.property('foo', 'hello')
+      expect(consumer).to.have.property('bar', 'world')
+      expect(consumer).to.have.property('baz', 3)
+      expect(consumer).to.have.property(sym).eql({provided: true})
+      expect(consumer).to.have.property('qux').eql(8)
+      expect(consumer).to.have.property('count').eql(1)
     })
   })
 
