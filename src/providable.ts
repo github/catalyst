@@ -45,6 +45,21 @@ const [provide, getProvide, initProvide] = createMark<CustomElement>(
     }
   }
 )
+const [provideAsync, getProvideAsync, initProvideAsync] = createMark<CustomElement>(
+  ({name, kind}) => {
+    if (kind === 'setter') throw new Error(`@provide cannot decorate setter ${String(name)}`)
+    if (kind === 'method') throw new Error(`@provide cannot decorate method ${String(name)}`)
+  },
+  (instance: CustomElement, {name, kind, access}) => {
+    return {
+      get: () => (kind === 'getter' ? access.get!.call(instance) : access.value),
+      set: (newValue: unknown) => {
+        access.set?.call(instance, newValue)
+        for (const callback of contexts.get(instance)?.get(name) || []) callback(newValue)
+      }
+    }
+  }
+)
 const [consume, getConsume, initConsume] = createMark<CustomElement>(
   ({name, kind}) => {
     if (kind === 'method') throw new Error(`@consume cannot decorate method ${String(name)}`)
@@ -75,7 +90,7 @@ const [consume, getConsume, initConsume] = createMark<CustomElement>(
 
 const disposes = new WeakMap<CustomElement, Map<PropertyKey, () => void>>()
 
-export {consume, provide, getProvide, getConsume}
+export {consume, provide, provideAsync, getProvide, getProvideAsync, getConsume}
 export const providable = createAbility(
   <T extends CustomElementClass>(Class: T): T =>
     class extends Class {
@@ -86,18 +101,23 @@ export const providable = createAbility(
       constructor(...args: any[]) {
         super(...args)
         initProvide(this)
+        initProvideAsync(this)
         const provides = getProvide(this)
-        if (provides.size) {
+        const providesAsync = getProvideAsync(this)
+        if (provides.size || providesAsync.size) {
           if (!contexts.has(this)) contexts.set(this, new Map())
           const instanceContexts = contexts.get(this)!
           this.addEventListener('context-request', event => {
             if (!isContextEvent(event)) return
             const name = event.context.name
-            if (!provides.has(name)) return
+            if (!provides.has(name) && !providesAsync.has(name)) return
             const value = this[name]
             const dispose = () => instanceContexts.get(name)?.delete(callback)
             const eventCallback = event.callback
-            const callback = (newValue: unknown) => eventCallback(newValue, dispose)
+            let callback = (newValue: unknown) => eventCallback(newValue, dispose)
+            if (providesAsync.has(name)) {
+              callback = async (newValue: unknown) => eventCallback(await newValue, dispose)
+            }
             if (event.multiple) {
               if (!instanceContexts.has(name)) instanceContexts.set(name, new Set())
               instanceContexts.get(name)!.add(callback)

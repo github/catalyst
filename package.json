@@ -59,7 +59,7 @@
     {
       "path": "lib/abilities.js",
       "import": "{providable}",
-      "limit": "1.1kb"
+      "limit": "1.5kb"
     }
   ]
 }
