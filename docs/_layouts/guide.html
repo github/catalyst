@@ -2,15 +2,43 @@
 layout: default
 ---
 
+{% assign sidebarItems = site.guide | sort: 'chapter' %}
+
+{% for item in sidebarItems  %}
+  {% if item.title == page.title %}
+    {% unless forloop.first %}
+      {% assign prevIndex = forloop.index| minus: 2 %}
+      {% assign prev = sidebarItems[prevIndex] %}
+    {% endunless %}
+    {% unless forloop.last %}
+      {% assign nextIndex = forloop.index %}
+      {% assign next = sidebarItems[nextIndex] %}
+    {% endunless %}
+  {% endif %}
+{% endfor %}
+
 <div class="d-md-flex flex-1">
-  {% assign sidebarItems = site.guide | sort: 'chapter' %}
   {% include sidebar.html %}
 
   <section class="col-lg-9 px-5 f4">
     <div class="container-md markdown-body mb-5">
       <h1 class="mb-4 f0-light">{{ page.title }}</h1>
       {{ content }}
+      <div class="mt-4">
+        <nav class="prev-next-links" aria-label="Pagination">
+          {% if prev %}
+          <a class="prev-next-links__button" rel="previous" href="{{ site.baseurl }}{{prev.url}}" aria-label="Previous Page">
+            <div class="f6 text-uppercase">Previous</div>
+            {{prev.title}}
+          </a>
+          {% endif %} {% if next %}
+          <a class="prev-next-links__button" rel="next" href="{{ site.baseurl }}{{next.url}}" aria-label="Next Page">
+            <div class="f6 text-uppercase">Next</div>
+            {{next.title}}
+          </a>
+          {% endif %}
+        </nav>
+      </div>
     </div>
   </section>
-
 </div>
