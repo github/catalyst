@@ -1,6 +1,6 @@
 import {expect} from '@open-wc/testing'
 import {fake} from 'sinon'
-import {createMark} from '../src/mark.js'
+import {createMark, observe} from '../src/mark.js'
 
 describe('createMark', () => {
   it('returns a tuple of functions: mark, getMarks, initializeMarks', () => {
@@ -252,5 +252,39 @@ describe('createMark', () => {
     const fooBar = new FooBar()
     expect(Array.from(getMarks1(fooBar))).to.eql(['foo', 'bar'])
     expect(Array.from(getMarks2(fooBar))).to.eql(['foo', 'bar'])
+  })
+
+  it('can observe changes to marks', () => {
+    const [mark1, getMarks1, initializeMarks1] = createMark(
+      fake(),
+      fake(() => ({get: fake(), set: fake()}))
+    )
+    const [mark2, getMarks2, initializeMarks2] = createMark(
+      fake(),
+      fake(() => ({get: fake(), set: fake()}))
+    )
+    const observer = fake()
+    class FooBar {
+      @mark1 foo: unknown
+      @mark2 bar = 'hi'
+      get baz() {
+        return 1
+      }
+      @mark1 set baz(_: unknown) {}
+
+      constructor() {
+        observe(this, observer)
+        initializeMarks1(this)
+        initializeMarks2(this)
+      }
+    }
+    const fooBar = new FooBar()
+    expect(observer).to.have.callCount(0)
+    fooBar.foo = 1
+    expect(observer).to.have.callCount(1).and.be.calledWithExactly('foo', undefined, 1)
+    fooBar.bar = 'bye'
+    expect(observer).to.have.callCount(2).and.be.calledWithExactly('bar', 'hi', 'bye')
+    fooBar.baz = 3
+    expect(observer).to.have.callCount(3).and.be.calledWithExactly('baz', 1, 3)
   })
 })

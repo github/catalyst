@@ -1,7 +1,8 @@
 import type {CustomElementClass, CustomElement} from '../src/custom-element.js'
 import {expect, fixture, html} from '@open-wc/testing'
 import {fake} from 'sinon'
-import {controllable, attachShadowCallback, attachInternalsCallback} from '../src/controllable.js'
+import {controllable, attachShadowCallback, attachInternalsCallback, markChangedCallback} from '../src/controllable.js'
+import {createMark} from '../src/mark.js'
 
 describe('controllable', () => {
   describe('attachShadowCallback', () => {
@@ -178,6 +179,63 @@ describe('controllable', () => {
     it('does not error if element internals are disabled', async () => {
       await fixture(html`<disallowed-internals-ability></disallowed-internals-ability>`)
       expect(attachInternalsFake).to.have.callCount(0)
+    })
+  })
+
+  describe('markChangedCallback', () => {
+    let markChangedFake: (s: Map<PropertyKey, unknown>) => void
+    beforeEach(() => {
+      markChangedFake = fake()
+    })
+
+    const [prop, getProp, initProp] = createMark()
+    const markChangeAbility = <T extends CustomElementClass>(Class: T): T =>
+      class extends controllable(Class) {
+        constructor() {
+          super()
+          initProp(this)
+        }
+        [markChangedCallback](...args: [Map<PropertyKey, unknown>]) {
+          return markChangedFake.apply(this, args)
+        }
+      }
+
+    @markChangeAbility
+    @controllable
+    class MarkChangedAbility extends HTMLElement {
+      @prop foo = 1
+      @prop bar = 'hi';
+      [markChangedCallback]() {
+        throw new Error('Custom Element concrete class [markChangedCallback] should not have been called')
+      }
+    }
+    customElements.define('mark-changed-ability', MarkChangedAbility)
+
+    it('calls markChangedCallback one Promise tick after a markChange call', async () => {
+      const instance = await fixture<MarkChangedAbility>(html`<mark-changed-ability></mark-changed-ability>`)
+      instance.foo = 2
+      expect(markChangedFake).to.have.callCount(0)
+      instance.bar = 'bye'
+      expect(markChangedFake).to.have.callCount(0)
+      await Promise.resolve()
+      expect(markChangedFake)
+        .to.have.callCount(1)
+        .and.be.calledWith(
+          new Map<PropertyKey, unknown>([
+            ['foo', 1],
+            ['bar', 'hi']
+          ])
+        )
+    })
+
+    it('does not call markChangedCallback for equal values', async () => {
+      const instance = await fixture<MarkChangedAbility>(html`<mark-changed-ability></mark-changed-ability>`)
+      instance.foo = 1
+      expect(markChangedFake).to.have.callCount(0)
+      instance.bar = 'hi'
+      expect(markChangedFake).to.have.callCount(0)
+      await Promise.resolve()
+      expect(markChangedFake).to.have.callCount(0)
     })
   })
 })

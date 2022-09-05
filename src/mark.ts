@@ -23,9 +23,16 @@ const getType = (descriptor?: PropertyDescriptor): PropertyType => {
   return 'field'
 }
 
+type observer = (key: PropertyKey, oldValue: unknown, newValue: unknown) => void
+const observers = new WeakMap<object, Set<observer>>()
+export function observe<T extends object>(instance: T, observer: observer) {
+  if (!observers.has(instance)) observers.set(instance, new Set())
+  observers.get(instance)!.add(observer)
+}
+
 export function createMark<T extends object>(
-  validate: (context: {name: PropertyKey; kind: PropertyType}) => void,
-  initialize: (instance: T, context: Context) => PropertyDescriptor | void
+  validate?: (context: {name: PropertyKey; kind: PropertyType}) => void,
+  initialize?: (instance: T, context: Context) => PropertyDescriptor | void
 ): [PropertyDecorator, GetMarks<T>, InitializeMarks<T>] {
   const marks = new WeakMap<object, Set<PropertyKey>>()
   const get = (proto: object): Set<PropertyKey> => {
@@ -37,7 +44,7 @@ export function createMark<T extends object>(
   }
   const marker = (proto: object, name: PropertyKey, descriptor?: PropertyDescriptor): void => {
     if (get(proto).has(name)) return
-    validate({name, kind: getType(descriptor)})
+    validate?.({name, kind: getType(descriptor)})
     get(proto).add(name)
   }
   marker.static = Symbol()
@@ -53,14 +60,34 @@ export function createMark<T extends object>(
     getMarks,
     (instance: T): void => {
       for (const name of getMarks(instance)) {
+        let value = (instance as Record<PropertyKey, unknown>)[name]
         const access: PropertyDescriptor = getPropertyDescriptor(instance, name) || {
           value: void 0,
           configurable: true,
           writable: true,
           enumerable: true
         }
-        const newDescriptor = initialize(instance, {name, kind: getType(access), access}) || access
-        Object.defineProperty(instance, name, Object.assign({configurable: true, enumerable: true}, newDescriptor))
+        const kind = getType(access)
+        const {
+          writable,
+          configurable = true,
+          enumerable = true,
+          set,
+          get: getter = () => value,
+          value: initValue
+        } = initialize?.(instance, {name, kind, access}) || access
+        if (typeof initValue !== 'undefined') value = initValue
+        Object.defineProperty(instance, name, {
+          configurable,
+          enumerable,
+          get: getter,
+          set(newValue: unknown) {
+            if (!set && !writable) throw new TypeError(`"${String(name)}" is read-only`)
+            for (const observer of observers.get(this) || []) observer.call(this, name, value, newValue)
+            set?.call(this, newValue)
+            value = (this as Record<PropertyKey, unknown>)[name]
+          }
+        })
       }
     }
   ]
