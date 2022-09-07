@@ -15,7 +15,7 @@ export {
   targetsChangedCallback,
   targetable
 } from './targetable.js'
-export {attr, getAttr, attrable, attrChangedCallback} from './attrable.js'
+export {attr, getAttr, attrable, attrChangedCallback, deprecatedDataPrefixedAttrs} from './attrable.js'
 export {lazyDefine} from './lazy-define.js'
 
 export type {CustomElement, CustomElementClass} from './custom-element.js'
