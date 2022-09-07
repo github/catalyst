@@ -1,5 +1,5 @@
 import {expect, fixture, html} from '@open-wc/testing'
-import {attr, attrable} from '../src/attrable.js'
+import {attr, attrable, deprecatedDataPrefixedAttrs} from '../src/attrable.js'
 
 describe('Attrable', () => {
   {
@@ -293,6 +293,33 @@ describe('Attrable', () => {
       instance.ClipX = 'bar'
       await Promise.resolve()
       expect(instance.getAttributeNames()).to.include('clip-x')
+    })
+  })
+
+  describe('deprecated naming', () => {
+    @deprecatedDataPrefixedAttrs
+    @attrable
+    class DeprecatedNamingAttrTest extends HTMLElement {
+      @attr fooBarBazBing = 'a'
+      @attr URLBar = 'b'
+      @attr ClipX = 'c'
+    }
+    window.customElements.define('deprecated-naming-attr-test', DeprecatedNamingAttrTest)
+
+    let instance: DeprecatedNamingAttrTest
+    beforeEach(async () => {
+      instance = await fixture(html`<deprecated-naming-attr-test />`)
+    })
+
+    it('prefixes all attrs with data-', async () => {
+      expect(instance.fooBarBazBing).to.equal('a')
+      instance.fooBarBazBing = 'bar'
+      instance.URLBar = 'bar'
+      instance.ClipX = 'bar'
+      await Promise.resolve()
+      expect(instance.getAttributeNames()).to.include('data-foo-bar-baz-bing')
+      expect(instance.getAttributeNames()).to.include('data-url-bar')
+      expect(instance.getAttributeNames()).to.include('data-clip-x')
     })
   })
 })
