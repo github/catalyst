@@ -6,15 +6,26 @@ import {createMark} from './mark.js'
 import {createAbility} from './ability.js'
 
 const attrChangedCallback = Symbol()
+const serializeAttributeName = Symbol()
 
 export interface Attrable {
   [key: PropertyKey]: unknown
+  [serializeAttributeName](name: PropertyKey): string
   [attrChangedCallback](changed: Map<PropertyKey, unknown>): void
 }
 
 export interface AttrableClass {
   new (): Attrable
 }
+
+export const deprecatedDataPrefixedAttrs = createAbility(
+  <T extends CustomElementClass>(Class: T): T =>
+    class extends controllable(Class) {
+      [serializeAttributeName](name: PropertyKey) {
+        return `data-${dasherize(name)}`
+      }
+    }
+)
 
 const Identity = (v: unknown) => v
 let setFromMutation = false
@@ -47,7 +58,7 @@ const [attr, getAttr, initializeAttrs] = createMark<Element & Attrable>(
       initialValue = access.value
     }
     let value = initialValue
-    const attributeName = dasherize(name)
+    const attributeName = instance[serializeAttributeName](name)
     const setCallback = (kind === 'method' ? access.value : access.set) || Identity
     const getCallback = access.get || (() => value)
     if (!attrs.get(instance)) attrs.set(instance, new Map())
@@ -97,16 +108,21 @@ export const attrable = createAbility(
       constructor() {
         super()
         initializeAttrs(this)
-        observer.observe(this, {attributeFilter: Array.from(getAttr(this)).map(dasherize)})
+        const attributeFilter = Array.from(getAttr(this)).map(name => this[serializeAttributeName](name))
+        observer.observe(this, {attributeFilter})
+      }
+
+      [serializeAttributeName](name: PropertyKey) {
+        return dasherize(name)
       }
 
       [attrChangedCallback](changed: Map<PropertyKey, unknown>) {
         if (!this.isConnected) return
         for (const [name, value] of changed) {
           if (typeof value === 'boolean') {
-            this.toggleAttribute(dasherize(name), value)
+            this.toggleAttribute(this[serializeAttributeName](name), value)
           } else {
-            this.setAttribute(dasherize(name), String(value))
+            this.setAttribute(this[serializeAttributeName](name), String(value))
           }
         }
       }
