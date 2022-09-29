@@ -56,9 +56,8 @@ const [targets, getTargets, initializeTargets] = createMark<Element>(
 
 function setTarget(el: Element, controller: Element | ShadowRoot, tag: string, key: string): void {
   const get = tag === 'data-targets' ? getTargets : getTarget
-  if (controller instanceof ShadowRoot) {
-    controller = controllers.get(controller)!
-  }
+  if (controller instanceof ShadowRoot) controller = controller.host
+
   if (controller && get(controller)?.has(key)) {
     ;(controller as unknown as Record<PropertyKey, unknown>)[key] = {}
   }
@@ -67,7 +66,6 @@ function setTarget(el: Element, controller: Element | ShadowRoot, tag: string, k
 registerTag('data-target', (str: string) => str.split('.'), setTarget)
 registerTag('data-targets', (str: string) => str.split('.'), setTarget)
 const shadows = new WeakMap<Element, ShadowRoot>()
-const controllers = new WeakMap<ShadowRoot, Element>()
 
 const findTarget = (controller: Element, selector: string, many: boolean) => () => {
   const nodes = []
@@ -113,7 +111,6 @@ export const targetable = createAbility(
       [attachShadowCallback](root: ShadowRoot) {
         super[attachShadowCallback]?.(root)
         shadows.set(this, root)
-        controllers.set(root, this)
         observeElementForTags(root)
       }
     }
