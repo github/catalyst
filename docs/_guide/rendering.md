@@ -1,5 +1,5 @@
 ---
-chapter: 8
+chapter: 10
 subtitle: Rendering HTML subtrees
 ---
 

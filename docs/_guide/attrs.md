@@ -1,5 +1,5 @@
 ---
-chapter: 7
+chapter: 8
 subtitle: Using attributes as configuration
 ---
 

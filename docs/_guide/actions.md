@@ -1,5 +1,5 @@
 ---
-chapter: 6
+chapter: 7
 subtitle: Binding Events
 ---
 
