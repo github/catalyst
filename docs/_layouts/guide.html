@@ -2,7 +2,7 @@
 layout: default
 ---
 
-{% assign sidebarItems = site.guide | sort: 'chapter' %}
+{% assign sidebarItems = site.guide | where_exp: "item", "item.hidden != true" | sort: 'chapter' %}
 
 {% for item in sidebarItems  %}
   {% if item.title == page.title %}
