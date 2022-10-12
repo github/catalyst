@@ -138,32 +138,21 @@ Important to note here is that nodes from the `shadowRoot` get returned _first_.
 
 ### What about without Decorators?
 
-If you're not using decorators, then the `@target` and `@targets` decorators have an escape hatch: you can define a static class field using the `[target.static]` computed property, as an array of key names. Like so:
+If you're using decorators, then the `@target` and `@targets` decorators will turn the decorated properties into getters.
+
+If you're not using decorators, then you'll need to make a `getter`, and call `findTarget(this, key)` or `findTargets(this, key)` in the getter, for example:
 
 ```js
-import {controller, target, targets} from '@github/catalyst'
-
-controller(class HelloWorldElement extends HTMLElement {
-  // The same as `@target output`
-  [target.static] = ['output']
-
-  // The same as `@targets pages; @targets links`
-  [targets.static] = ['pages', 'links']
-
-})
-```
-
-This is functionally identical to:
-
-```js
-import {controller} from '@github/catalyst'
-
-@controller
+import {findTarget, findTargets} from '@github/catalyst'
 class HelloWorldElement extends HTMLElement {
-  @target output
 
-  @targets pages
-  @targets links
+  get output() {
+    return findTarget(this, 'output')
+  }
+
+  get pages() {
+    return findTargets(this, 'pages')
+  }
 
 }
 ```
