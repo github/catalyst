@@ -1,8 +1,9 @@
 ---
-version: 1
-chapter: 5
-title: Actions
+version: 2
+chapter: 6
+title: Actionable
 subtitle: Binding Events
+permalink: /guide-v2/actions
 ---
 
 Catalyst Components automatically bind actions upon instantiation. Automatically as part of the `connectedCallback`, a component will search for any children with the `data-action` attribute, and bind events based on the value of this attribute. Any _public method_ on a Controller can be bound to via `data-action`.

@@ -1,8 +1,9 @@
 ---
-version: 1
+version: 2
 chapter: 1
 title: Introduction
 subtitle: Origins & Concepts
+permalink: /guide-v2/introduction
 ---
 
 Catalyst is a set of patterns and techniques for developing _components_ within a complex application. At its core, Catalyst simply provides a small library of functions to make developing [Web Components](https://developer.mozilla.org/en-US/docs/Web/Web_Components) easier. The library is an implementation detail, though. The concepts are what we're most interested in.

@@ -1,8 +1,9 @@
 ---
-version: 1
+version: 2
 chapter: 3
 title: Decorators
 subtitle: Using TypeScript for ergonomics
+permalink: /guide-v2/decorators
 ---
 
 Decorators are used heavily in Catalyst, because they provide really clean ergonomics and makes using the library a lot easier. Decorators are a special, (currently) non standard, feature of TypeScript. You'll need to turn the `experimentalDecorators` option on inside of your TypeScript project to use them (if you're using `@babel/plugin-proposal-decorators` plugin, you need to use [`legacy` option](https://babeljs.io/docs/en/babel-plugin-proposal-decorators#legacy)).

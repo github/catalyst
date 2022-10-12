@@ -1,8 +1,9 @@
 ---
-version: 1
-chapter: 7
+version: 2
+chapter: 10
 title: Lifecycle Hooks
 subtitle: Observing the life cycle of an element
+permalink: /guide-v2/lifecycle-hooks
 ---
 
 Catalyst Controllers - like many other frameworks - have several "well known" method names which are called periodically through the life cycle of the element, and let you observe when an element changes in various ways. Here is a comprehensive list of all life-cycle callbacks. Each one is suffixed `Callback`, to denote that it will be called by the framework.

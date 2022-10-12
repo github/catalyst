@@ -1,8 +1,9 @@
 ---
-version: 1
-chapter: 10
+version: 2
+chapter: 12
 title: Patterns
 subtitle: Best Practices for behaviours
+permalink: /guide-v2/patterns
 ---
 
 An aim of Catalyst is to be as light weight as possible, and so we often avoid including helper functions for otherwise fine code. We also want to keep Catalyst focussed, and so where some helper functions might be reasonable, we recommend judicious use of other small libraries.

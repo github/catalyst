@@ -1,6 +1,8 @@
 ---
-chapter: 10
-subtitle: Conventions
+version: 1
+chapter: 9
+title: Conventions
+subtitle: Common naming and patterns
 ---
 
 Catalyst strives for convention over code. Here are a few conventions we recommend when writing Catalyst code:

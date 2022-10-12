@@ -1,8 +1,9 @@
 ---
-version: 1
-chapter: 4
-title: Targets
+version: 2
+chapter: 5
+title: Targetable
 subtitle: Querying Descendants
+permalink: /guide-v2/targets
 ---
 
 One of the three [core patterns]({{ site.baseurl }}/guide/introduction#three-core-concepts-observe-listen-query) is Querying. In Catalyst, Targets are the preferred way to query. Targets use `querySelector` under the hood, but in a way that makes it a lot simpler to work with.

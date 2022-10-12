@@ -1,8 +1,9 @@
 ---
-version: 1
-chapter: 6
-title: Attrs
+version: 2
+chapter: 7
+title: Attrable
 subtitle: Using attributes as configuration
+permalink: /guide-v2/attrs
 ---
 
 Components may sometimes manage state, or configuration. We encourage the use of DOM as state, rather than maintaining a separate state. One way to maintain state in the DOM is via [Attributes](https://developer.mozilla.org/en-US/docs/Learn/HTML/Howto/Use_data_attributes).

@@ -1,7 +1,9 @@
 ---
-chapter: 14
+version: 2
+chapter: 4
+title: Abilities
 subtitle: Abilities
-hidden: true
+permalink: /guide-v2/abilities
 ---
 
 Under the hood Catalyst's controller decorator is comprised of a handful of separate "abilities". An "ability" is essentially a mixin or perhaps "higher order class". An ability takes a class and returns an extended class that adds additional behaviours. By convention all abilities exported by Catalyst are suffixed with `able` which we think is a nice way to denote that something is an ability and should be used as such.

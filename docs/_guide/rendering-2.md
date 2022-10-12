@@ -1,8 +1,9 @@
 ---
-version: 1
-chapter: 8
+version: 2
+chapter: 11
 title: Rendering
 subtitle: Rendering HTML subtrees
+permalink: /guide-v2/rendering
 ---
 
 Sometimes it's necessary to render an HTML subtree as part of a component. This can be especially useful if a component is driving complex UI that is only interactive with JS.
