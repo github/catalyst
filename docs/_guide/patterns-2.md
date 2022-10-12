@@ -1,6 +1,6 @@
 ---
 version: 2
-chapter: 12
+chapter: 14
 title: Patterns
 subtitle: Best Practices for behaviours
 permalink: /guide-v2/patterns

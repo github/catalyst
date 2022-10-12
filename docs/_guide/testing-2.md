@@ -3,6 +3,7 @@ version: 2
 chapter: 13
 title: Testing
 subtitle: Tips for automated testing
+permalink: /guide-v2/testing
 ---
 
 Catalyst controllers are based on Web Components, and as such need the Web Platform environment to run in, including in tests. It's possible to run these tests in "browser like" environments such as NodeJS or Deno with libraries like jsdom, but it's best to run tests directly in the browser.
