@@ -1,4 +1,13 @@
 <aside class="col-lg-3 pl-4 pt-1 pb-1 bg-gray">
+  <label class="d-flex mr-4 flex-items-center">
+    <span class="mr-4">Version</span> 
+    <select class="flex-1" onchange="window.location.href = this.value">
+      <option value="/guide/introduction" {% if page.version == 1 %} selected{% endif %}>v1.x.x</option>
+      <option value="/guide-v2/introduction" {% if page.version == 2 %} selected{% endif %}>v2.x.x</option>
+    </select>
+  </label>
+  <br>
+
   <nav class="position-sticky top-100px">
     <ol class="f3-light ml-4">
       {% for item in sidebarItems %}
