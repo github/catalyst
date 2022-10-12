@@ -2,8 +2,8 @@
   <label class="d-flex mr-4 flex-items-center">
     <span class="mr-4">Version</span> 
     <select class="flex-1" onchange="window.location.href = this.value">
-      <option value="/guide/introduction" {% if page.version == 1 %} selected{% endif %}>v1.x.x</option>
-      <option value="/guide-v2/introduction" {% if page.version == 2 %} selected{% endif %}>v2.x.x</option>
+      <option value="{{ site.baseurl }}/guide/introduction" {% if page.version == 1 %} selected{% endif %}>v1.x.x</option>
+      <option value="{{ site.baseurl }}/guide-v2/introduction" {% if page.version == 2 %} selected{% endif %}>v2.x.x</option>
     </select>
   </label>
   <br>
