@@ -1,5 +1,7 @@
 ---
-chapter: 6
+version: 1
+chapter: 5
+title: Actions
 subtitle: Binding Events
 ---
 

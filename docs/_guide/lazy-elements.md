@@ -1,5 +1,7 @@
 ---
-chapter: 17
+version: 1
+chapter: 13
+title: Lazy Elements
 subtitle: Dynamically load elements just in time
 ---
 

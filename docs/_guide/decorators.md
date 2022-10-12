@@ -1,5 +1,7 @@
 ---
-chapter: 4
+version: 1
+chapter: 3
+title: Decorators
 subtitle: Using TypeScript for ergonomics
 ---
 

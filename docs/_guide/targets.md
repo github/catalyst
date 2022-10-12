@@ -1,5 +1,7 @@
 ---
-chapter: 5
+version: 1
+chapter: 4
+title: Targets
 subtitle: Querying Descendants
 ---
 

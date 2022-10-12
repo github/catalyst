@@ -1,5 +1,7 @@
 ---
+version: 1
 chapter: 8
+title: Rendering
 subtitle: Rendering HTML subtrees
 ---
 

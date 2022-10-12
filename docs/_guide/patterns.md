@@ -1,6 +1,8 @@
 ---
-chapter: 11
-subtitle: Patterns
+version: 1
+chapter: 10
+title: Patterns
+subtitle: Best Practices for behaviours
 ---
 
 An aim of Catalyst is to be as light weight as possible, and so we often avoid including helper functions for otherwise fine code. We also want to keep Catalyst focussed, and so where some helper functions might be reasonable, we recommend judicious use of other small libraries.

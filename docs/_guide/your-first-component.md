@@ -1,6 +1,8 @@
 ---
+version: 1
+chapter: 2
+title: Your First Component
 subtitle: Building an HTMLElement
-chapter: 3
 ---
 
 ### Catalyst's `@controller` decorator

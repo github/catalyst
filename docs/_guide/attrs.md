@@ -1,5 +1,7 @@
 ---
-chapter: 7
+version: 1
+chapter: 6
+title: Attrs
 subtitle: Using attributes as configuration
 ---
 

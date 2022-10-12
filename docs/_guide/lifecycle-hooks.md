@@ -1,5 +1,7 @@
 ---
-chapter: 8
+version: 1
+chapter: 7
+title: Lifecycle Hooks
 subtitle: Observing the life cycle of an element
 ---
 
