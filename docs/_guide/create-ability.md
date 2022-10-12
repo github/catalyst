@@ -3,6 +3,7 @@ version: 2
 chapter: 9
 title: Create Ability
 subtitle: Create your own abilities
+permalink: /guide-v2/create-ability
 ---
 
 Catalyst provides the functionality to create your own abilities, with a few helper methods and a `controllable` base-level ability. These are explained in detail below, but for a quick summary they are:

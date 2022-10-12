@@ -1,6 +1,6 @@
 ---
 version: 2
-chapter: 13
+chapter: 15
 title: Anti Patterns
 subtitle: Things to avoid building components
 permalink: /guide-v2/anti-patterns

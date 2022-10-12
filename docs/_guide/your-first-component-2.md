@@ -28,12 +28,12 @@ class HelloWorldElement extends HTMLElement {
 ```
 <br>
 
-Catalyst will automatically convert the classes name; removing the trailing `Element` suffix and lowercasing all capital letters, separating them with a dash.
+Catalyst will automatically convert the classes name so the HTML tag will be `<hello-world>`. It removes the trailing `Element` suffix and lowercases all capital letters, separating them with a dash.
 
-By convention Catalyst controllers end in `Element`; Catalyst will omit this when generating a tag name. The `Element` suffix is _not_ required - just convention. All examples in this guide use `Element` suffixed names.
+Catalyst controllers can end in `Element`, `Controller`, or `Component` and Catalyst will remove this suffix when generating a tag name. Adding one of these suffixes is _not_ required - just convention. All examples in this guide use `Element` suffixed names (see our [convention note on this for more]({{ site.baseurl }}/guide/conventions#suffix-your-controllers-consistently-for-symmetry)).
 
 {% capture callout %}
-Remember! A class name _must_ include at least two CamelCased words (not including the `Element` suffix). One-word elements will raise exceptions. Example of good names: `UserListElement`, `SubTaskElement`, `PagerContainerElement`
+Remember! A class name _must_ include at least two CamelCased words (not including the `Element`, `Controller` or `Component` suffix). One-word elements will raise exceptions. Example of good names: `UserListElement`, `SubTaskController`, `PagerContainerComponent`
 {% endcapture %}{% include callout.md %}
 
 
@@ -43,26 +43,21 @@ The `@controller` decorator ties together the various other decorators within Ca
 
  - Derives a tag name based on your class name, removing the trailing `Element` suffix and lowercasing all capital letters, separating them with a dash.
  - Calls `window.customElements.define` with the newly derived tag name and your class.
- - Calls `defineObservedAttributes` with the class to add map any `@attr` decorators. See [attrs]({{ site.baseurl }}/guide/attrs) for more on this.
- - Injects the following code inside of the `connectedCallback()` function of your class:
-   - `bind(this)`; ensures that as your element connects it picks up any `data-action` handlers. See [actions]({{ site.baseurl }}/guide/actions) for more on this.
-   - `autoShadowRoot(this)`; ensures that your element loads any `data-shadowroot` templates. See [rendering]({{ site.baseurl }}/guide/rendering) for more on this.
-   - `initializeAttrs(this)`; ensures that your element binds any `data-*` attributes to props. See [attrs]({{ site.baseurl }}/guide/attrs) for more on this.
+ - Loads the `attrable` decorator, which provides the ability to define `@attr` decorators. See [attrs]({{ site.baseurl }}/guide/attrs) for more on this.
+ - Loads the `actionable` decorator, which provides the ability to bind actions. See [actions]({{ site.baseurl }}/guide/actions) for more on this.
+ - Loads the `targetable` decorator, which provides Target querying. See [targets]({{ site.baseurl }}/guide/targets) for more on this.
  
 You can do all of this manually; for example here's the above `HelloWorldElement`, written without the `@controller` annotation:
 
 ```js
-import {bind, autoShadowRoot, initializeAttrs, defineObservedAttributes} from '@github/catalyst'
+import {attrable, targetable, actionable} from '@github/catalyst'
+
+@register
+@actionable
+@attrable
+@targetable
 class HelloWorldElement extends HTMLElement {
-  connectedCallback() {
-    autoShadowRoot(this)
-    initializeAttrs(this)
-    this.innerHTML = 'Hello World!'
-    bind(this)
-  }
 }
-defineObservedAttributes(HelloWorldElement)
-window.customElements.define('hello-world', HelloWorldElement)
 ```
 
 The `@controller` decorator saves on having to write this boilerplate for each element.
@@ -81,3 +76,4 @@ controller(
 )
 ```
 <br>
+

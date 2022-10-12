@@ -1,8 +1,9 @@
 ---
 version: 2
-chapter: 15
+chapter: 16
 title: Lazy Elements
 subtitle: Dynamically load elements just in time
+permalink: /guide-v2/lazy-elements
 ---
 
 A common practice in modern web development is to combine all JavaScript code into JS "bundles". By bundling the code together we avoid the network overhead of fetching each file. However the trade-off of bundling is that we might deliver JS code that will never run in the browser.
