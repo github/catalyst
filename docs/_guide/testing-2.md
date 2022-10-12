@@ -1,6 +1,6 @@
 ---
-version: 1
-chapter: 14
+version: 2
+chapter: 13
 title: Testing
 subtitle: Tips for automated testing
 ---
