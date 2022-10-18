@@ -1,4 +1,5 @@
 ---
+version: 1
 chapter: 2
 subtitle: How to install and set up Catalyst
 ---
