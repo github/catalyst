@@ -21,13 +21,12 @@
     <link rel="apple-touch-icon" sizes="512x512" href="{{ site.baseurl }}/icons/icon-512x512.png?">
     <link rel="icon" href="{{ site.baseurl }}/icons/icon-48x48.png">
   </head>
-  <body class="d-flex flex-column height-full">
-    <header class="position-sticky top-0 d-md-flex"
-      style="z-index: 1; background-image: linear-gradient(to top, var(--color-bg-canvas-shadow), var(--color-bg-canvas) 25%)">
-      <div class="flex-1 pl-3 pb-6 col-md-3 {% if page.layout != "default" %}bg-gray{% endif %}">
+  <body class="d-flex flex-column min-height-full">
+    <header class="d-flex position-md-sticky top-0 d-md-flex main-header">
+      <div class="logo flex-1 pl-3 pb-6 col-md-3 {% if page.layout != "default" %}bg-gray{% endif %}">
         <h1 class="m-0 mt-md-2">Catalyst</h1>
       </div>
-      <nav class="f3 col-md-9 d-flex flex-justify-center flex-md-justify-end">
+      <nav class="f3 mr-4 mr-md-0 col-md-9 d-flex flex-justify-center flex-md-justify-end">
         <ul class="d-flex list-style-none mr-md-6">
           <li class="ml-3 mt-3 mb-3">
             <a href="{{ site.baseurl }}/">
