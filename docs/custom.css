@@ -60,6 +60,47 @@ a {
   color: var(--color-accent-fg);
 }
 
+.min-height-full {
+  min-height: 100vh
+}
+
+.main-header {
+  height: 5rem;
+  z-index: 1;
+  background-image: linear-gradient(to top, var(--color-bg-canvas-shadow), var(--color-bg-canvas) 25%);
+}
+
+:root {
+  --logo-width: 18rem;
+}
+
+.logo {
+  min-width: var(--logo-width);
+}
+
+.sidebar {
+  height: calc(100vh - 5rem);
+  top: 5rem;
+  min-width: var(--logo-width);
+}
+
+@media only screen and (max-device-width : 768px) {
+  .main-header {
+    height: auto;
+    background: none;
+  }
+
+  .sidebar {
+    height: auto;
+  }
+
+  .logo.bg-gray {
+    background-color: inherit !important;
+    min-width: 9rem;
+  }
+}
+
+
 /* Sidebar */
 /* NB: `!important` is already used; so it’s required here */
 .bg-gray {
