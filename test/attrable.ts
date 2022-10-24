@@ -97,6 +97,13 @@ describe('Attrable', () => {
       expect(instance).to.have.property('getCount', 0)
       expect(instance).to.have.property('setCount', 4)
     })
+
+    it('updates properties synchronously ', () => {
+      instance.fooBar = 'goodbye'
+      expect(instance).to.have.property('fooBar', 'goodbye')
+      instance.bingBaz = 'universe'
+      expect(instance).to.have.property('bingBaz', 'universe')
+    })
   }
 
   describe('types', () => {
