@@ -146,10 +146,10 @@ import {controller, target, targets} from '@github/catalyst'
 
 controller(class HelloWorldElement extends HTMLElement {
   // The same as `@target output`
-  [target.static] = ['output']
+  static [target.static] = ['output']
 
   // The same as `@targets pages; @targets links`
-  [targets.static] = ['pages', 'links']
+  static [targets.static] = ['pages', 'links']
 
 })
 ```
