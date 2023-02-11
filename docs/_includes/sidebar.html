@@ -1,6 +1,6 @@
-<aside class="sidebar position-md-sticky px-4 col-lg-3 py-4 py-md-1 mb-4 mb-md-0 pb-1 bg-gray">
+<aside class="sidebar position-md-sticky overflow-y-auto px-4 col-lg-3 py-4 py-md-1 mb-4 mb-md-0 pb-1 bg-gray">
   <label class="d-flex mr-4 flex-items-center">
-    <span class="mr-4">Version</span> 
+    <span class="mr-4">Version</span>
     <select class="flex-1" onchange="window.location.href = this.value">
       <option value="{{ site.baseurl }}/guide/introduction" {% if page.version == 1 %} selected{% endif %}>v1.x.x</option>
       <option value="{{ site.baseurl }}/guide-v2/introduction" {% if page.version == 2 %} selected{% endif %}>v2.x.x</option>
