@@ -1,7 +1,4 @@
 import {register} from './register.js'
-import {bind, bindShadow} from './bind.js'
-import {autoShadowRoot} from './auto-shadow-root.js'
-import {defineObservedAttributes, initializeAttrs} from './attr.js'
 import type {CustomElementClass} from './custom-element.js'
 
 const symbol = Symbol.for('catalyst')
@@ -42,7 +39,6 @@ export class CatalystDelegate {
       }
     })
 
-    defineObservedAttributes(classObject)
     register(classObject)
   }
 
@@ -53,11 +49,7 @@ export class CatalystDelegate {
   connectedCallback(instance: HTMLElement, connectedCallback: () => void) {
     instance.toggleAttribute('data-catalyst', true)
     customElements.upgrade(instance)
-    autoShadowRoot(instance)
-    initializeAttrs(instance)
-    bind(instance)
     connectedCallback?.call(instance)
-    if (instance.shadowRoot) bindShadow(instance.shadowRoot)
   }
 
   disconnectedCallback(element: HTMLElement, disconnectedCallback: () => void) {
@@ -71,7 +63,6 @@ export class CatalystDelegate {
     newValue: string | null,
     attributeChangedCallback: (...args: unknown[]) => void
   ) {
-    initializeAttrs(instance)
     if (name !== 'data-catalyst' && attributeChangedCallback) {
       attributeChangedCallback.call(instance, name, oldValue, newValue)
     }

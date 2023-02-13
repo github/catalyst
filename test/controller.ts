@@ -1,7 +1,6 @@
 import {expect, fixture, html} from '@open-wc/testing'
 import {replace, fake} from 'sinon'
 import {controller} from '../src/controller.js'
-import {attr} from '../src/attr.js'
 
 describe('controller', () => {
   let instance
@@ -65,30 +64,6 @@ describe('controller', () => {
     expect(instance.foo).to.have.callCount(1)
   })
 
-  it('binds auto shadowRoots', async () => {
-    @controller
-    class ControllerBindAutoShadowElement extends HTMLElement {
-      foo() {
-        return 'foo'
-      }
-    }
-    instance = await fixture<ControllerBindAutoShadowElement>(html`
-      <controller-bind-auto-shadow>
-        <template data-shadowroot="open">
-          <button data-action="click:controller-bind-auto-shadow#foo" />
-        </template>
-      </controller-bind-auto-shadow>
-    `)
-    replace(instance, 'foo', fake(instance.foo))
-
-    expect(instance.shadowRoot).to.exist
-    expect(instance).to.have.property('shadowRoot').not.equal(null)
-    expect(instance.shadowRoot!.children).to.have.lengthOf(1)
-    instance.shadowRoot!.querySelector('button')!.click()
-
-    expect(instance.foo).to.have.callCount(1)
-  })
-
   it('upgrades child decendants when connected', async () => {
     @controller
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -106,36 +81,5 @@ describe('controller', () => {
         <child-element />
       </parent-element>
     `)
-  })
-
-  describe('attrs', () => {
-    let attrValues: string[] = []
-    @controller
-    class AttributeTestElement extends HTMLElement {
-      foo = 'baz'
-      attributeChangedCallback() {
-        attrValues.push(this.getAttribute('data-foo')!)
-        attrValues.push(this.foo)
-      }
-    }
-    attr(AttributeTestElement.prototype, 'foo')
-
-    beforeEach(() => {
-      attrValues = []
-    })
-
-    it('initializes attrs as attributes in attributeChangedCallback', async () => {
-      instance = await fixture<AttributeTestElement>(html`<attribute-test></attribute-test>`)
-      instance.foo = 'bar'
-      instance.attributeChangedCallback()
-      expect(attrValues).to.eql(['bar', 'bar'])
-    })
-
-    it('initializes attributes as attrs in attributeChangedCallback', async () => {
-      instance = await fixture<AttributeTestElement>(html`<attribute-test />`)
-      instance.setAttribute('data-foo', 'bar')
-      instance.attributeChangedCallback()
-      expect(attrValues).to.eql(['bar', 'bar'])
-    })
   })
 })
