@@ -66,7 +66,7 @@ class HelloWorldElement extends HTMLElement {
   }
 
   attributeChangedCallback() {
-    render(() => html`
+    render(html`
       <div>
         Hello <span>${ this.name }</span>
       </div>`,
@@ -102,7 +102,7 @@ class HelloWorldElement extends HTMLElement {
   }
 
   update() {
-    render(() => html`
+    render(html`
       <div>
         Hello <span>${ this.#name }</span>
       </div>`,
