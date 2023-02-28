@@ -55,21 +55,24 @@ const strategies: Record<string, Strategy> = {
   visible
 }
 
-const timers = new WeakMap<Element, number>()
-function scan(node: Element) {
-  cancelAnimationFrame(timers.get(node) || 0)
+type ElementLike = Element | Document | ShadowRoot
+
+const timers = new WeakMap<ElementLike, number>()
+function scan(element: ElementLike) {
+  cancelAnimationFrame(timers.get(element) || 0)
   timers.set(
-    node,
+    element,
     requestAnimationFrame(() => {
       for (const tagName of dynamicElements.keys()) {
-        const child: Element | null = node.matches(tagName) ? node : node.querySelector(tagName)
+        const child: Element | null =
+          element instanceof Element && element.matches(tagName) ? element : element.querySelector(tagName)
         if (customElements.get(tagName) || child) {
           const strategyName = (child?.getAttribute('data-load-on') || 'ready') as keyof typeof strategies
           const strategy = strategyName in strategies ? strategies[strategyName] : strategies.ready
           // eslint-disable-next-line github/no-then
           for (const cb of dynamicElements.get(tagName) || []) strategy(tagName).then(cb)
           dynamicElements.delete(tagName)
-          timers.delete(node)
+          timers.delete(element)
         }
       }
     })
@@ -82,17 +85,20 @@ export function lazyDefine(tagName: string, callback: () => void) {
   if (!dynamicElements.has(tagName)) dynamicElements.set(tagName, new Set<() => void>())
   dynamicElements.get(tagName)!.add(callback)
 
-  scan(document.body)
+  observe(document)
+}
 
-  if (!elementLoader) {
-    elementLoader = new MutationObserver(mutations => {
-      if (!dynamicElements.size) return
-      for (const mutation of mutations) {
-        for (const node of mutation.addedNodes) {
-          if (node instanceof Element) scan(node)
-        }
+export function observe(target: ElementLike): void {
+  elementLoader ||= new MutationObserver(mutations => {
+    if (!dynamicElements.size) return
+    for (const mutation of mutations) {
+      for (const node of mutation.addedNodes) {
+        if (node instanceof Element) scan(node)
       }
-    })
-    elementLoader.observe(document, {subtree: true, childList: true})
-  }
+    }
+  })
+
+  scan(target)
+
+  elementLoader.observe(target, {subtree: true, childList: true})
 }

@@ -3,6 +3,7 @@ import {bind, bindShadow} from './bind.js'
 import {autoShadowRoot} from './auto-shadow-root.js'
 import {defineObservedAttributes, initializeAttrs} from './attr.js'
 import type {CustomElementClass} from './custom-element.js'
+import {observe} from './lazy-define.js'
 
 const symbol = Symbol.for('catalyst')
 
@@ -57,7 +58,10 @@ export class CatalystDelegate {
     initializeAttrs(instance)
     bind(instance)
     connectedCallback?.call(instance)
-    if (instance.shadowRoot) bindShadow(instance.shadowRoot)
+    if (instance.shadowRoot) {
+      bindShadow(instance.shadowRoot)
+      observe(instance.shadowRoot)
+    }
   }
 
   disconnectedCallback(element: HTMLElement, disconnectedCallback: () => void) {
