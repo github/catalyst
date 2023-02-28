@@ -1,6 +1,6 @@
 import {expect, fixture, html} from '@open-wc/testing'
 import {spy} from 'sinon'
-import {lazyDefine} from '../src/lazy-define.js'
+import {lazyDefine, observe} from '../src/lazy-define.js'
 
 const animationFrame = () => new Promise<unknown>(resolve => requestAnimationFrame(resolve))
 
@@ -44,6 +44,21 @@ describe('lazyDefine', () => {
       await animationFrame()
 
       expect(onDefine).to.be.callCount(2)
+    })
+
+    it('lazy loads elements in shadow roots', async () => {
+      const onDefine = spy()
+      lazyDefine('nested-shadow-element', onDefine)
+
+      const el = await fixture(html` <div></div> `)
+      const shadowRoot = el.attachShadow({mode: 'open'})
+      observe(shadowRoot)
+      // eslint-disable-next-line github/unescaped-html-literal
+      shadowRoot.innerHTML = '<div><nested-shadow-element></nested-shadow-element></div>'
+
+      await animationFrame()
+
+      expect(onDefine).to.be.callCount(1)
     })
   })
 

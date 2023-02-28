@@ -1,7 +1,8 @@
 import {expect, fixture, html} from '@open-wc/testing'
-import {replace, fake} from 'sinon'
+import {replace, fake, spy} from 'sinon'
 import {controller} from '../src/controller.js'
 import {attr} from '../src/attr.js'
+import {lazyDefine} from '../src/lazy-define.js'
 
 describe('controller', () => {
   let instance
@@ -63,6 +64,23 @@ describe('controller', () => {
     instance.shadowRoot!.querySelector('button')!.click()
 
     expect(instance.foo).to.have.callCount(1)
+  })
+
+  it('observes changes on shadowRoots', async () => {
+    const onDefine = spy()
+    lazyDefine('nested-shadow-element', onDefine)
+
+    @controller
+    class ControllerObserveShadowElement extends HTMLElement {
+      connectedCallback() {
+        const shadowRoot = this.attachShadow({mode: 'open'})
+        // eslint-disable-next-line github/unescaped-html-literal
+        shadowRoot.innerHTML = '<div><nested-shadow-element></nested-shadow-element></div>'
+      }
+    }
+    instance = await fixture<ControllerObserveShadowElement>(html`<controller-observe-shadow />`)
+
+    expect(onDefine).to.be.callCount(1)
   })
 
   it('binds auto shadowRoots', async () => {
