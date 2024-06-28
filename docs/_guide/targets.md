@@ -55,6 +55,7 @@ class HelloWorldElement extends HTMLElement {
 The target syntax follows a pattern of `controller.target`.
 
  - `controller` must be the name of a controller ascendant to the element.
+ - `.` is the required delimiter between `controller` and `target`.
  - `target` must be the name matching that of a `@target` (or `@targets`) annotated field within the Controller code.
 
 ### Multiple Targets
