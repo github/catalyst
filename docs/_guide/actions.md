@@ -68,7 +68,9 @@ class HelloWorldElement extends HTMLElement {
 The actions syntax follows a pattern of `event:controller#method`.
 
  - `event` must be the name of a [_DOM Event_](https://developer.mozilla.org/en-US/docs/Web/Events), e.g. `click`.
+ - `:` is the required delimiter between the `event` and `controller`.
  - `controller` must be the name of a controller ascendant to the element.
+ - `#` is the required delimieter between the `controller` and `method`.
  - `method` (optional) must be a _public_ _method_ attached to a controller's prototype. Static methods will not work.
 
 If method is not supplied, it will default to `handleEvent`.
