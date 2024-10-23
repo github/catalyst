@@ -81,9 +81,18 @@ function scan(element: ElementLike) {
 
 let elementLoader: MutationObserver
 
-export function lazyDefine(tagName: string, callback: () => void) {
-  if (!dynamicElements.has(tagName)) dynamicElements.set(tagName, new Set<() => void>())
-  dynamicElements.get(tagName)!.add(callback)
+export function lazyDefine(object: Record<string, () => void>): void
+export function lazyDefine(tagName: string, callback: () => void): void
+export function lazyDefine(tagNameOrObj: string | Record<string, () => void>, singleCallback?: () => void) {
+  if (typeof tagNameOrObj === 'string' && singleCallback) {
+    if (!dynamicElements.has(tagNameOrObj)) dynamicElements.set(tagNameOrObj, new Set<() => void>())
+    dynamicElements.get(tagNameOrObj)!.add(singleCallback)
+  } else {
+    for (const [tagName, callback] of Object.entries(tagNameOrObj)) {
+      if (!dynamicElements.has(tagName)) dynamicElements.set(tagName, new Set<() => void>())
+      dynamicElements.get(tagName)!.add(callback)
+    }
+  }
 
   observe(document)
 }

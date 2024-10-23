@@ -46,6 +46,28 @@ describe('lazyDefine', () => {
       expect(onDefine).to.be.callCount(2)
     })
 
+    it('takes an object as well', async () => {
+      const onDefine1 = spy()
+      const onDefine2 = spy()
+      const onDefine3 = spy()
+      lazyDefine({
+        'first-object-element': onDefine1,
+        'second-object-element': onDefine2,
+        'third-object-element': onDefine3
+      })
+      await fixture(html`
+        <first-object-element></first-object-element>
+        <second-object-element></second-object-element>
+        <third-object-element></third-object-element>
+      `)
+
+      await animationFrame()
+
+      expect(onDefine1).to.have.callCount(1)
+      expect(onDefine2).to.have.callCount(1)
+      expect(onDefine3).to.have.callCount(1)
+    })
+
     it('lazy loads elements in shadow roots', async () => {
       const onDefine = spy()
       lazyDefine('nested-shadow-element', onDefine)
