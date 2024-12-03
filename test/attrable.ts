@@ -19,6 +19,16 @@ describe('Attrable', () => {
         this.setCount += 1
         this.#bing = value
       }
+      lastSetHasFoo: any
+      @attr get hasFoo() {
+        return false
+      }
+      set hasFoo(v: boolean) {
+        this.lastSetHasFoo = v
+      }
+      connectedCallback() {
+        this.hasFoo = true
+      }
     }
     window.customElements.define('initialize-attr-test', InitializeAttrTest)
 
@@ -103,6 +113,10 @@ describe('Attrable', () => {
       expect(instance).to.have.property('fooBar', 'goodbye')
       instance.bingBaz = 'universe'
       expect(instance).to.have.property('bingBaz', 'universe')
+    })
+    
+    it('updates default-valued properties in the connected callback', async () => {
+      expect(instance).to.have.property('lastSetHasFoo', true)
     })
   }
 
