@@ -4,7 +4,7 @@ import {dasherize} from './dasherize.js'
 /**
  * Register the controller as a custom element.
  *
- * The classname is converted to a approriate tag name.
+ * The classname is converted to a appropriate tag name.
  *
  * Example: HelloController => hello-controller
  */
