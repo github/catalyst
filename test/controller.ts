@@ -27,6 +27,16 @@ describe('controller', () => {
     expect(instance).to.exist
   })
 
+  it('adds data-catalyst to elements with custom names', async () => {
+    @controller('custom-named-element')
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    class CustomNamedElement extends HTMLElement {}
+
+    instance = await fixture(html`<custom-named-element />`)
+    expect(instance.hasAttribute('data-catalyst')).to.equal(true)
+    expect(instance.getAttribute('data-catalyst')).to.equal('')
+  })
+
   it('adds data-catalyst to elements', async () => {
     @controller
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
