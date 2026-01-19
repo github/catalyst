@@ -14,6 +14,19 @@ describe('controller', () => {
     expect(instance).to.be.instanceof(ControllerRegisterElement)
   })
 
+  it('registers element with custom name when provided', async () => {
+    @controller('happy-widget')
+    class SomeClass extends HTMLElement {}
+    instance = await fixture(html`<happy-widget />`)
+    expect(instance).to.be.instanceof(SomeClass)
+  })
+
+  it('registers element with custom name using function syntax', async () => {
+    controller('custom-element-name')(class AnotherClass extends HTMLElement {})
+    instance = await fixture(html`<custom-element-name />`)
+    expect(instance).to.exist
+  })
+
   it('adds data-catalyst to elements', async () => {
     @controller
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

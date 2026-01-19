@@ -31,6 +31,27 @@ Catalyst will automatically convert the classes name; removing the trailing `Ele
 
 By convention Catalyst controllers end in `Element`; Catalyst will omit this when generating a tag name. The `Element` suffix is _not_ required - just convention. All examples in this guide use `Element` suffixed names.
 
+### Custom Element Names
+
+If you need to use a specific element name that doesn't match your class name (for example, to support minification), you can pass the element name directly to the `@controller` decorator:
+
+```js
+import {controller} from '@github/catalyst'
+
+@controller('happy-widget')
+class SomeClass extends HTMLElement {
+  connectedCallback() {
+    this.innerHTML = 'Hello from happy-widget!'
+  }
+}
+```
+<br>
+
+This will register the element as `<happy-widget>` regardless of the class name. This is particularly useful when:
+- Your production build minifies class names
+- You want explicit control over the element name
+- The class name doesn't follow the naming pattern required for automatic naming
+
 {% capture callout %}
 Remember! A class name _must_ include at least two CamelCased words (not including the `Element` suffix). One-word elements will raise exceptions. Example of good names: `UserListElement`, `SubTaskElement`, `PagerContainerElement`
 {% endcapture %}{% include callout.md %}
@@ -40,8 +61,8 @@ Remember! A class name _must_ include at least two CamelCased words (not includi
 
 The `@controller` decorator ties together the various other decorators within Catalyst, plus a few extra conveniences such as automatically registering the element, which saves you writing some boilerplate that you'd otherwise have to write by hand. Specifically the `@controller` decorator:
 
- - Derives a tag name based on your class name, removing the trailing `Element` suffix and lowercasing all capital letters, separating them with a dash.
- - Calls `window.customElements.define` with the newly derived tag name and your class.
+ - Derives a tag name based on your class name, removing the trailing `Element` suffix and lowercasing all capital letters, separating them with a dash. You can optionally provide a custom element name as a parameter (e.g., `@controller('my-element')`).
+ - Calls `window.customElements.define` with the newly derived (or provided) tag name and your class.
  - Calls `defineObservedAttributes` with the class to add map any `@attr` decorators. See [attrs]({{ site.baseurl }}/guide/attrs) for more on this.
  - Injects the following code inside of the `connectedCallback()` function of your class:
    - `bind(this)`; ensures that as your element connects it picks up any `data-action` handlers. See [actions]({{ site.baseurl }}/guide/actions) for more on this.
@@ -74,6 +95,18 @@ If you don't want to use TypeScript decorators, you can use `controller` as a re
 import {controller} from '@github/catalyst'
 
 controller(
+  class HelloWorldElement extends HTMLElement {
+    //...
+  }
+)
+```
+
+Or with a custom element name:
+
+```js
+import {controller} from '@github/catalyst'
+
+controller('my-custom-name')(
   class HelloWorldElement extends HTMLElement {
     //...
   }
