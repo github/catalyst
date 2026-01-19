@@ -1,5 +1,6 @@
 {
   "include": ["src", "test"],
+  "exclude": ["node_modules"],
   "compilerOptions": {
     "baseUrl": ".",
     "esModuleInterop": true,
@@ -10,6 +11,8 @@
     "noEmit": true,
     "sourceMap": true,
     "strict": true,
-    "target": "ES2020"
+    "target": "ES2020",
+    "types": ["vitest/globals"],
+    "skipLibCheck": true
   }
 }

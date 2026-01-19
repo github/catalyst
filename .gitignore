@@ -5,3 +5,4 @@ lib/
 .jekyll-cache
 .lighthouseci
 coverage
+test/__screenshots__

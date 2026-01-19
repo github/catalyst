@@ -1,10 +1,9 @@
-import {use} from 'chai'
+import {chai} from 'vitest'
 import chaiDom from 'chai-dom'
 import sinonChai from 'sinon-chai'
 
 // Extend chai with DOM assertions
-use(chaiDom)
+chai.use(chaiDom)
 
 // Extend chai with sinon assertions
-use(sinonChai)
-
+chai.use(sinonChai)

@@ -7,18 +7,18 @@ export default defineConfig({
       enabled: true,
       instances: [
         {
-          browser: 'chromium',
-        },
+          browser: 'chromium'
+        }
       ],
       provider: playwright(),
-      headless: true,
+      headless: true
     },
     include: ['test/**/*.ts'],
     exclude: ['test/setup.ts', 'test/test-utils.ts'],
     setupFiles: ['./test/setup.ts'],
-    globals: true,
+    globals: true
   },
   esbuild: {
-    target: 'es2020',
-  },
+    target: 'es2020'
+  }
 })

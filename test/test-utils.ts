@@ -24,16 +24,16 @@ export async function fixture<T extends HTMLElement>(template: string): Promise<
   const container = document.createElement('div')
   container.innerHTML = template.trim()
   const element = container.firstElementChild as T
-  
+
   if (!element) {
     throw new Error('No element found in template')
   }
-  
+
   document.body.appendChild(element)
-  
+
   // Wait for next frame to ensure element is fully connected
   await new Promise(resolve => requestAnimationFrame(resolve))
-  
+
   return element
 }
 
