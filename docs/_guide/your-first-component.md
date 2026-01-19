@@ -38,16 +38,16 @@ If you need to use a specific element name that doesn't match your class name (f
 ```js
 import {controller} from '@github/catalyst'
 
-@controller('happy-widget')
+@controller('hello-widget')
 class SomeClass extends HTMLElement {
   connectedCallback() {
-    this.innerHTML = 'Hello from happy-widget!'
+    this.innerHTML = 'Hello from hello-widget!'
   }
 }
 ```
 <br>
 
-This will register the element as `<happy-widget>` regardless of the class name. This is particularly useful when:
+This will register the element as `<hello-widget>` regardless of the class name. This is particularly useful when:
 - Your production build minifies class names
 - You want explicit control over the element name
 - The class name doesn't follow the naming pattern required for automatic naming
