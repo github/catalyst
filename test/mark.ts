@@ -1,4 +1,4 @@
-import {expect} from '@open-wc/testing'
+import {expect} from './test-utils.js'
 import {fake} from 'sinon'
 import {createMark} from '../src/mark.js'
 

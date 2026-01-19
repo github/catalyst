@@ -1,4 +1,4 @@
-import {expect, fixture, html} from '@open-wc/testing'
+import {expect, fixture, html} from './test-utils.js'
 import {fake} from 'sinon'
 import {provide, provideAsync, consume, providable, ContextEvent} from '../src/providable.js'
 

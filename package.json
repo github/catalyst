@@ -31,7 +31,7 @@
     "prepack": "npm run build",
     "presize": "npm run build",
     "size": "size-limit",
-    "test": "web-test-runner"
+    "test": "vitest run"
   },
   "prettier": "@github/prettier-config",
   "devDependencies": {
@@ -41,14 +41,21 @@
     "@size-limit/preset-small-lib": "^8.0.1",
     "@typescript-eslint/eslint-plugin": "^5.36.1",
     "@typescript-eslint/parser": "^5.36.1",
-    "@web/dev-server-esbuild": "^0.3.2",
-    "@web/test-runner": "^0.14.0",
+    "@vitest/browser": "^4.0.17",
+    "@vitest/browser-playwright": "^4.0.17",
+    "@vitest/expect": "^4.0.17",
+    "@vitest/ui": "^4.0.17",
+    "chai": "^6.2.2",
+    "chai-dom": "^1.12.1",
     "eslint": "^8.23.0",
     "eslint-plugin-github": "^4.3.7",
+    "playwright": "^1.57.0",
     "sinon": "^14.0.0",
+    "sinon-chai": "^4.0.1",
     "size-limit": "^8.0.1",
     "tslib": "^2.4.0",
-    "typescript": "^4.8.2"
+    "typescript": "^4.8.2",
+    "vitest": "^4.0.17"
   },
   "size-limit": [
     {

@@ -1,4 +1,4 @@
-import {expect, fixture, html} from '@open-wc/testing'
+import {expect, fixture, html} from './test-utils.js'
 import {spy} from 'sinon'
 import {lazyDefine, observe} from '../src/lazy-define.js'
 

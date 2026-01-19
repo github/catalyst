@@ -1,4 +1,4 @@
-import {expect} from '@open-wc/testing'
+import {expect} from './test-utils.js'
 import {restore, replace, fake} from 'sinon'
 import {register} from '../src/register.js'
 

@@ -1,4 +1,4 @@
-import {expect, fixture, html} from '@open-wc/testing'
+import {expect, fixture, html} from './test-utils.js'
 import {target, targets} from '../src/target.js'
 import {controller} from '../src/controller.js'
 

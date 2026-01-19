@@ -1,4 +1,4 @@
-import {expect, fixture, html} from '@open-wc/testing'
+import {expect, fixture, html} from './test-utils.js'
 import {replace, fake} from 'sinon'
 import {autoShadowRoot} from '../src/auto-shadow-root.js'
 

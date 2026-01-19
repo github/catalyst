@@ -1,5 +1,5 @@
 import type {CustomElementClass, CustomElement} from '../src/custom-element.js'
-import {expect, fixture, html} from '@open-wc/testing'
+import {expect, fixture, html} from './test-utils.js'
 import {fake} from 'sinon'
 import {controllable, attachShadowCallback, attachInternalsCallback} from '../src/controllable.js'
 

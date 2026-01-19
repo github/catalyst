@@ -1,4 +1,4 @@
-import {expect, fixture, html} from '@open-wc/testing'
+import {expect, fixture, html} from './test-utils.js'
 import {fake, match} from 'sinon'
 import {registerTag, observeElementForTags} from '../src/tag-observer.js'
 

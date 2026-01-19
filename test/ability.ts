@@ -1,5 +1,5 @@
 import type {CustomElement} from '../src/custom-element.js'
-import {expect, fixture, html} from '@open-wc/testing'
+import {expect, fixture, html} from './test-utils.js'
 import {restore} from 'sinon'
 import {createAbility} from '../src/ability.js'
 
