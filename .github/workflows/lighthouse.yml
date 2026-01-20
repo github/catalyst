@@ -10,10 +10,10 @@ jobs:
       - name: Checkout the project
         uses: actions/checkout@v3
 
-      - name: Use Node.js 16.x (LTS)
+      - name: Use Node.js 24.x (LTS)
         uses: actions/setup-node@v3
         with:
-          node-version: 16.x
+          node-version: 24.x
           cache: 'npm'
       - run: npm ci
 
