@@ -1,6 +1,4 @@
 name: Publish
-permissions:
-  contents: read
 
 on:
   release:
