@@ -6,16 +6,20 @@ on:
   release:
     types: [created]
 
+permissions:
+  contents: read
+  id-token: write # for provenance and publish access
+
 jobs:
   publish-npm:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the project
         uses: actions/checkout@v3
-      - name: Use Node.js 16.x (LTS)
+      - name: Use Node.js 24.x (LTS)
         uses: actions/setup-node@v3
         with:
-          node-version: 16.x
+          node-version: 24.x
           registry-url: https://registry.npmjs.org/
           cache: npm
       - run: npm ci
@@ -23,6 +27,4 @@ jobs:
       - run: npm version ${TAG_NAME} --git-tag-version=false
         env:
           TAG_NAME: ${{ github.event.release.tag_name }}
-      - run: npm whoami; npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.npm_token}}
+      - run: npm publish --provenance

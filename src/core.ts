@@ -8,7 +8,7 @@ import {observe} from './lazy-define.js'
 const symbol = Symbol.for('catalyst')
 
 export class CatalystDelegate {
-  constructor(classObject: CustomElementClass) {
+  constructor(classObject: CustomElementClass, elementName?: string) {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const delegate = this
 
@@ -44,7 +44,7 @@ export class CatalystDelegate {
     })
 
     defineObservedAttributes(classObject)
-    register(classObject)
+    register(classObject, elementName)
   }
 
   observedAttributes(instance: HTMLElement, observedAttributes: string[]) {

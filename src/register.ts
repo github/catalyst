@@ -8,14 +8,14 @@ import {dasherize} from './dasherize.js'
  *
  * Example: HelloController => hello-controller
  */
-export function register(classObject: CustomElementClass): CustomElementClass {
-  const name = dasherize(classObject.name).replace(/-element$/, '')
+export function register(classObject: CustomElementClass, name?: string): CustomElementClass {
+  const tagName = name || dasherize(classObject.name).replace(/-element$/, '')
 
   try {
-    window.customElements.define(name, classObject)
+    window.customElements.define(tagName, classObject)
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    window[classObject.name] = customElements.get(name)
+    window[classObject.name] = customElements.get(tagName)
   } catch (e: unknown) {
     // The only reason for window.customElements.define to throw a `NotSupportedError`
     // is if the element has already been defined.
