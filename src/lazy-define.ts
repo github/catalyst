@@ -1,6 +1,7 @@
 type Strategy = (tagName: string) => Promise<void>
 
-const dynamicElements = new Map<string, Set<() => void>>()
+const pending = new Map<string, Set<() => void>>()
+const triggered = new Set<string>()
 
 const ready = new Promise<void>(resolve => {
   if (document.readyState !== 'loading') {
@@ -57,29 +58,70 @@ const strategies: Record<string, Strategy> = {
 
 type ElementLike = Element | Document | ShadowRoot
 
+let observedTargets = new WeakSet<ElementLike>()
 const timers = new WeakMap<ElementLike, number>()
 function scan(element: ElementLike) {
-  cancelAnimationFrame(timers.get(element) || 0)
-  timers.set(
-    element,
-    requestAnimationFrame(() => {
-      for (const tagName of dynamicElements.keys()) {
-        const child: Element | null =
-          element instanceof Element && element.matches(tagName) ? element : element.querySelector(tagName)
-        if (customElements.get(tagName) || child) {
-          const strategyName = (child?.getAttribute('data-load-on') || 'ready') as keyof typeof strategies
-          const strategy = strategyName in strategies ? strategies[strategyName] : strategies.ready
-          // eslint-disable-next-line github/no-then
-          for (const cb of dynamicElements.get(tagName) || []) strategy(tagName).then(cb)
-          dynamicElements.delete(tagName)
-          timers.delete(element)
+  const currentTimer = timers.get(element)
+  if (currentTimer) cancelAnimationFrame(currentTimer)
+
+  const newTimer = requestAnimationFrame(() => {
+    // FIX 7: Early return optimization
+    if (pending.size === 0) return
+
+    // FIX 7: Create snapshot to iterate safely
+    const tagList = Array.from(pending.keys())
+
+    for (let i = 0; i < tagList.length; i++) {
+      const tagName = tagList[i]
+
+      const child: Element | null =
+        element instanceof Element && element.matches(tagName) ? element : element.querySelector(tagName)
+      if (customElements.get(tagName) || child) {
+        // Only skip if already triggered AND not in pending
+        // (If it's in pending, it means lazyDefine was called again)
+        const shouldSkip = triggered.has(tagName) && !pending.has(tagName)
+        if (shouldSkip) continue
+
+        triggered.add(tagName)
+
+        const callbackSet = pending.get(tagName)
+        pending.delete(tagName)
+
+        const strategyName = (child?.getAttribute('data-load-on') || 'ready') as keyof typeof strategies
+        const strategy = strategyName in strategies ? strategies[strategyName] : strategies.ready
+
+        // FIX 5: Wrap callback execution in try-catch and handle rejections
+        const callbackList = Array.from(callbackSet || [])
+        for (let j = 0; j < callbackList.length; j++) {
+          const callback = callbackList[j]
+          strategy(tagName)
+            // eslint-disable-next-line github/no-then
+            .then(() => {
+              try {
+                callback()
+              } catch (err) {
+                reportError(err)
+              }
+            })
+            // eslint-disable-next-line github/no-then
+            .catch(reportError)
         }
+
+        timers.delete(element)
       }
-    })
-  )
+    }
+
+    if (pending.size === 0 && elementLoader) {
+      elementLoader.disconnect()
+      elementLoader = undefined
+      observedTargets = new WeakSet<ElementLike>()
+    }
+  })
+
+  timers.set(element, newTimer)
 }
 
-let elementLoader: MutationObserver
+let elementLoader: MutationObserver | undefined
 
 export function lazyDefine(object: Record<string, () => void>): void
 export function lazyDefine(tagName: string, callback: () => void): void
@@ -87,24 +129,56 @@ export function lazyDefine(tagNameOrObj: string | Record<string, () => void>, si
   if (typeof tagNameOrObj === 'string' && singleCallback) {
     tagNameOrObj = {[tagNameOrObj]: singleCallback}
   }
+
   for (const [tagName, callback] of Object.entries(tagNameOrObj)) {
-    if (!dynamicElements.has(tagName)) dynamicElements.set(tagName, new Set<() => void>())
-    dynamicElements.get(tagName)!.add(callback)
+    // FIX 6: Late registration - execute immediately if already triggered
+    // AND elements exist in DOM
+    const wasTriggered = triggered.has(tagName)
+    const elementsExist = wasTriggered && document.querySelector(tagName) !== null
+    if (elementsExist) {
+      // eslint-disable-next-line github/no-then
+      Promise.resolve().then(() => {
+        try {
+          callback()
+        } catch (err) {
+          reportError(err)
+        }
+      })
+    } else {
+      if (!pending.has(tagName)) {
+        pending.set(tagName, new Set<() => void>())
+      }
+      const callbackSet = pending.get(tagName)
+      if (callbackSet) {
+        callbackSet.add(callback)
+      }
+    }
   }
   observe(document)
 }
 
 export function observe(target: ElementLike): void {
-  elementLoader ||= new MutationObserver(mutations => {
-    if (!dynamicElements.size) return
-    for (const mutation of mutations) {
-      for (const node of mutation.addedNodes) {
-        if (node instanceof Element) scan(node)
+  if (!elementLoader) {
+    elementLoader = new MutationObserver(mutations => {
+      if (!pending.size) return
+      for (let i = 0; i < mutations.length; i++) {
+        const mutation = mutations[i]
+        const nodes = mutation.addedNodes
+        for (let j = 0; j < nodes.length; j++) {
+          const node = nodes[j]
+          if (node instanceof Element) {
+            scan(node)
+          }
+        }
       }
-    }
-  })
+    })
+  }
 
   scan(target)
 
-  elementLoader.observe(target, {subtree: true, childList: true})
+  // FIX 3: Check observedTargets to avoid redundant observe() calls
+  if (!observedTargets.has(target)) {
+    observedTargets.add(target)
+    elementLoader.observe(target, {subtree: true, childList: true})
+  }
 }
