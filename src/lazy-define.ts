@@ -25,14 +25,14 @@ const firstInteraction = new Promise<void>(resolve => {
 })
 
 const visible = async (tagName: string): Promise<void> => {
-  const makeViewportMonitor = (itemsToMonitor: Element[]) => {
-    return new Promise<void>(signalComplete => {
-      const viewMonitor = new IntersectionObserver(
-        viewEvents => {
-          for (const viewEvent of viewEvents) {
-            if (viewEvent.isIntersecting) {
-              signalComplete()
-              viewMonitor.disconnect()
+  const observeIntersection = (elements: Element[]) => {
+    return new Promise<void>(resolve => {
+      const observer = new IntersectionObserver(
+        entries => {
+          for (const entry of entries) {
+            if (entry.isIntersecting) {
+              resolve()
+              observer.disconnect()
               return
             }
           }
@@ -46,45 +46,44 @@ const visible = async (tagName: string): Promise<void> => {
           threshold: 0.01
         }
       )
-      for (const monitoredItem of itemsToMonitor) {
-        viewMonitor.observe(monitoredItem)
+      for (const element of elements) {
+        observer.observe(element)
       }
     })
   }
 
-  const makeElementHunter = () => {
-    return new Promise<Element[]>(deliverCapturedElements => {
-      const domHunter = new MutationObserver(capturedChanges => {
-        for (const capturedChange of capturedChanges) {
-          const capturedNodes = Array.from(capturedChange.addedNodes)
-          for (const capturedNode of capturedNodes) {
-            if (!(capturedNode instanceof Element)) continue
+  const waitForElement = () => {
+    return new Promise<Element[]>(resolve => {
+      const observer = new MutationObserver(mutations => {
+        for (const mutation of mutations) {
+          const addedNodes = Array.from(mutation.addedNodes)
+          for (const node of addedNodes) {
+            if (!(node instanceof Element)) continue
 
-            const directHit = capturedNode.matches(tagName) ? capturedNode : null
-            const nestedHit = capturedNode.querySelector(tagName)
-            const successfulHit = directHit || nestedHit
+            const isMatch = node.matches(tagName)
+            const descendant = node.querySelector(tagName)
 
-            if (successfulHit) {
-              domHunter.disconnect()
-              deliverCapturedElements(Array.from(document.querySelectorAll(tagName)))
+            if (isMatch || descendant) {
+              observer.disconnect()
+              resolve(Array.from(document.querySelectorAll(tagName)))
               return
             }
           }
         }
       })
 
-      domHunter.observe(document.documentElement, {childList: true, subtree: true})
+      observer.observe(document.documentElement, {childList: true, subtree: true})
     })
   }
 
-  const immediateFinds = Array.from(document.querySelectorAll(tagName))
+  const existingElements = Array.from(document.querySelectorAll(tagName))
 
-  if (immediateFinds.length > 0) {
-    return makeViewportMonitor(immediateFinds)
+  if (existingElements.length > 0) {
+    return observeIntersection(existingElements)
   }
 
-  const delayedFinds = await makeElementHunter()
-  return makeViewportMonitor(delayedFinds)
+  const foundElements = await waitForElement()
+  return observeIntersection(foundElements)
 }
 
 const strategies: Record<string, Strategy> = {

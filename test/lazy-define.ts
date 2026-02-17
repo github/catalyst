@@ -119,13 +119,13 @@ describe('lazyDefine', () => {
     it('waits for element to be added to DOM before observing', async () => {
       const onDefine = spy()
       lazyDefine('late-visible-element', onDefine)
-      
+
       await animationFrame()
       expect(onDefine).to.be.callCount(0)
 
       // Add the element later
       await fixture(html`<late-visible-element data-load-on="visible"></late-visible-element>`)
-      
+
       await animationFrame()
       expect(onDefine).to.be.callCount(1)
     })
@@ -137,8 +137,8 @@ describe('lazyDefine', () => {
       lazyDefine('race-test-element', onDefine)
 
       // Create multiple elements to trigger multiple scans
-      const el1 = await fixture(html`<race-test-element></race-test-element>`)
-      const el2 = await fixture(html`<race-test-element></race-test-element>`)
+      await fixture(html`<race-test-element></race-test-element>`)
+      await fixture(html`<race-test-element></race-test-element>`)
 
       await animationFrame()
       await animationFrame()
@@ -162,7 +162,7 @@ describe('lazyDefine', () => {
       // Register second callback after element is already triggered
       lazyDefine('late-reg-element', onDefine2)
       await animationFrame()
-      
+
       // Second callback should be executed immediately
       expect(onDefine2).to.be.callCount(1)
     })
@@ -190,7 +190,7 @@ describe('lazyDefine', () => {
         // Both callbacks should be called despite first one throwing
         expect(onDefine1).to.be.callCount(1)
         expect(onDefine2).to.be.callCount(1)
-        
+
         // Error should have been reported
         expect(errors.length).to.be.greaterThan(0)
       } finally {
