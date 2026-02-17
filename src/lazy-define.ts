@@ -71,9 +71,7 @@ function scan(element: ElementLike) {
     // FIX 7: Create snapshot to iterate safely
     const tagList = Array.from(pending.keys())
 
-    for (let i = 0; i < tagList.length; i++) {
-      const tagName = tagList[i]
-
+    for (const tagName of tagList) {
       const child: Element | null =
         element instanceof Element && element.matches(tagName) ? element : element.querySelector(tagName)
       if (customElements.get(tagName) || child) {
@@ -92,8 +90,7 @@ function scan(element: ElementLike) {
 
         // FIX 5: Wrap callback execution in try-catch and handle rejections
         const callbackList = Array.from(callbackSet || [])
-        for (let j = 0; j < callbackList.length; j++) {
-          const callback = callbackList[j]
+        for (const callback of callbackList) {
           strategy(tagName)
             // eslint-disable-next-line github/no-then
             .then(() => {
@@ -134,8 +131,8 @@ export function lazyDefine(tagNameOrObj: string | Record<string, () => void>, si
     // FIX 6: Late registration - execute immediately if already triggered
     // AND elements exist in DOM
     const wasTriggered = triggered.has(tagName)
-    const elementsExist = wasTriggered && document.querySelector(tagName) !== null
-    if (elementsExist) {
+    const elementsExist = document.querySelector(tagName) !== null
+    if (wasTriggered && elementsExist) {
       // eslint-disable-next-line github/no-then
       Promise.resolve().then(() => {
         try {
@@ -161,11 +158,9 @@ export function observe(target: ElementLike): void {
   if (!elementLoader) {
     elementLoader = new MutationObserver(mutations => {
       if (!pending.size) return
-      for (let i = 0; i < mutations.length; i++) {
-        const mutation = mutations[i]
+      for (const mutation of mutations) {
         const nodes = mutation.addedNodes
-        for (let j = 0; j < nodes.length; j++) {
-          const node = nodes[j]
+        for (const node of nodes) {
           if (node instanceof Element) {
             scan(node)
           }
