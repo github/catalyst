@@ -112,14 +112,15 @@ function scan(element: ElementLike) {
     // FIX 7: Early return optimization
     if (pending.size === 0) return
 
-    // FIX 7: Create snapshot to iterate safely
+    // FIX 7: Create snapshot to prevent modification-during-iteration issues
+    // (concurrent scans may delete tags from pending)
     const tagList = Array.from(pending.keys())
 
     for (const tagName of tagList) {
       const child: Element | null =
         element instanceof Element && element.matches(tagName) ? element : element.querySelector(tagName)
       if (customElements.get(tagName) || child) {
-        // Skip if already triggered and no longer in pending
+        // Skip if already processed and not re-registered
         if (triggered.has(tagName) && !pending.has(tagName)) continue
 
         triggered.add(tagName)
@@ -167,8 +168,9 @@ export function lazyDefine(tagNameOrObj: string | Record<string, () => void>, si
   }
 
   for (const [tagName, callback] of Object.entries(tagNameOrObj)) {
-    // FIX 6: Late registration - execute immediately if already triggered AND elements exist
-    if (triggered.has(tagName) && document.querySelector(tagName) !== null) {
+    // FIX 6: Late registration - execute immediately if already triggered
+    // Check both triggered state and element existence to avoid executing for removed elements
+    if (triggered.has(tagName) && document.querySelector(tagName)) {
       // eslint-disable-next-line github/no-then
       Promise.resolve().then(() => {
         try {

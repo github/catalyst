@@ -1,5 +1,5 @@
 import {expect, fixture, html} from '@open-wc/testing'
-import {spy} from 'sinon'
+import {spy, stub} from 'sinon'
 import {lazyDefine, observe} from '../src/lazy-define.js'
 
 const animationFrame = () => new Promise<unknown>(resolve => requestAnimationFrame(resolve))
@@ -161,10 +161,8 @@ describe('lazyDefine', () => {
       })
       const onDefine2 = spy()
 
-      // Suppress global error reporting for this test
-      const originalReportError = globalThis.reportError
       const errors: unknown[] = []
-      globalThis.reportError = (err: unknown) => errors.push(err)
+      const reportErrorStub = stub(globalThis, 'reportError').callsFake((err: unknown) => errors.push(err))
 
       try {
         lazyDefine('error-test-element', onDefine1)
@@ -180,7 +178,7 @@ describe('lazyDefine', () => {
         // Error should have been reported
         expect(errors.length).to.be.greaterThan(0)
       } finally {
-        globalThis.reportError = originalReportError
+        reportErrorStub.restore()
       }
     })
   })
