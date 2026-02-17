@@ -24,31 +24,68 @@ const firstInteraction = new Promise<void>(resolve => {
   document.addEventListener('pointerdown', handler, listenerOptions)
 })
 
-const visible = (tagName: string): Promise<void> =>
-  new Promise<void>(resolve => {
-    const observer = new IntersectionObserver(
-      entries => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            resolve()
-            observer.disconnect()
-            return
+const visible = async (tagName: string): Promise<void> => {
+  const makeViewportMonitor = (itemsToMonitor: Element[]) => {
+    return new Promise<void>(signalComplete => {
+      const viewMonitor = new IntersectionObserver(
+        viewEvents => {
+          for (const viewEvent of viewEvents) {
+            if (viewEvent.isIntersecting) {
+              signalComplete()
+              viewMonitor.disconnect()
+              return
+            }
+          }
+        },
+        {
+          // Currently the threshold is set to 256px from the bottom of the viewport
+          // with a threshold of 0.1. This means the element will not load until about
+          // 2 keyboard-down-arrow presses away from being visible in the viewport,
+          // giving us some time to fetch it before the contents are made visible
+          rootMargin: '0px 0px 256px 0px',
+          threshold: 0.01
+        }
+      )
+      for (const monitoredItem of itemsToMonitor) {
+        viewMonitor.observe(monitoredItem)
+      }
+    })
+  }
+
+  const makeElementHunter = () => {
+    return new Promise<Element[]>(deliverCapturedElements => {
+      const domHunter = new MutationObserver(capturedChanges => {
+        for (const capturedChange of capturedChanges) {
+          const capturedNodes = Array.from(capturedChange.addedNodes)
+          for (const capturedNode of capturedNodes) {
+            if (!(capturedNode instanceof Element)) continue
+
+            const directHit = capturedNode.matches(tagName) ? capturedNode : null
+            const nestedHit = capturedNode.querySelector(tagName)
+            const successfulHit = directHit || nestedHit
+
+            if (successfulHit) {
+              domHunter.disconnect()
+              deliverCapturedElements(Array.from(document.querySelectorAll(tagName)))
+              return
+            }
           }
         }
-      },
-      {
-        // Currently the threshold is set to 256px from the bottom of the viewport
-        // with a threshold of 0.1. This means the element will not load until about
-        // 2 keyboard-down-arrow presses away from being visible in the viewport,
-        // giving us some time to fetch it before the contents are made visible
-        rootMargin: '0px 0px 256px 0px',
-        threshold: 0.01
-      }
-    )
-    for (const el of document.querySelectorAll(tagName)) {
-      observer.observe(el)
-    }
-  })
+      })
+
+      domHunter.observe(document.documentElement, {childList: true, subtree: true})
+    })
+  }
+
+  const immediateFinds = Array.from(document.querySelectorAll(tagName))
+
+  if (immediateFinds.length > 0) {
+    return makeViewportMonitor(immediateFinds)
+  }
+
+  const delayedFinds = await makeElementHunter()
+  return makeViewportMonitor(delayedFinds)
+}
 
 const strategies: Record<string, Strategy> = {
   ready: () => ready,
