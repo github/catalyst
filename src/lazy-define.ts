@@ -94,8 +94,16 @@ const strategies: Record<string, Strategy> = {
 
 type ElementLike = Element | Document | ShadowRoot
 
-let observedTargets = new WeakSet<ElementLike>()
+const observedTargets = new WeakSet<ElementLike>()
 const timers = new WeakMap<ElementLike, number>()
+
+function cleanupObserver() {
+  if (pending.size === 0 && elementLoader) {
+    elementLoader.disconnect()
+    elementLoader = undefined
+  }
+}
+
 function scan(element: ElementLike) {
   const currentTimer = timers.get(element)
   if (currentTimer) cancelAnimationFrame(currentTimer)
@@ -111,10 +119,8 @@ function scan(element: ElementLike) {
       const child: Element | null =
         element instanceof Element && element.matches(tagName) ? element : element.querySelector(tagName)
       if (customElements.get(tagName) || child) {
-        // Only skip if already triggered AND not in pending
-        // (If it's in pending, it means lazyDefine was called again)
-        const shouldSkip = triggered.has(tagName) && !pending.has(tagName)
-        if (shouldSkip) continue
+        // Skip if already triggered and no longer in pending
+        if (triggered.has(tagName) && !pending.has(tagName)) continue
 
         triggered.add(tagName)
 
@@ -144,11 +150,8 @@ function scan(element: ElementLike) {
       }
     }
 
-    if (pending.size === 0 && elementLoader) {
-      elementLoader.disconnect()
-      elementLoader = undefined
-      observedTargets = new WeakSet<ElementLike>()
-    }
+    // FIX 4: Disconnect observer when all pending tags are processed
+    cleanupObserver()
   })
 
   timers.set(element, newTimer)
@@ -164,11 +167,8 @@ export function lazyDefine(tagNameOrObj: string | Record<string, () => void>, si
   }
 
   for (const [tagName, callback] of Object.entries(tagNameOrObj)) {
-    // FIX 6: Late registration - execute immediately if already triggered
-    // AND elements exist in DOM
-    const wasTriggered = triggered.has(tagName)
-    const elementsExist = document.querySelector(tagName) !== null
-    if (wasTriggered && elementsExist) {
+    // FIX 6: Late registration - execute immediately if already triggered AND elements exist
+    if (triggered.has(tagName) && document.querySelector(tagName) !== null) {
       // eslint-disable-next-line github/no-then
       Promise.resolve().then(() => {
         try {
@@ -181,10 +181,7 @@ export function lazyDefine(tagNameOrObj: string | Record<string, () => void>, si
       if (!pending.has(tagName)) {
         pending.set(tagName, new Set<() => void>())
       }
-      const callbackSet = pending.get(tagName)
-      if (callbackSet) {
-        callbackSet.add(callback)
-      }
+      pending.get(tagName)!.add(callback)
     }
   }
   observe(document)

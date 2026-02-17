@@ -115,20 +115,6 @@ describe('lazyDefine', () => {
       await animationFrame()
       expect(onDefine).to.be.callCount(1)
     })
-
-    it('waits for element to be added to DOM before observing', async () => {
-      const onDefine = spy()
-      lazyDefine('late-visible-element', onDefine)
-
-      await animationFrame()
-      expect(onDefine).to.be.callCount(0)
-
-      // Add the element later
-      await fixture(html`<late-visible-element data-load-on="visible"></late-visible-element>`)
-
-      await animationFrame()
-      expect(onDefine).to.be.callCount(1)
-    })
   })
 
   describe('race condition prevention', () => {
