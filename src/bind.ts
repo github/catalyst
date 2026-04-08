@@ -100,7 +100,7 @@ function* bindings(el: Element): Iterable<Binding> {
       type: action.slice(0, eventSep),
       tag: action.slice(eventSep + 1, methodSep),
       method: action.slice(methodSep + 1) || 'handleEvent'
-    } || 'handleEvent'
+    }
   }
 }
 
