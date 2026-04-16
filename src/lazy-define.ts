@@ -71,8 +71,7 @@ function scan(element: ElementLike) {
     }
     for (const el of pendingElements) {
       for (const tagName of dynamicElements.keys()) {
-        const child: Element | null =
-          el instanceof Element && el.matches(tagName) ? el : el.querySelector(tagName)
+        const child: Element | null = el instanceof Element && el.matches(tagName) ? el : el.querySelector(tagName)
         if (customElements.get(tagName) || child) {
           const strategyName = (child?.getAttribute('data-load-on') || 'ready') as keyof typeof strategies
           const strategy = strategyName in strategies ? strategies[strategyName] : strategies.ready
