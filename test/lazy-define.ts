@@ -68,6 +68,38 @@ describe('lazyDefine', () => {
       expect(onDefine3).to.have.callCount(1)
     })
 
+    it('coalesces multiple added elements into a single rAF callback', async () => {
+      const onDefine = spy()
+      lazyDefine('coalesce-test-element', onDefine)
+
+      const rafSpy = spy(window, 'requestAnimationFrame')
+      const callsBefore = rafSpy.callCount
+
+      await fixture(html`
+        <div>
+          <coalesce-test-element></coalesce-test-element>
+          <coalesce-test-element></coalesce-test-element>
+          <coalesce-test-element></coalesce-test-element>
+          <coalesce-test-element></coalesce-test-element>
+          <coalesce-test-element></coalesce-test-element>
+          <coalesce-test-element></coalesce-test-element>
+          <coalesce-test-element></coalesce-test-element>
+          <coalesce-test-element></coalesce-test-element>
+          <coalesce-test-element></coalesce-test-element>
+          <coalesce-test-element></coalesce-test-element>
+        </div>
+      `)
+
+      await animationFrame()
+
+      const rafCallsFromScan = rafSpy.callCount - callsBefore
+      rafSpy.restore()
+
+      // Should use at most a few rAF calls, not one per element
+      expect(rafCallsFromScan).to.be.lessThan(5)
+      expect(onDefine).to.be.callCount(1)
+    })
+
     it('lazy loads elements in shadow roots', async () => {
       const onDefine = spy()
       lazyDefine('nested-shadow-element', onDefine)
