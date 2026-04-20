@@ -6,14 +6,14 @@ const ready = new Promise<void>(resolve => {
   if (document.readyState !== 'loading') {
     resolve()
   } else {
-    document.addEventListener('readystatechange', () => resolve(), { once: true })
+    document.addEventListener('readystatechange', () => resolve(), {once: true})
   }
 })
 
 const firstInteraction = new Promise<void>(resolve => {
   const controller = new AbortController()
   controller.signal.addEventListener('abort', () => resolve())
-  const listenerOptions = { once: true, passive: true, signal: controller.signal }
+  const listenerOptions = {once: true, passive: true, signal: controller.signal}
   const handler = () => controller.abort()
 
   document.addEventListener('mousedown', handler, listenerOptions)
@@ -92,7 +92,7 @@ export function lazyDefine(object: Record<string, () => void>): void
 export function lazyDefine(tagName: string, callback: () => void): void
 export function lazyDefine(tagNameOrObj: string | Record<string, () => void>, singleCallback?: () => void) {
   if (typeof tagNameOrObj === 'string' && singleCallback) {
-    tagNameOrObj = { [tagNameOrObj]: singleCallback }
+    tagNameOrObj = {[tagNameOrObj]: singleCallback}
   }
   for (const [tagName, callback] of Object.entries(tagNameOrObj)) {
     if (!dynamicElements.has(tagName)) dynamicElements.set(tagName, new Set<() => void>())
@@ -113,5 +113,5 @@ export function observe(target: ElementLike): void {
 
   scan(target)
 
-  elementLoader.observe(target, { subtree: true, childList: true })
+  elementLoader.observe(target, {subtree: true, childList: true})
 }
