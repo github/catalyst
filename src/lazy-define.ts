@@ -57,26 +57,33 @@ const strategies: Record<string, Strategy> = {
 
 type ElementLike = Element | Document | ShadowRoot
 
-const timers = new WeakMap<ElementLike, number>()
+const pendingElements = new Set<ElementLike>()
+let scanTimer: number | null = null
+
 function scan(element: ElementLike) {
-  cancelAnimationFrame(timers.get(element) || 0)
-  timers.set(
-    element,
-    requestAnimationFrame(() => {
+  pendingElements.add(element)
+  if (scanTimer != null) return
+  scanTimer = requestAnimationFrame(() => {
+    scanTimer = null
+    const elements = new Set(pendingElements)
+    pendingElements.clear()
+    if (!dynamicElements.size) {
+      return
+    }
+    outer: for (const el of elements) {
       for (const tagName of dynamicElements.keys()) {
-        const child: Element | null =
-          element instanceof Element && element.matches(tagName) ? element : element.querySelector(tagName)
+        const child: Element | null = el instanceof Element && el.matches(tagName) ? el : el.querySelector(tagName)
         if (customElements.get(tagName) || child) {
           const strategyName = (child?.getAttribute('data-load-on') || 'ready') as keyof typeof strategies
           const strategy = strategyName in strategies ? strategies[strategyName] : strategies.ready
           // eslint-disable-next-line github/no-then
           for (const cb of dynamicElements.get(tagName) || []) strategy(tagName).then(cb)
           dynamicElements.delete(tagName)
-          timers.delete(element)
+          if (!dynamicElements.size) break outer
         }
       }
-    })
-  )
+    }
+  })
 }
 
 let elementLoader: MutationObserver
