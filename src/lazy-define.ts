@@ -73,11 +73,27 @@ const SCAN_BUDGET_MS = 4
 // keeps that overhead negligible while still yielding promptly.
 const SCAN_CHECK_INTERVAL = 1024
 
+type PostTaskScheduler = {postTask(callback: () => void): Promise<unknown>}
+const nativeScheduler = (globalThis as unknown as {scheduler?: PostTaskScheduler}).scheduler
+
 function scan(element: ElementLike) {
   scanQueue.push(element)
   if (scanScheduled) return
   scanScheduled = true
   requestAnimationFrame(runScan)
+}
+
+// Resume an interrupted scan. Prefer `scheduler.postTask` (default 'user-visible'
+// priority) so a large scan continues promptly after yielding to input rather
+// than waiting a whole frame; fall back to requestAnimationFrame.
+function scheduleScanContinuation() {
+  scanScheduled = true
+  if (nativeScheduler?.postTask) {
+    // eslint-disable-next-line github/no-then
+    nativeScheduler.postTask(runScan).catch(() => undefined)
+  } else {
+    requestAnimationFrame(runScan)
+  }
 }
 
 function resolveTag(tagName: string, el: Element | null): void {
@@ -142,9 +158,8 @@ function runScan(): void {
       if (++sinceCheck >= SCAN_CHECK_INTERVAL) {
         sinceCheck = 0
         if (performance.now() >= deadline) {
-          // Out of budget — resume this same walker on the next frame.
-          scanScheduled = true
-          requestAnimationFrame(runScan)
+          // Out of budget — resume this same walker after yielding.
+          scheduleScanContinuation()
           return
         }
       }
