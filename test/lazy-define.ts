@@ -270,4 +270,47 @@ describe('lazyDefine', () => {
       expect(onDefine).to.be.callCount(1)
     })
   })
+
+  describe('large scale scanning', () => {
+    it('resolves a tag efficiently when many are registered', async () => {
+      const onDefine = spy()
+      const defs: Record<string, () => void> = {'needle-el': onDefine}
+      const tags = ['needle-el']
+      for (let i = 0; i < 300; i++) {
+        const tag = `bulk-el-${i}`
+        defs[tag] = () => {}
+        tags.push(tag)
+      }
+      lazyDefine(defs)
+
+      // Provide an element for every registered tag so all definitions resolve
+      // (and module state drains) instead of leaking into later tests.
+      const container = document.createElement('div')
+      for (const tag of tags) container.appendChild(document.createElement(tag))
+      const host = await fixture(html`<div></div>`)
+      host.appendChild(container)
+
+      await animationFrame()
+      await animationFrame()
+
+      expect(onDefine).to.be.callCount(1)
+    })
+
+    it('finds a target deep inside a large subtree', async () => {
+      const onDefine = spy()
+      lazyDefine('deep-needle-el', onDefine)
+
+      const container = document.createElement('div')
+      for (let i = 0; i < 5000; i++) container.appendChild(document.createElement('span'))
+      container.appendChild(document.createElement('deep-needle-el'))
+
+      const host = await fixture(html`<div></div>`)
+      host.appendChild(container)
+
+      // May span more than one frame if the scan is time-sliced.
+      for (let i = 0; i < 20 && onDefine.callCount === 0; i++) await animationFrame()
+
+      expect(onDefine).to.be.callCount(1)
+    })
+  })
 })

@@ -57,45 +57,100 @@ const strategies: Record<string, Strategy> = {
 
 type ElementLike = Element | Document | ShadowRoot
 
-const pendingElements = new Set<ElementLike>()
-let scanTimer: number | null = null
+// Roots waiting to be scanned for pending tags.
+const scanQueue: ElementLike[] = []
+// A partially-processed tree walk, kept between frames so that a very large tree
+// (100k+ nodes) can be scanned across multiple frames instead of in one long,
+// input-blocking task.
+let scanWalker: TreeWalker | null = null
+let scanScheduled = false
 let elementLoader: MutationObserver | undefined
 
+// Maximum time a single scan pass may run before yielding back to the browser.
+const SCAN_BUDGET_MS = 4
+// How often (in nodes) to check the time budget. Checking every node would call
+// performance.now() millions of times on large pages; checking periodically
+// keeps that overhead negligible while still yielding promptly.
+const SCAN_CHECK_INTERVAL = 1024
+
 function scan(element: ElementLike) {
-  pendingElements.add(element)
-  if (scanTimer != null) return
-  scanTimer = requestAnimationFrame(() => {
-    scanTimer = null
-    const elements = new Set(pendingElements)
-    pendingElements.clear()
-    if (!dynamicElements.size) return
-    outer: for (const el of elements) {
-      for (const tagName of dynamicElements.keys()) {
-        const child: Element | null = el instanceof Element && el.matches(tagName) ? el : el.querySelector(tagName)
-        if (customElements.get(tagName) || child) {
-          const strategyName = (child?.getAttribute('data-load-on') || 'ready') as keyof typeof strategies
-          const strategy = strategyName in strategies ? strategies[strategyName] : strategies.ready
-          const callbacks = dynamicElements.get(tagName) || []
-          dynamicElements.delete(tagName)
-          for (const callback of callbacks) {
-            // Run each callback independently so one failure cannot prevent the
-            // others, and surface errors through reportError instead of as
-            // unhandled promise rejections.
-            // eslint-disable-next-line github/no-then
-            strategy(tagName).then(callback).catch(reportError)
-          }
-          if (!dynamicElements.size) break outer
+  scanQueue.push(element)
+  if (scanScheduled) return
+  scanScheduled = true
+  requestAnimationFrame(runScan)
+}
+
+function resolveTag(tagName: string, el: Element | null): void {
+  const callbacks = dynamicElements.get(tagName)
+  if (!callbacks) return
+  dynamicElements.delete(tagName)
+  const strategyName = (el?.getAttribute('data-load-on') || 'ready') as keyof typeof strategies
+  const strategy = strategyName in strategies ? strategies[strategyName] : strategies.ready
+  for (const callback of callbacks) {
+    // Run each callback independently so one failure cannot prevent the others,
+    // and surface errors through reportError instead of unhandled rejections.
+    // eslint-disable-next-line github/no-then
+    strategy(tagName).then(callback).catch(reportError)
+  }
+}
+
+function stopScanning(): void {
+  // Everything registered has resolved: drop any queued work and disconnect the
+  // observer so it stops reacting to unrelated DOM mutations for the rest of the
+  // page's lifetime.
+  scanQueue.length = 0
+  scanWalker = null
+  if (elementLoader) {
+    elementLoader.disconnect()
+    elementLoader = undefined
+  }
+}
+
+function runScan(): void {
+  scanScheduled = false
+  if (!dynamicElements.size) return stopScanning()
+
+  const deadline = performance.now() + SCAN_BUDGET_MS
+
+  // Cheap O(pendingTags) pass for tags already defined elsewhere, which need no
+  // DOM lookup at all.
+  for (const tagName of [...dynamicElements.keys()]) {
+    if (customElements.get(tagName)) resolveTag(tagName, null)
+  }
+  if (!dynamicElements.size) return stopScanning()
+
+  let sinceCheck = 0
+  while (scanWalker || scanQueue.length) {
+    if (!scanWalker) {
+      const root = scanQueue.shift()!
+      // A TreeWalker visits descendants only, so match the root element itself.
+      if (root instanceof Element && dynamicElements.has(root.localName)) {
+        resolveTag(root.localName, root)
+        if (!dynamicElements.size) return stopScanning()
+      }
+      scanWalker = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT)
+    }
+
+    for (let node = scanWalker.nextNode(); node; node = scanWalker.nextNode()) {
+      const el = node as Element
+      // Membership is O(1), so total cost is O(nodes) rather than
+      // O(nodes × pendingTags).
+      if (dynamicElements.has(el.localName)) {
+        resolveTag(el.localName, el)
+        if (!dynamicElements.size) return stopScanning()
+      }
+      if (++sinceCheck >= SCAN_CHECK_INTERVAL) {
+        sinceCheck = 0
+        if (performance.now() >= deadline) {
+          // Out of budget — resume this same walker on the next frame.
+          scanScheduled = true
+          requestAnimationFrame(runScan)
+          return
         }
       }
     }
-    // Once every registered element has been found there is nothing left to look
-    // for, so disconnect the observer rather than keep reacting to unrelated DOM
-    // mutations for the rest of the page's lifetime.
-    if (!dynamicElements.size && elementLoader) {
-      elementLoader.disconnect()
-      elementLoader = undefined
-    }
-  })
+    scanWalker = null // finished this root
+  }
 }
 
 export function lazyDefine(object: Record<string, () => void>): void

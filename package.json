@@ -60,7 +60,7 @@
     {
       "path": "lib/index.js",
       "import": "{lazyDefine}",
-      "limit": "0.9kb"
+      "limit": "1kb"
     },
     {
       "path": "lib/abilities.js",
