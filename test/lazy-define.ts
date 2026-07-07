@@ -166,6 +166,20 @@ describe('lazyDefine', () => {
 
       expect(onSecond).to.be.callCount(1)
     })
+
+    it('does no work when observe() is called with no pending definitions', async () => {
+      // Drain any pending state from prior expectations.
+      await animationFrame()
+
+      const rafSpy = spy(window, 'requestAnimationFrame')
+      // core.ts calls observe() for every shadow-root controller on connect; it
+      // must be free when nothing is waiting to be lazily defined.
+      observe(document)
+      const scheduled = rafSpy.callCount
+      rafSpy.restore()
+
+      expect(scheduled).to.equal(0)
+    })
   })
 
   describe('race condition prevention', () => {
@@ -240,12 +254,13 @@ describe('lazyDefine', () => {
       const el = await fixture(html`<div></div>`)
       const shadowRoot = el.attachShadow({mode: 'open'})
 
+      lazyDefine('redundant-test-element', onDefine)
+
       // Observe the same shadow root multiple times
       observe(shadowRoot)
       observe(shadowRoot)
       observe(shadowRoot)
 
-      lazyDefine('redundant-test-element', onDefine)
       // eslint-disable-next-line github/unescaped-html-literal
       shadowRoot.innerHTML = '<redundant-test-element></redundant-test-element>'
 

@@ -112,6 +112,14 @@ export function lazyDefine(tagNameOrObj: string | Record<string, () => void>, si
 }
 
 export function observe(target: ElementLike): void {
+  // Nothing is waiting to be defined. Any tags that already resolved are now
+  // real custom elements, so the browser upgrades their instances natively and
+  // there is nothing for us to watch for. This keeps controllers that never use
+  // lazyDefine — and those connecting after every definition has resolved —
+  // completely free of observer cost (core.ts calls observe() for every
+  // shadow-root controller on connect).
+  if (!dynamicElements.size) return
+
   elementLoader ||= new MutationObserver(mutations => {
     if (!dynamicElements.size) return
     for (const mutation of mutations) {
