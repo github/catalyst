@@ -58,6 +58,11 @@
       "limit": "2.6kb"
     },
     {
+      "path": "lib/index.js",
+      "import": "{lazyDefine}",
+      "limit": "0.9kb"
+    },
+    {
       "path": "lib/abilities.js",
       "import": "{providable}",
       "limit": "1.5kb"

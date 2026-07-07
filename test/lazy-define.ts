@@ -149,6 +149,25 @@ describe('lazyDefine', () => {
     })
   })
 
+  describe('observer lifecycle', () => {
+    it('re-observes for definitions registered after everything has resolved', async () => {
+      const onFirst = spy()
+      lazyDefine('idle-first-element', onFirst)
+      await fixture(html`<idle-first-element></idle-first-element>`)
+      await animationFrame()
+      // All pending definitions have resolved, so the observer disconnects here.
+      expect(onFirst).to.be.callCount(1)
+
+      // A later registration must re-establish observation of newly added nodes.
+      const onSecond = spy()
+      lazyDefine('idle-second-element', onSecond)
+      await fixture(html`<idle-second-element></idle-second-element>`)
+      await animationFrame()
+
+      expect(onSecond).to.be.callCount(1)
+    })
+  })
+
   describe('race condition prevention', () => {
     it('does not fire callbacks multiple times from concurrent scans', async () => {
       const onDefine = spy()
@@ -167,7 +186,7 @@ describe('lazyDefine', () => {
   })
 
   describe('late registration', () => {
-    it('executes callback immediately for already-triggered tags', async () => {
+    it('runs a callback registered for a tag that already resolved', async () => {
       const onDefine1 = spy()
       const onDefine2 = spy()
 
@@ -177,11 +196,11 @@ describe('lazyDefine', () => {
       await animationFrame()
       expect(onDefine1).to.be.callCount(1)
 
-      // Register second callback after element is already triggered
+      // Register a second callback after the element already exists in the DOM
       lazyDefine('late-reg-element', onDefine2)
       await animationFrame()
 
-      // Second callback should be executed immediately
+      // The late callback should still run
       expect(onDefine2).to.be.callCount(1)
     })
   })
