@@ -19,10 +19,10 @@ jobs:
           cache: 'npm'
       - run: npm ci
 
-      - name: Use Ruby 2.7.3
+      - name: Use Ruby 3.2
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '2.7.3'
+          ruby-version: '3.2'
           bundler-cache: true
           working-directory: docs
 
