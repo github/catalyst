@@ -1,5 +1,5 @@
 import {expect, fixture, html} from '@open-wc/testing'
-import {spy} from 'sinon'
+import {spy, stub} from 'sinon'
 import {lazyDefine, observe} from '../src/lazy-define.js'
 
 const animationFrame = () => new Promise<unknown>(resolve => requestAnimationFrame(resolve))
@@ -145,6 +145,171 @@ describe('lazyDefine', () => {
       document.documentElement.scrollTo({top: 10})
 
       await animationFrame()
+      expect(onDefine).to.be.callCount(1)
+    })
+  })
+
+  describe('observer lifecycle', () => {
+    it('re-observes for definitions registered after everything has resolved', async () => {
+      const onFirst = spy()
+      lazyDefine('idle-first-element', onFirst)
+      await fixture(html`<idle-first-element></idle-first-element>`)
+      await animationFrame()
+      // All pending definitions have resolved, so the observer disconnects here.
+      expect(onFirst).to.be.callCount(1)
+
+      // A later registration must re-establish observation of newly added nodes.
+      const onSecond = spy()
+      lazyDefine('idle-second-element', onSecond)
+      await fixture(html`<idle-second-element></idle-second-element>`)
+      await animationFrame()
+
+      expect(onSecond).to.be.callCount(1)
+    })
+
+    it('does no work when observe() is called with no pending definitions', async () => {
+      // Drain any pending state from prior expectations.
+      await animationFrame()
+
+      const rafSpy = spy(window, 'requestAnimationFrame')
+      // core.ts calls observe() for every shadow-root controller on connect; it
+      // must be free when nothing is waiting to be lazily defined.
+      observe(document)
+      const scheduled = rafSpy.callCount
+      rafSpy.restore()
+
+      expect(scheduled).to.equal(0)
+    })
+  })
+
+  describe('race condition prevention', () => {
+    it('does not fire callbacks multiple times from concurrent scans', async () => {
+      const onDefine = spy()
+      lazyDefine('race-test-element', onDefine)
+
+      // Create multiple elements to trigger multiple scans
+      await fixture(html`<race-test-element></race-test-element>`)
+      await fixture(html`<race-test-element></race-test-element>`)
+
+      await animationFrame()
+      await animationFrame()
+
+      // Should only be called once despite multiple elements triggering scans
+      expect(onDefine).to.be.callCount(1)
+    })
+  })
+
+  describe('late registration', () => {
+    it('runs a callback registered for a tag that already resolved', async () => {
+      const onDefine1 = spy()
+      const onDefine2 = spy()
+
+      // Register and trigger first callback
+      lazyDefine('late-reg-element', onDefine1)
+      await fixture(html`<late-reg-element></late-reg-element>`)
+      await animationFrame()
+      expect(onDefine1).to.be.callCount(1)
+
+      // Register a second callback after the element already exists in the DOM
+      lazyDefine('late-reg-element', onDefine2)
+      await animationFrame()
+
+      // The late callback should still run
+      expect(onDefine2).to.be.callCount(1)
+    })
+  })
+
+  describe('error handling', () => {
+    it('handles callback errors without breaking other callbacks', async () => {
+      const onDefine1 = spy(() => {
+        throw new Error('Test error')
+      })
+      const onDefine2 = spy()
+
+      const errors: unknown[] = []
+      const reportErrorStub = stub(globalThis, 'reportError').callsFake((err: unknown) => errors.push(err))
+
+      try {
+        lazyDefine('error-test-element', onDefine1)
+        lazyDefine('error-test-element', onDefine2)
+
+        await fixture(html`<error-test-element></error-test-element>`)
+        await animationFrame()
+
+        // Both callbacks should be called despite first one throwing
+        expect(onDefine1).to.be.callCount(1)
+        expect(onDefine2).to.be.callCount(1)
+
+        // Error should have been reported
+        expect(errors.length).to.be.greaterThan(0)
+      } finally {
+        reportErrorStub.restore()
+      }
+    })
+  })
+
+  describe('redundant observe calls', () => {
+    it('does not observe the same target multiple times', async () => {
+      const onDefine = spy()
+      const el = await fixture(html`<div></div>`)
+      const shadowRoot = el.attachShadow({mode: 'open'})
+
+      lazyDefine('redundant-test-element', onDefine)
+
+      // Observe the same shadow root multiple times
+      observe(shadowRoot)
+      observe(shadowRoot)
+      observe(shadowRoot)
+
+      // eslint-disable-next-line github/unescaped-html-literal
+      shadowRoot.innerHTML = '<redundant-test-element></redundant-test-element>'
+
+      await animationFrame()
+
+      // Should still only be called once
+      expect(onDefine).to.be.callCount(1)
+    })
+  })
+
+  describe('large scale scanning', () => {
+    it('resolves a tag efficiently when many are registered', async () => {
+      const onDefine = spy()
+      const defs: Record<string, () => void> = {'needle-el': onDefine}
+      const tags = ['needle-el']
+      for (let i = 0; i < 300; i++) {
+        const tag = `bulk-el-${i}`
+        defs[tag] = () => {}
+        tags.push(tag)
+      }
+      lazyDefine(defs)
+
+      // Provide an element for every registered tag so all definitions resolve
+      // (and module state drains) instead of leaking into later tests.
+      const container = document.createElement('div')
+      for (const tag of tags) container.appendChild(document.createElement(tag))
+      const host = await fixture(html`<div></div>`)
+      host.appendChild(container)
+
+      await animationFrame()
+      await animationFrame()
+
+      expect(onDefine).to.be.callCount(1)
+    })
+
+    it('finds a target deep inside a large subtree', async () => {
+      const onDefine = spy()
+      lazyDefine('deep-needle-el', onDefine)
+
+      const container = document.createElement('div')
+      for (let i = 0; i < 5000; i++) container.appendChild(document.createElement('span'))
+      container.appendChild(document.createElement('deep-needle-el'))
+
+      const host = await fixture(html`<div></div>`)
+      host.appendChild(container)
+
+      // May span more than one frame if the scan is time-sliced.
+      for (let i = 0; i < 20 && onDefine.callCount === 0; i++) await animationFrame()
+
       expect(onDefine).to.be.callCount(1)
     })
   })
