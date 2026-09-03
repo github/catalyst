@@ -62,5 +62,8 @@
       "import": "{providable}",
       "limit": "1.5kb"
     }
-  ]
+  ],
+  "overrides": {
+    "browserslist": "4.20.3"
+  }
 }
