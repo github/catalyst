@@ -46,6 +46,7 @@ export function listenForBind(el: Node = document): Subscription {
       return closed
     },
     unsubscribe() {
+      if (closed) return
       closed = true
       observers.delete(el)
       observer.disconnect()
