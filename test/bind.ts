@@ -1,7 +1,7 @@
 import {expect, fixture, html} from '@open-wc/testing'
 import {fake} from 'sinon'
 import {controller} from '../src/controller.js'
-import {bindShadow} from '../src/bind.js'
+import {bindShadow, listenForBind} from '../src/bind.js'
 
 describe('Actionable', () => {
   @controller
@@ -26,6 +26,43 @@ describe('Actionable', () => {
         ></div>
       </bind-test>
       <div id="el6" data-action="click:bind-test#foo"></div>`)
+  })
+
+  it('keeps a new subscription cached when an old subscription is unsubscribed again', () => {
+    const root = document.createElement('div')
+    const old = listenForBind(root)
+    old.unsubscribe()
+    const current = listenForBind(root)
+    old.unsubscribe()
+    const reused = listenForBind(root)
+    try {
+      expect(old.closed).to.equal(true)
+      expect(current.closed).to.equal(false)
+      expect(reused === current).to.equal(true)
+    } finally {
+      current.unsubscribe()
+      reused.unsubscribe()
+    }
+  })
+
+  it('does not leave an observer binding actions after the current subscription is closed', async () => {
+    const root = instance.attachShadow({mode: 'open'})
+    const old = listenForBind(root)
+    old.unsubscribe()
+    const current = listenForBind(root)
+    old.unsubscribe()
+    const reused = listenForBind(root)
+    reused.unsubscribe()
+    try {
+      const button = document.createElement('button')
+      button.setAttribute('data-action', 'click:bind-test#foo')
+      root.append(button)
+      await Promise.resolve()
+      button.click()
+      expect(instance.foo.callCount).to.equal(0)
+    } finally {
+      current.unsubscribe()
+    }
   })
 
   it('binds events on elements based on their data-action attribute', () => {
