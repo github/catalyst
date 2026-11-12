@@ -35,7 +35,11 @@ export interface AccessorResult<This, Value> {
 
 // Lets compilers that only attach decorator metadata when `Symbol.metadata` exists (such as TypeScript) do so. Uses
 // the same fallback key as the SWC and Babel helpers, and leaves an existing definition alone.
-;(Symbol as {metadata?: symbol}).metadata ??= Symbol.for('Symbol.metadata')
+try {
+  ;(Symbol as {metadata?: symbol}).metadata ??= Symbol.for('Symbol.metadata')
+} catch {
+  // `Symbol` is frozen, for example by SES `lockdown()`. Legacy decorators don't need metadata.
+}
 
 export const hasOwn = (object: object, key: PropertyKey): boolean => Object.prototype.hasOwnProperty.call(object, key)
 

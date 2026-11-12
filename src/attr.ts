@@ -51,6 +51,7 @@ const registeredStandardAttrs = new WeakSet<object>()
  * metadata that doesn't inherit from its parent's.
  */
 export function registerStandardAttrs(classObject: CustomElementClass): void {
+  if (registeredStandardAttrs.has(classObject)) return
   const levels: string[][] = []
   for (
     let current: unknown = classObject;
@@ -91,7 +92,10 @@ export function initializeAttrs(instance: HTMLElement, names?: Iterable<string>)
   initialized.add(instance)
   const proto = Object.getPrototypeOf(instance)
   const prefix = proto?.constructor?.attrPrefix ?? 'data-'
-  if (!names) names = meta(proto, attrKey)
+  if (!names) {
+    if (typeof proto?.constructor === 'function') registerStandardAttrs(proto.constructor)
+    names = meta(proto, attrKey)
+  }
   for (const key of names) {
     const value = (<Record<PropertyKey, unknown>>(<unknown>instance))[key]
     const name = mustDasherize(`${prefix}${key}`)
@@ -133,6 +137,7 @@ export function initializeAttrs(instance: HTMLElement, names?: Iterable<string>)
 }
 
 export function defineObservedAttributes(classObject: CustomElementClass): void {
+  registerStandardAttrs(classObject)
   let observed = classObject.observedAttributes || []
 
   const prefix = classObject.attrPrefix ?? 'data-'

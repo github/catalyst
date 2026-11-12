@@ -1,6 +1,6 @@
 import {expect, fixture, html} from '@open-wc/testing'
 import {controller} from '../../src/controller.js'
-import {attr} from '../../src/attr.js'
+import {attr, defineObservedAttributes, initializeAttrs} from '../../src/attr.js'
 import type {CustomElementClass} from '../../src/custom-element.js'
 
 const symbolWithMetadata = Symbol as {metadata?: symbol}
@@ -84,6 +84,28 @@ describe('Attr (standard decorators)', () => {
       ])
     })
   }
+
+  it('registers attrs for defineObservedAttributes and initializeAttrs without @controller', async () => {
+    class StandardManualAttrElement extends HTMLElement {
+      @attr foo = 'bar'
+      connectedCallback() {
+        initializeAttrs(this)
+      }
+    }
+    defineObservedAttributes(StandardManualAttrElement)
+    customElements.define('standard-manual-attr', StandardManualAttrElement)
+    expect(observed(StandardManualAttrElement)).to.eql(['data-foo'])
+
+    class StandardInitializeOnlyElement extends HTMLElement {
+      @attr foo = 'baz'
+      connectedCallback() {
+        initializeAttrs(this)
+      }
+    }
+    customElements.define('standard-initialize-only', StandardInitializeOnlyElement)
+    const instance = await fixture(html`<standard-initialize-only></standard-initialize-only>`)
+    expect(instance.getAttribute('data-foo')).to.equal('baz')
+  })
 
   it('respects a static attrPrefix', async () => {
     @controller
