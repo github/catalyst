@@ -1,9 +1,13 @@
 import type {CustomElementClass} from './custom-element.js'
 import {mustDasherize} from './dasherize.js'
 import {meta} from './core.js'
+import type {MemberContext} from './decorator-context.js'
+import {hasOwn, isDecoratorContext, memberName, ownMetadata} from './decorator-context.js'
 
 const attrKey = 'attr'
 type attrValue = string | number | boolean
+
+const standardAttrs = Symbol.for('catalyst:attr')
 
 /**
  * Attr is a decorator which tags a property as one to be initialized via
@@ -11,9 +15,55 @@ type attrValue = string | number | boolean
  *
  * The signature is typed such that the property must be one of a String,
  * Number or Boolean. This matches the behavior of `initializeAttrs`.
+ *
+ * It supports both TypeScript's `experimentalDecorators` and standard
+ * decorators. With standard decorators it can decorate a field, accessor,
+ * getter or setter, and records the name in the class's decorator metadata
+ * for `@controller` to register.
  */
-export function attr<K extends string>(proto: Record<K, attrValue>, key: K): void {
-  meta(proto, attrKey).add(key)
+export function attr<This, Value extends attrValue>(
+  value: unknown,
+  context: MemberContext<'field' | 'accessor' | 'getter' | 'setter', This, Value>
+): void
+export function attr<K extends string>(proto: Record<K, attrValue>, key: K): void
+export function attr(proto: unknown, keyOrContext: unknown): void {
+  if (!isDecoratorContext(keyOrContext)) {
+    meta(proto as Record<PropertyKey, unknown>, attrKey).add(keyOrContext as string)
+    return
+  }
+  const name = memberName('attr', keyOrContext, ['field', 'accessor', 'getter', 'setter'])
+  const metadata = keyOrContext.metadata as Record<PropertyKey, string[] | undefined> | undefined
+  if (!metadata) throw new TypeError('@attr requires decorator metadata (`Symbol.metadata`) support')
+  // Metadata inherits from the parent class's metadata, so only append to this class's own list.
+  if (hasOwn(metadata, standardAttrs)) metadata[standardAttrs]!.push(name)
+  else metadata[standardAttrs] = [name]
+}
+
+const registeredStandardAttrs = new WeakSet<object>()
+
+/**
+ * Registers the `@attr` members recorded in decorator metadata by standard
+ * decorators, so `initializeAttrs` and `defineObservedAttributes` find them.
+ *
+ * Walks up the class chain to include undecorated base classes, stopping at a
+ * class already registered, whose attrs `meta` copies to subclasses. Reads each
+ * class's own metadata because a class without a class decorator may get
+ * metadata that doesn't inherit from its parent's.
+ */
+export function registerStandardAttrs(classObject: CustomElementClass): void {
+  const levels: string[][] = []
+  for (
+    let current: unknown = classObject;
+    typeof current === 'function' && !registeredStandardAttrs.has(current);
+    current = Object.getPrototypeOf(current)
+  ) {
+    const metadata = ownMetadata(current)
+    if (metadata && hasOwn(metadata, standardAttrs)) levels.unshift(metadata[standardAttrs] as string[])
+  }
+  // Base class attrs first, matching the order legacy decorators register them in.
+  const attrs = meta(classObject.prototype, attrKey)
+  for (const key of levels.flat()) attrs.add(key)
+  registeredStandardAttrs.add(classObject)
 }
 
 /**

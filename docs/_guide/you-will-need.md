@@ -8,7 +8,7 @@ Catalyst is available as an npm module `@github/catalyst`. To install into your 
 
 ### TypeScript
 
-Catalyst has no strict dependencies, but it relies on TypeScript for decorator support, so you should also configure your project to use TypeScript. [Read the TypeScript docs on how to set up TypeScript on a new project](https://www.typescriptlang.org/docs/home.html).
+Catalyst has no strict dependencies, but it relies on TypeScript for decorator support, so you should also configure your project to use TypeScript. [Read the TypeScript docs on how to set up TypeScript on a new project](https://www.typescriptlang.org/docs/home.html). Catalyst's decorators work with both the `experimentalDecorators` option and standard decorators; see [Decorators]({{ site.baseurl }}/guide/decorators).
 
 ### Polyfills
 
@@ -19,6 +19,8 @@ Catalyst uses modern browser standards, and so requires evergreen browsers or ma
  - [`MutationObserver`](https://caniuse.com/#search=MutationObserver). [`mutation-observer`](https://github.com/webmodules/mutation-observer) can polyfill this.
 
 Please note this list may increase over time. Catalyst will never ship with polyfills that add missing browser functionality, but will continue to use the latest Web Standards, and so may require more polyfills as new releases come out.
+
+The one exception is `Symbol.metadata`, which [standard decorators]({{ site.baseurl }}/guide/decorators#standard-decorators) use to store metadata. TypeScript only attaches decorator metadata when `Symbol.metadata` exists, so if it is missing, Catalyst defines it as `Symbol.for('Symbol.metadata')` when it loads. That is the key SWC's and Babel's decorator helpers fall back to. Lit also defines `Symbol.metadata` when it is missing.
 
 ### Build considerations
 

@@ -16,7 +16,7 @@ Catalyst includes the `@attr` decorator, which provides nice syntax sugar to sim
  - The attribute name is automatically [observed, meaning `attributeChangedCallback` will fire when it changes](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements#using_the_lifecycle_callbacks).
  - Assigning a value in the class description will make that value the _default_ value, so when the element is connected that value is set (unless the element has the attribute defined already).
 
-To use the `@attr` decorator, attach it to a class field, and it will get/set the value of the matching `data-*` attribute.
+To use the `@attr` decorator, attach it to a class field, and it will get/set the value of the matching `data-*` attribute. With [standard decorators]({{ site.baseurl }}/guide/decorators#standard-decorators), `@attr` needs decorator metadata support, which TypeScript has from version 5.2.
 
 ### Example
 
