@@ -100,7 +100,9 @@ TypeScript 5.0+ and SWC (`decoratorVersion: "2023-11"`) compile standard (TC39) 
     Assigning to the accessor throws a `TypeError`, just as assigning to the getter-only legacy property does.
 - `@attr` records its fields in [decorator metadata](https://github.com/tc39/proposal-decorator-metadata), so with TypeScript you need version 5.2 or later. `@attr` can decorate a field, an `accessor`, a getter or a setter.
 
-Catalyst's member decorators only support public, non-static members. `@controller` registers the element once static fields such as `observedAttributes` and `attrPrefix` are assigned, the same as with legacy decorators.
+Catalyst's member decorators only support public, non-static members. `@controller` (and `@register`) define the element once static fields such as `observedAttributes` and `attrPrefix` are assigned, the same as with legacy decorators.
+
+Catalyst derives the element name from the class name, so keep class names intact through your build. For example, if TypeScript emits standard decorators as ES2022 and esbuild then lowers that output to an older target, esbuild renames the class unless you turn on [`keepNames`](https://esbuild.github.io/api/#keep-names). See [build considerations]({{ site.baseurl }}/guide/you-will-need#build-considerations).
 
 ### Supporting `strictPropertyInitialization`
 
