@@ -1,6 +1,9 @@
 import {expect, fixture, html} from '@open-wc/testing'
 import {controller} from '../src/controller.js'
-import {attr} from '../src/attr.js'
+import {attr, defineObservedAttributes, initializeAttrs} from '../src/attr.js'
+import type {CustomElementClass} from '../src/custom-element.js'
+
+const observed = (classObject: CustomElementClass) => classObject.observedAttributes
 
 describe('Attr', () => {
   {
@@ -175,6 +178,83 @@ describe('Attr', () => {
       expect(instance.getAttributeNames()).to.include('foo-foo-bar-baz-bing')
       expect(instance.getAttributeNames()).to.include('foo-url-bar')
       expect(instance.getAttributeNames()).to.include('foo-clip-x')
+    })
+  })
+
+  describe('inheritance', () => {
+    it('registers attrs from undecorated base classes, base class first', async () => {
+      class Base extends HTMLElement {
+        @attr baseValue = 'base'
+      }
+      class Middle extends Base {
+        @attr middleValue = 1
+      }
+      @controller
+      class InheritedAttrTest extends Middle {
+        @attr ownValue = true
+      }
+      const instance = await fixture<InheritedAttrTest>(html`<inherited-attr-test></inherited-attr-test>`)
+      expect(observed(InheritedAttrTest)).to.eql(['data-base-value', 'data-middle-value', 'data-own-value'])
+      expect(instance).to.have.attribute('data-base-value', 'base')
+      expect(instance).to.have.attribute('data-middle-value', '1')
+      expect(instance).to.have.attribute('data-own-value', '')
+    })
+
+    it('inherits attrs from a parent controller without adding to it', async () => {
+      @controller
+      class ParentAttrTest extends HTMLElement {
+        @attr parentValue = 'p'
+      }
+      @controller
+      class ChildAttrTest extends ParentAttrTest {
+        @attr childValue = 'c'
+      }
+      expect(observed(ParentAttrTest)).to.eql(['data-parent-value'])
+      // The inherited list repeats the parent's attributes.
+      expect([...new Set(observed(ChildAttrTest))]).to.eql(['data-parent-value', 'data-child-value'])
+      const child = await fixture(html`<child-attr-test></child-attr-test>`)
+      expect(child).to.have.attribute('data-parent-value', 'p')
+      expect(child).to.have.attribute('data-child-value', 'c')
+    })
+
+    it('keeps attrs of subclasses sharing an undecorated base class separate', () => {
+      class SharedBase extends HTMLElement {
+        @attr shared = ''
+      }
+      @controller
+      class FirstSiblingAttrTest extends SharedBase {
+        @attr first = ''
+      }
+      @controller
+      class SecondSiblingAttrTest extends SharedBase {
+        @attr second = ''
+      }
+      expect(observed(FirstSiblingAttrTest)).to.eql(['data-shared', 'data-first'])
+      expect(observed(SecondSiblingAttrTest)).to.eql(['data-shared', 'data-second'])
+    })
+  })
+
+  describe('without @controller', () => {
+    it('registers attrs for defineObservedAttributes and initializeAttrs', async () => {
+      class ManualAttrTest extends HTMLElement {
+        @attr foo = 'bar'
+        connectedCallback() {
+          initializeAttrs(this)
+        }
+      }
+      defineObservedAttributes(ManualAttrTest)
+      customElements.define('manual-attr-test', ManualAttrTest)
+      expect(observed(ManualAttrTest)).to.eql(['data-foo'])
+
+      class InitializeOnlyAttrTest extends HTMLElement {
+        @attr foo = 'baz'
+        connectedCallback() {
+          initializeAttrs(this)
+        }
+      }
+      customElements.define('initialize-only-attr-test', InitializeOnlyAttrTest)
+      const instance = await fixture(html`<initialize-only-attr-test></initialize-only-attr-test>`)
+      expect(instance).to.have.attribute('data-foo', 'baz')
     })
   })
 })

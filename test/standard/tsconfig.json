@@ -1,0 +1,9 @@
+{
+  "extends": "../../tsconfig.json",
+  "include": ["*.ts", "../attr.ts", "../bind.ts", "../controller.ts", "../register.ts", "../helpers/*.ts", "../types/*.ts"],
+  "exclude": [],
+  "compilerOptions": {
+    "experimentalDecorators": false,
+    "target": "ES2022"
+  }
+}

@@ -27,11 +27,11 @@
     "build:docs": "cd docs && JEKYLL_ENV=production bundle exec jekyll build",
     "clean": "tsc --build --clean tsconfig.build.json",
     "lint": "eslint . --ignore-path .gitignore",
-    "postlint": "tsc",
+    "postlint": "tsc && tsc -p test/standard",
     "prepack": "npm run build",
     "presize": "npm run build",
     "size": "size-limit",
-    "test": "web-test-runner"
+    "test": "web-test-runner && web-test-runner --config web-test-runner-standard.config.js"
   },
   "prettier": "@github/prettier-config",
   "devDependencies": {
@@ -40,8 +40,8 @@
     "@open-wc/testing": "^4.0.0",
     "@size-limit/preset-small-lib": "^8.0.1",
     "@types/mocha": "^10.0.10",
-    "@typescript-eslint/eslint-plugin": "^5.36.1",
-    "@typescript-eslint/parser": "^5.36.1",
+    "@typescript-eslint/eslint-plugin": "^5.62.0",
+    "@typescript-eslint/parser": "^5.62.0",
     "@web/dev-server-esbuild": "^0.3.2",
     "@web/test-runner": "^0.20.0",
     "eslint": "^8.23.0",
@@ -49,13 +49,13 @@
     "sinon": "^14.0.0",
     "size-limit": "^8.0.1",
     "tslib": "^2.4.0",
-    "typescript": "^4.8.2"
+    "typescript": "^5.9.3"
   },
   "size-limit": [
     {
       "path": "lib/index.js",
       "import": "{controller, attr, target, targets}",
-      "limit": "2.5kb"
+      "limit": "3kb"
     },
     {
       "path": "lib/abilities.js",
