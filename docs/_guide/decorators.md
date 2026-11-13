@@ -102,7 +102,7 @@ TypeScript 5.0+ and SWC (`decoratorVersion: "2023-11"`) compile standard (TC39) 
 
 Catalyst's member decorators only support public, non-static members. `@controller` (and `@register`) define the element once static fields such as `observedAttributes` and `attrPrefix` are assigned, the same as with legacy decorators.
 
-Catalyst derives the element name from the class name, so keep class names intact through your build. For example, if TypeScript emits standard decorators as ES2022 and esbuild then lowers that output to an older target, esbuild renames the class unless you turn on [`keepNames`](https://esbuild.github.io/api/#keep-names). See [build considerations]({{ site.baseurl }}/guide/you-will-need#build-considerations).
+Without an explicit name, `@controller` derives the element name from the class name, so the class name must survive your build. For example, if TypeScript emits standard decorators as ES2022 and esbuild then lowers that output to an older target, esbuild renames the class unless you turn on [`keepNames`](https://esbuild.github.io/api/#keep-names). Passing the tag name, as in `@controller('hello-world')`, avoids this. See [build considerations]({{ site.baseurl }}/guide/you-will-need#build-considerations).
 
 ### Supporting `strictPropertyInitialization`
 
