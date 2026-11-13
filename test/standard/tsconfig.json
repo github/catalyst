@@ -1,6 +1,6 @@
 {
   "extends": "../../tsconfig.json",
-  "include": ["*.ts", "../types/*.ts"],
+  "include": ["*.ts", "../attr.ts", "../bind.ts", "../controller.ts", "../helpers/*.ts", "../types/*.ts"],
   "exclude": [],
   "compilerOptions": {
     "experimentalDecorators": false,

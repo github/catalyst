@@ -1,11 +1,12 @@
 import {expect, fixture, html} from '@open-wc/testing'
 import {controller} from '../../src/controller.js'
-import {attr, defineObservedAttributes, initializeAttrs} from '../../src/attr.js'
+import {attr} from '../../src/attr.js'
 import type {CustomElementClass} from '../../src/custom-element.js'
 
 const symbolWithMetadata = Symbol as {metadata?: symbol}
 const observed = (classObject: CustomElementClass) => classObject.observedAttributes
 
+// Shared @attr behaviour is in test/attr.ts, which also runs with standard decorators.
 describe('Attr (standard decorators)', () => {
   {
     @controller
@@ -84,91 +85,6 @@ describe('Attr (standard decorators)', () => {
       ])
     })
   }
-
-  it('registers attrs for defineObservedAttributes and initializeAttrs without @controller', async () => {
-    class StandardManualAttrElement extends HTMLElement {
-      @attr foo = 'bar'
-      connectedCallback() {
-        initializeAttrs(this)
-      }
-    }
-    defineObservedAttributes(StandardManualAttrElement)
-    customElements.define('standard-manual-attr', StandardManualAttrElement)
-    expect(observed(StandardManualAttrElement)).to.eql(['data-foo'])
-
-    class StandardInitializeOnlyElement extends HTMLElement {
-      @attr foo = 'baz'
-      connectedCallback() {
-        initializeAttrs(this)
-      }
-    }
-    customElements.define('standard-initialize-only', StandardInitializeOnlyElement)
-    const instance = await fixture(html`<standard-initialize-only></standard-initialize-only>`)
-    expect(instance.getAttribute('data-foo')).to.equal('baz')
-  })
-
-  it('respects a static attrPrefix', async () => {
-    @controller
-    class StandardPrefixAttrElement extends HTMLElement {
-      static attrPrefix = 'foo-'
-      @attr URLBar = 'b'
-    }
-    const instance = await fixture<StandardPrefixAttrElement>(html`<standard-prefix-attr></standard-prefix-attr>`)
-    expect(instance).to.have.attribute('foo-url-bar', 'b')
-  })
-
-  it('registers attrs from undecorated base classes, base class first', async () => {
-    class Base extends HTMLElement {
-      @attr baseValue = 'base'
-    }
-    class Middle extends Base {
-      @attr middleValue = 1
-    }
-    @controller
-    class StandardInheritedAttrElement extends Middle {
-      @attr ownValue = true
-    }
-    const instance = await fixture<StandardInheritedAttrElement>(
-      html`<standard-inherited-attr></standard-inherited-attr>`
-    )
-    expect(observed(StandardInheritedAttrElement)).to.eql(['data-base-value', 'data-middle-value', 'data-own-value'])
-    expect(instance).to.have.attribute('data-base-value', 'base')
-    expect(instance).to.have.attribute('data-middle-value', '1')
-    expect(instance).to.have.attribute('data-own-value', '')
-  })
-
-  it('inherits attrs from a parent controller without adding to it', async () => {
-    @controller
-    class StandardParentAttrElement extends HTMLElement {
-      @attr parentValue = 'p'
-    }
-    @controller
-    class StandardChildAttrElement extends StandardParentAttrElement {
-      @attr childValue = 'c'
-    }
-    expect(observed(StandardParentAttrElement)).to.eql(['data-parent-value'])
-    // Like legacy decorators, the inherited list repeats the parent's attributes.
-    expect([...new Set(observed(StandardChildAttrElement))]).to.eql(['data-parent-value', 'data-child-value'])
-    const child = await fixture(html`<standard-child-attr></standard-child-attr>`)
-    expect(child).to.have.attribute('data-parent-value', 'p')
-    expect(child).to.have.attribute('data-child-value', 'c')
-  })
-
-  it('keeps attrs of subclasses sharing an undecorated base class separate', () => {
-    class SharedBase extends HTMLElement {
-      @attr shared = ''
-    }
-    @controller
-    class StandardFirstSiblingElement extends SharedBase {
-      @attr first = ''
-    }
-    @controller
-    class StandardSecondSiblingElement extends SharedBase {
-      @attr second = ''
-    }
-    expect(observed(StandardFirstSiblingElement)).to.eql(['data-shared', 'data-first'])
-    expect(observed(StandardSecondSiblingElement)).to.eql(['data-shared', 'data-second'])
-  })
 
   it('reads metadata stored under a Symbol.metadata defined after Catalyst loaded', async () => {
     const original = symbolWithMetadata.metadata

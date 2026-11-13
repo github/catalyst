@@ -31,7 +31,7 @@
     "prepack": "npm run build",
     "presize": "npm run build",
     "size": "size-limit",
-    "test": "web-test-runner"
+    "test": "web-test-runner && web-test-runner --config web-test-runner-standard.config.js"
   },
   "prettier": "@github/prettier-config",
   "devDependencies": {
