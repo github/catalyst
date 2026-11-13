@@ -9,11 +9,9 @@
       "preset": "lighthouse:no-pwa",
       "assertions": {
         "unused-css-rules": "off",
-        "uses-text-compression": "off",
-        "render-blocking-resources": "off",
-        "uses-rel-preload": "off",
+        "document-latency-insight": "off",
+        "render-blocking-insight": "off",
         "first-contentful-paint": ["error", {"minScore": 0.6}],
-        "first-meaningful-paint": ["error", {"maxNumericValue": 3000}],
         "largest-contentful-paint": ["error", {"maxNumericValue": 3000}],
         "deprecations": "off",
         "csp-xss": "off"
