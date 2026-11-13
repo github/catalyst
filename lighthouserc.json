@@ -11,6 +11,7 @@
         "unused-css-rules": "off",
         "document-latency-insight": "off",
         "render-blocking-insight": "off",
+        "bf-cache": "off",
         "first-contentful-paint": ["error", {"minScore": 0.6}],
         "largest-contentful-paint": ["error", {"maxNumericValue": 3000}],
         "deprecations": "off",
