@@ -1,5 +1,5 @@
 import {expect} from '@open-wc/testing'
-import {dasherize} from '../src/dasherize.js'
+import {dasherize, mustDasherize} from '../src/dasherize.js'
 
 describe('dasherize', () => {
   const tests: Array<[PropertyKey, string]> = [
@@ -15,4 +15,25 @@ describe('dasherize', () => {
   tests.map(([input, output]) =>
     it(`transforms ${String(input)} to ${output}`, () => expect(dasherize(input)).to.equal(output))
   )
+})
+
+describe('mustDasherize', () => {
+  it('returns the dasherized name when it contains a dash', () => {
+    expect(mustDasherize('fooBar')).to.equal('foo-bar')
+  })
+
+  it('passes the custom type through to the returned name', () => {
+    expect(mustDasherize('fooBar', 'controller')).to.equal('foo-bar')
+  })
+
+  it('throws a SyntaxError when the name has no dash', () => {
+    expect(() => mustDasherize('json')).to.throw(DOMException, 'property: json is not a valid property name')
+  })
+
+  it('names the custom type in the thrown error', () => {
+    expect(() => mustDasherize('json', 'controller')).to.throw(
+      DOMException,
+      'controller: json is not a valid controller name'
+    )
+  })
 })
