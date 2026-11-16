@@ -9,6 +9,12 @@ describe('dasherize', () => {
     ['autofocusWhenReady', 'autofocus-when-ready'],
     ['URLBar', 'url-bar'],
     ['ClipX', 'clip-x'],
+    ['UserIDListElement', 'user-id-list-element'],
+    ['CopyURLElement', 'copy-url-element'],
+    ['mySVGIcon', 'my-svg-icon'],
+    ['srcURL', 'src-url'],
+    ['data-URL', 'data-url'],
+    ['data-srcURL', 'data-src-url'],
     [Symbol('helloWorld'), 'hello-world']
   ]
 
