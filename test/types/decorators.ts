@@ -50,3 +50,8 @@ declare const untyped: any
 export const targetResult: void = target(untyped, untyped)
 export const targetsResult: void = targets(untyped, untyped)
 export const registerResult: CustomElementClass = register(untyped, untyped)
+
+// Types read from the last overload, such as `ReturnType`, also keep their legacy types.
+export const registerReturn: CustomElementClass = null as unknown as ReturnType<typeof register>
+export const targetParameters: [Record<string, unknown>, string] = null as unknown as Parameters<typeof target>
+export const targetsReturn: void = null as unknown as ReturnType<typeof targets>

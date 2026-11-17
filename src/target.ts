@@ -13,11 +13,14 @@ import {isDecoratorContext, memberName} from './decorator-context.js'
  * With standard decorators it must decorate an accessor:
  * `@target accessor foo!: HTMLElement`.
  */
+// The legacy overload comes first, so calls with untyped arguments resolve to it, and last, so `ReturnType` and
+// `Parameters` read it.
 export function target<K extends string>(proto: Record<K, unknown>, key: K): void
 export function target<This extends HTMLElement, Value>(
   value: AccessorTarget<This, Value>,
   context: MemberContext<'accessor', This, Value>
 ): AccessorResult<This, Value>
+export function target<K extends string>(proto: Record<K, unknown>, key: K): void
 export function target(proto: unknown, keyOrContext: unknown): unknown {
   if (isDecoratorContext(keyOrContext)) return standardTarget('target', keyOrContext, findTarget)
   const key = keyOrContext as string
@@ -40,11 +43,14 @@ export function target(proto: unknown, keyOrContext: unknown): unknown {
  * With standard decorators it must decorate an accessor:
  * `@targets accessor foos!: HTMLElement[]`.
  */
+// The legacy overload comes first, so calls with untyped arguments resolve to it, and last, so `ReturnType` and
+// `Parameters` read it.
 export function targets<K extends string>(proto: Record<K, unknown>, key: K): void
 export function targets<This extends HTMLElement, Value>(
   value: AccessorTarget<This, Value>,
   context: MemberContext<'accessor', This, Value>
 ): AccessorResult<This, Value>
+export function targets<K extends string>(proto: Record<K, unknown>, key: K): void
 export function targets(proto: unknown, keyOrContext: unknown): unknown {
   if (isDecoratorContext(keyOrContext)) return standardTarget('targets', keyOrContext, findTargets)
   const key = keyOrContext as string
