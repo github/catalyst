@@ -4,8 +4,10 @@ export const dasherize = (str: unknown): string =>
     // `mySVGIcon` -> `mySVG-Icon`).
     .replace(/([A-Z]+)([A-Z][a-z])/g, '$1-$2')
     // Split a lowercase letter or digit from a following capital (`fooBar` -> `foo-Bar`,
-    // `srcURL` -> `src-URL`).
-    .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
+    // `srcURL` -> `src-URL`). Boundaries are also kept after other non-uppercase
+    // characters, so `CaféBarElement` keeps its `café-Bar` boundary and `Foo_BarElement`
+    // keeps its `Foo_-Bar` boundary (both still register after `-element` is stripped).
+    .replace(/([^A-Z])([A-Z])/g, '$1-$2')
     .replace(/--/g, '-')
     .replace(/^-|-$/, '')
     .toLowerCase()
