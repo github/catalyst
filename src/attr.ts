@@ -1,6 +1,6 @@
 import type {CustomElementClass} from './custom-element.js'
 import {mustDasherize} from './dasherize.js'
-import {meta} from './core.js'
+import {meta, ownMeta} from './core.js'
 import type {MemberContext} from './decorator-context.js'
 import {hasOwn, isDecoratorContext, memberName} from './decorator-context.js'
 
@@ -73,23 +73,27 @@ const registeredStandardAttrs = new WeakMap<object, boolean>()
  */
 export function registerStandardAttrs(classObject: CustomElementClass): void {
   if (registeredStandardAttrs.has(classObject)) return
-  const levels: string[][] = []
+  const levels: CustomElementClass[] = []
   let current: unknown = classObject
   for (
     ;
     typeof current === 'function' && !registeredStandardAttrs.has(current);
     current = Object.getPrototypeOf(current)
   ) {
-    const level = ownStandardAttrs(current)
-    if (level.length) levels.unshift(level)
+    levels.unshift(current as CustomElementClass)
   }
   const attrs = meta(classObject.prototype, attrKey)
   const ancestor = registeredStandardAttrs.has(current as object) ? (current as CustomElementClass) : undefined
-  const hasStandard = levels.length > 0 || (ancestor !== undefined && registeredStandardAttrs.get(ancestor)!)
+  const standard = levels.map(ownStandardAttrs)
+  const hasStandard = standard.some(level => level.length) || !!registeredStandardAttrs.get(current as object)
   if (hasStandard) {
-    // Base class attrs first, matching the order legacy decorators register them in. `attrs` may hold this class's
-    // legacy attrs, and a copy of an ancestor's attrs taken before its standard attrs were registered.
-    const ordered = new Set([...(ancestor ? meta(ancestor.prototype, attrKey) : []), ...levels.flat(), ...attrs])
+    // Base class attrs first, matching the order legacy decorators register them in. Read each class's own legacy
+    // attrs, because a subclass's copy of them can predate standard attrs registered on its ancestors.
+    const ordered = new Set(ancestor ? meta(ancestor.prototype, attrKey) : [])
+    for (const [i, level] of levels.entries()) {
+      for (const key of level === classObject ? attrs : ownMeta(level.prototype, attrKey) ?? []) ordered.add(key)
+      for (const key of standard[i]!) ordered.add(key)
+    }
     attrs.clear()
     for (const key of ordered) attrs.add(key)
   }

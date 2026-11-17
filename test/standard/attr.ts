@@ -119,6 +119,24 @@ describe('Attr (standard decorators)', () => {
       expect(instance).to.have.attribute('data-derived', 'attribute')
     })
 
+    it('initializes legacy base attrs before standard subclass attrs', async () => {
+      class MixedLegacyBase extends HTMLElement {
+        base = 'field'
+      }
+      attr(MixedLegacyBase.prototype, 'base')
+      @controller
+      class MixedLegacyChildElement extends MixedLegacyBase {
+        @attr get derived() {
+          return `${this.base}-derived`
+        }
+      }
+
+      const instance = await fixture<MixedLegacyChildElement>(
+        html`<mixed-legacy-child data-base="attribute"></mixed-legacy-child>`
+      )
+      expect(instance.getAttribute('data-derived')).to.equal('attribute-derived')
+    })
+
     it('includes standard base attrs registered after a subclass recorded legacy attrs', async () => {
       class MixedLateBase extends HTMLElement {
         @attr base = ''
