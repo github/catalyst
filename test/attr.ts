@@ -130,6 +130,7 @@ describe('Attr', () => {
     class ManualAttrTest extends HTMLElement {
       @attr foo = 'hello'
       bar = 'default'
+      baz = 'third'
 
       connectedCallback() {
         initializeAttrs(this, ['bar'])
@@ -165,6 +166,19 @@ describe('Attr', () => {
       instance.setAttribute('data-bar', 'also-changed')
       await Promise.resolve()
       expect(instance).to.have.property('bar', 'also-changed')
+    })
+
+    it('still initializes additional names passed explicitly after implicit initialization completes', async () => {
+      const instance = await fixture<ManualAttrTest>(html`<manual-attr-test />`)
+
+      // @controller already initialized the decorated names; the implicit
+      // fast path must not short-circuit this explicit call.
+      initializeAttrs(instance, ['baz'])
+
+      expect(instance).to.have.property('baz', 'third')
+      expect(instance).to.have.attribute('data-baz', 'third')
+      instance.baz = 'changed'
+      expect(instance).to.have.attribute('data-baz', 'changed')
     })
   })
 

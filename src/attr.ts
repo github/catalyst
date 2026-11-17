@@ -39,8 +39,16 @@ export function attr<K extends string>(proto: Record<K, attrValue>, key: K): voi
  * initialized yet, so a class may pass additional names (for example, from
  * its own `connectedCallback`) after `@controller` already initialized the
  * decorated ones.
+ *
+ * Implicit calls (no names given) short-circuit once the decorated names
+ * are being initialized or are already done: reflecting a missing default
+ * value back to an attribute synchronously invokes `attributeChangedCallback`,
+ * which calls this again, and without the short-circuit each re-entrant call
+ * would rescan every decorated name. Explicit calls are never short-circuited
+ * and always initialize the names they are given.
  */
 const initializedAttrs = new WeakMap<Element, Set<string>>()
+const implicitAttrsState = new WeakMap<Element, 'in-progress' | 'completed'>()
 export function initializeAttrs(instance: HTMLElement, names?: Iterable<string>): void {
   let initialized = initializedAttrs.get(instance)
   if (!initialized) {
@@ -49,50 +57,73 @@ export function initializeAttrs(instance: HTMLElement, names?: Iterable<string>)
   }
   const proto = Object.getPrototypeOf(instance)
   const prefix = proto?.constructor?.attrPrefix ?? 'data-'
-  if (!names) names = meta(proto, attrKey)
-  for (const key of names) {
-    // Skip names that were already initialized (for example, by an earlier
-    // call from `@controller`, or by `attributeChangedCallback`). Mark the
-    // name before defining its descriptor so a re-entrant call — for
-    // example, one triggered by reflecting the default value back to an
-    // attribute — does not define it twice.
-    if (initialized.has(key)) continue
-    initialized.add(key)
-    const value = (<Record<PropertyKey, unknown>>(<unknown>instance))[key]
-    const name = mustDasherize(`${prefix}${key}`)
-    let descriptor: PropertyDescriptor = {
-      configurable: true,
-      get(this: HTMLElement): string {
-        return this.getAttribute(name) || ''
-      },
-      set(this: HTMLElement, newValue: string) {
-        this.setAttribute(name, newValue || '')
-      }
-    }
-    if (typeof value === 'number') {
-      descriptor = {
+  const explicit = names != null
+  let namesToInit: Iterable<string>
+  if (explicit) {
+    namesToInit = names as Iterable<string>
+  } else {
+    const state = implicitAttrsState.get(instance)
+    if (state === 'in-progress' || state === 'completed') return
+    implicitAttrsState.set(instance, 'in-progress')
+    namesToInit = meta(proto, attrKey)
+  }
+  let completed = false
+  try {
+    for (const key of namesToInit) {
+      // Skip names that were already initialized (for example, by an earlier
+      // call from `@controller`, or by `attributeChangedCallback`). Mark the
+      // name before defining its descriptor so a re-entrant call — for
+      // example, one triggered by reflecting the default value back to an
+      // attribute — does not define it twice.
+      if (initialized.has(key)) continue
+      initialized.add(key)
+      const value = (<Record<PropertyKey, unknown>>(<unknown>instance))[key]
+      const name = mustDasherize(`${prefix}${key}`)
+      let descriptor: PropertyDescriptor = {
         configurable: true,
-        get(this: HTMLElement): number {
-          return Number(this.getAttribute(name) || 0)
+        get(this: HTMLElement): string {
+          return this.getAttribute(name) || ''
         },
         set(this: HTMLElement, newValue: string) {
-          this.setAttribute(name, newValue)
+          this.setAttribute(name, newValue || '')
         }
       }
-    } else if (typeof value === 'boolean') {
-      descriptor = {
-        configurable: true,
-        get(this: HTMLElement): boolean {
-          return this.hasAttribute(name)
-        },
-        set(this: HTMLElement, newValue: boolean) {
-          this.toggleAttribute(name, newValue)
+      if (typeof value === 'number') {
+        descriptor = {
+          configurable: true,
+          get(this: HTMLElement): number {
+            return Number(this.getAttribute(name) || 0)
+          },
+          set(this: HTMLElement, newValue: string) {
+            this.setAttribute(name, newValue)
+          }
         }
+      } else if (typeof value === 'boolean') {
+        descriptor = {
+          configurable: true,
+          get(this: HTMLElement): boolean {
+            return this.hasAttribute(name)
+          },
+          set(this: HTMLElement, newValue: boolean) {
+            this.toggleAttribute(name, newValue)
+          }
+        }
+      }
+      Object.defineProperty(instance, key, descriptor)
+      if (key in instance && !instance.hasAttribute(name)) {
+        descriptor.set!.call(instance, value)
       }
     }
-    Object.defineProperty(instance, key, descriptor)
-    if (key in instance && !instance.hasAttribute(name)) {
-      descriptor.set!.call(instance, value)
+    completed = true
+  } finally {
+    if (!explicit) {
+      if (completed) {
+        implicitAttrsState.set(instance, 'completed')
+      } else {
+        // The loop threw part-way: drop the state so a later implicit call
+        // retries the names that were not initialized yet.
+        implicitAttrsState.delete(instance)
+      }
     }
   }
 }
