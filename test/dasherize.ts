@@ -27,13 +27,26 @@ describe('mustDasherize', () => {
   })
 
   it('throws a SyntaxError when the name has no dash', () => {
-    expect(() => mustDasherize('json')).to.throw(DOMException, 'property: json is not a valid property name')
+    let error: unknown
+    try {
+      mustDasherize('json')
+    } catch (caught) {
+      error = caught
+    }
+    expect(error).to.be.instanceOf(DOMException)
+    expect((error as DOMException).name).to.equal('SyntaxError')
+    expect((error as DOMException).message).to.equal('property: json is not a valid property name')
   })
 
   it('names the custom type in the thrown error', () => {
-    expect(() => mustDasherize('json', 'controller')).to.throw(
-      DOMException,
-      'controller: json is not a valid controller name'
-    )
+    let error: unknown
+    try {
+      mustDasherize('json', 'controller')
+    } catch (caught) {
+      error = caught
+    }
+    expect(error).to.be.instanceOf(DOMException)
+    expect((error as DOMException).name).to.equal('SyntaxError')
+    expect((error as DOMException).message).to.equal('controller: json is not a valid controller name')
   })
 })
