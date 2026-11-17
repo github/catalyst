@@ -34,15 +34,30 @@ export function attr<K extends string>(proto: Record<K, attrValue>, key: K): voi
  *
  * This is automatically called as part of `@controller`. If a class uses the
  * `@controller` decorator it should not call this manually.
+ *
+ * Calling it again only initializes the property names that have not been
+ * initialized yet, so a class may pass additional names (for example, from
+ * its own `connectedCallback`) after `@controller` already initialized the
+ * decorated ones.
  */
-const initialized = new WeakSet<Element>()
+const initializedAttrs = new WeakMap<Element, Set<string>>()
 export function initializeAttrs(instance: HTMLElement, names?: Iterable<string>): void {
-  if (initialized.has(instance)) return
-  initialized.add(instance)
+  let initialized = initializedAttrs.get(instance)
+  if (!initialized) {
+    initialized = new Set()
+    initializedAttrs.set(instance, initialized)
+  }
   const proto = Object.getPrototypeOf(instance)
   const prefix = proto?.constructor?.attrPrefix ?? 'data-'
   if (!names) names = meta(proto, attrKey)
   for (const key of names) {
+    // Skip names that were already initialized (for example, by an earlier
+    // call from `@controller`, or by `attributeChangedCallback`). Mark the
+    // name before defining its descriptor so a re-entrant call — for
+    // example, one triggered by reflecting the default value back to an
+    // attribute — does not define it twice.
+    if (initialized.has(key)) continue
+    initialized.add(key)
     const value = (<Record<PropertyKey, unknown>>(<unknown>instance))[key]
     const name = mustDasherize(`${prefix}${key}`)
     let descriptor: PropertyDescriptor = {
