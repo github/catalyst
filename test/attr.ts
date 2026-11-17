@@ -1,6 +1,6 @@
 import {expect, fixture, html} from '@open-wc/testing'
 import {controller} from '../src/controller.js'
-import {attr} from '../src/attr.js'
+import {attr, initializeAttrs} from '../src/attr.js'
 
 describe('Attr', () => {
   {
@@ -122,6 +122,63 @@ describe('Attr', () => {
       instance.setAttribute('data-foo-bar', '2')
       instance.fooBar = 3
       instance.setAttribute('data-foo-bar', '4')
+    })
+  })
+
+  describe('manual initialization', () => {
+    @controller
+    class ManualAttrTest extends HTMLElement {
+      @attr foo = 'hello'
+      bar = 'default'
+      baz = 'third'
+
+      connectedCallback() {
+        initializeAttrs(this, ['bar'])
+      }
+    }
+
+    it('initializes attrs passed manually in connectedCallback, even though @controller already initialized the decorated ones', async () => {
+      const instance = await fixture<ManualAttrTest>(
+        html`<manual-attr-test data-foo="from-attr" data-bar="from-attr" />`
+      )
+
+      expect(instance).to.have.property('foo', 'from-attr')
+      expect(instance).to.have.property('bar', 'from-attr')
+      expect(instance).to.have.attribute('data-bar', 'from-attr')
+    })
+
+    it('reflects the default value of a manually initialized attr when no attribute is present', async () => {
+      const instance = await fixture<ManualAttrTest>(html`<manual-attr-test />`)
+
+      expect(instance).to.have.property('foo', 'hello')
+      expect(instance).to.have.property('bar', 'default')
+      expect(instance).to.have.attribute('data-bar', 'default')
+    })
+
+    it('does not re-initialize attrs that were already initialized', async () => {
+      const instance = await fixture<ManualAttrTest>(html`<manual-attr-test />`)
+
+      initializeAttrs(instance, ['bar'])
+      initializeAttrs(instance)
+
+      instance.bar = 'changed'
+      expect(instance).to.have.attribute('data-bar', 'changed')
+      instance.setAttribute('data-bar', 'also-changed')
+      await Promise.resolve()
+      expect(instance).to.have.property('bar', 'also-changed')
+    })
+
+    it('still initializes additional names passed explicitly after implicit initialization completes', async () => {
+      const instance = await fixture<ManualAttrTest>(html`<manual-attr-test />`)
+
+      // @controller already initialized the decorated names; the implicit
+      // fast path must not short-circuit this explicit call.
+      initializeAttrs(instance, ['baz'])
+
+      expect(instance).to.have.property('baz', 'third')
+      expect(instance).to.have.attribute('data-baz', 'third')
+      instance.baz = 'changed'
+      expect(instance).to.have.attribute('data-baz', 'changed')
     })
   })
 
