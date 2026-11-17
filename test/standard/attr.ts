@@ -86,6 +86,20 @@ describe('Attr (standard decorators)', () => {
     })
   }
 
+  it('initializes stored attrs before getter attrs that read them', async () => {
+    @controller
+    class StandardDependentElement extends HTMLElement {
+      @attr base = 'field'
+      @attr get derived() {
+        return `${this.base}-derived`
+      }
+    }
+    const instance = await fixture<StandardDependentElement>(
+      html`<standard-dependent data-base="attribute"></standard-dependent>`
+    )
+    expect(instance).to.have.attribute('data-derived', 'attribute-derived')
+  })
+
   // A base compiled with standard decorators, extended by a class that registers attrs with legacy-style calls.
   describe('mixed with legacy attrs', () => {
     it('initializes standard base attrs before legacy subclass attrs', async () => {
@@ -136,6 +150,26 @@ describe('Attr (standard decorators)', () => {
     } finally {
       symbolWithMetadata.metadata = original
     }
+  })
+
+  it('reads base class metadata stored before Symbol.metadata changed', async () => {
+    const original = symbolWithMetadata.metadata
+    class StandardLateBase extends HTMLElement {
+      @attr early = 'early'
+    }
+    symbolWithMetadata.metadata = Symbol('late metadata')
+    let instance: HTMLElement
+    try {
+      @controller
+      class StandardLateChildElement extends StandardLateBase {
+        @attr late = 'late'
+      }
+      instance = await fixture<StandardLateChildElement>(html`<standard-late-child></standard-late-child>`)
+    } finally {
+      symbolWithMetadata.metadata = original
+    }
+    expect(instance.getAttribute('data-early')).to.equal('early')
+    expect(instance.getAttribute('data-late')).to.equal('late')
   })
 
   it('throws a clear error without decorator metadata', () => {

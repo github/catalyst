@@ -13,8 +13,8 @@ import {dasherize} from './dasherize.js'
  * It can be used as a class decorator with both TypeScript's
  * `experimentalDecorators` and standard decorators.
  */
-export function register<C extends CustomElementClass>(classObject: C, context: ClassContext<C>): void
 export function register(classObject: CustomElementClass, name?: string): CustomElementClass
+export function register<C extends CustomElementClass>(classObject: C, context: ClassContext<C>): void
 export function register(classObject: CustomElementClass, nameOrContext?: unknown): CustomElementClass | void {
   if (isDecoratorContext(nameOrContext)) {
     // Like `@controller`, define the element once static fields are assigned.

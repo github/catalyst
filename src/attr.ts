@@ -2,12 +2,15 @@ import type {CustomElementClass} from './custom-element.js'
 import {mustDasherize} from './dasherize.js'
 import {meta} from './core.js'
 import type {MemberContext} from './decorator-context.js'
-import {hasOwn, isDecoratorContext, memberName, ownMetadata} from './decorator-context.js'
+import {hasOwn, isDecoratorContext, memberName} from './decorator-context.js'
 
 const attrKey = 'attr'
 type attrValue = string | number | boolean
 
+// Standard decorators apply getter and setter decorators before field decorators, so record them separately and
+// register stored values first. A getter may read another attr while it initializes; a stored value can't.
 const standardAttrs = Symbol.for('catalyst:attr')
+const standardComputedAttrs = Symbol.for('catalyst:attr:computed')
 
 /**
  * Attr is a decorator which tags a property as one to be initialized via
@@ -21,9 +24,9 @@ const standardAttrs = Symbol.for('catalyst:attr')
  * getter or setter, and records the name in the class's decorator metadata
  * for `@controller` to register.
  */
-export function attr<This, Value extends attrValue>(
+export function attr<K extends string, This extends Record<K, attrValue>, Value extends attrValue>(
   value: unknown,
-  context: MemberContext<'field' | 'accessor' | 'getter' | 'setter', This, Value>
+  context: MemberContext<'field' | 'accessor' | 'getter' | 'setter', This, Value> & {readonly name: K}
 ): void
 export function attr<K extends string>(proto: Record<K, attrValue>, key: K): void
 export function attr(proto: unknown, keyOrContext: unknown): void {
@@ -34,9 +37,26 @@ export function attr(proto: unknown, keyOrContext: unknown): void {
   const name = memberName('attr', keyOrContext, ['field', 'accessor', 'getter', 'setter'])
   const metadata = keyOrContext.metadata as Record<PropertyKey, string[] | undefined> | undefined
   if (!metadata) throw new TypeError('@attr requires decorator metadata (`Symbol.metadata`) support')
+  const key = keyOrContext.kind === 'getter' || keyOrContext.kind === 'setter' ? standardComputedAttrs : standardAttrs
   // Metadata inherits from the parent class's metadata, so only append to this class's own list.
-  if (hasOwn(metadata, standardAttrs)) metadata[standardAttrs]!.push(name)
-  else metadata[standardAttrs] = [name]
+  if (hasOwn(metadata, key)) metadata[key]!.push(name)
+  else metadata[key] = [name]
+}
+
+/**
+ * Returns the `@attr` members recorded in the class's own decorator metadata. Finds the metadata by these lists rather
+ * than by `Symbol.metadata`, because another library may redefine `Symbol.metadata` after some classes are defined.
+ */
+function ownStandardAttrs(classObject: object): string[] {
+  for (const symbol of Object.getOwnPropertySymbols(classObject)) {
+    const metadata: unknown = Object.getOwnPropertyDescriptor(classObject, symbol)!.value
+    if (typeof metadata !== 'object' || metadata === null) continue
+    const attrs = [standardAttrs, standardComputedAttrs].flatMap(key =>
+      hasOwn(metadata, key) ? (metadata as Record<symbol, string[]>)[key]! : []
+    )
+    if (attrs.length) return attrs
+  }
+  return []
 }
 
 // Classes whose attrs are registered, mapped to whether any of them came from standard decorator metadata.
@@ -60,8 +80,8 @@ export function registerStandardAttrs(classObject: CustomElementClass): void {
     typeof current === 'function' && !registeredStandardAttrs.has(current);
     current = Object.getPrototypeOf(current)
   ) {
-    const metadata = ownMetadata(current)
-    if (metadata && hasOwn(metadata, standardAttrs)) levels.unshift(metadata[standardAttrs] as string[])
+    const level = ownStandardAttrs(current)
+    if (level.length) levels.unshift(level)
   }
   const attrs = meta(classObject.prototype, attrKey)
   const ancestor = registeredStandardAttrs.has(current as object) ? (current as CustomElementClass) : undefined
