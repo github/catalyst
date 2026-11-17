@@ -189,12 +189,12 @@ data-name ".*": Will set the value of `name`
 
 ### What about without Decorators?
 
-If you're not using decorators, then you won't be able to use the `@attr` decorator, but there is still a way to achieve the same result. Under the hood `@attr` simply tags a field, but `initializeAttrs` and `defineObservedAttributes` do all of the logic.
+If you're not using decorators, then you won't be able to use the `@attr` decorator, but there is still a way to achieve the same result. Under the hood `@attr` simply tags a field, but `initializeAttrs` and `defineObservedAttributes` do all of the logic. Tag the field with `attr()` first, so `defineObservedAttributes` knows which attributes to observe.
 
-Calling `initializeAttrs` in your connected callback, with the list of properties you'd like to initialize, and calling `defineObservedAttributes` with the class, can achieve the same result as `@attr`. The class fields can still be defined in your class, and they'll be overridden as described above. For example:
+Calling `attr()` on the prototype to tag the property, `initializeAttrs` in your connected callback with the list of properties you'd like to initialize, and `defineObservedAttributes` with the class, can achieve the same result as `@attr`. The class fields can still be defined in your class, and they'll be overridden as described above. For example:
 
 ```js
-import {initializeAttrs, defineObservedAttributes} from '@github/catalyst'
+import {initializeAttrs, defineObservedAttributes, attr} from '@github/catalyst'
 
 class HelloWorldElement extends HTMLElement {
   foo = 1
@@ -204,7 +204,8 @@ class HelloWorldElement extends HTMLElement {
   }
 
 }
-defineObservedAttributes(HelloWorldElement, ['foo'])
+attr(HelloWorldElement.prototype, 'foo')
+defineObservedAttributes(HelloWorldElement)
 ```
 
 This example is functionally identical to:
