@@ -39,32 +39,41 @@ export function attr(proto: unknown, keyOrContext: unknown): void {
   else metadata[standardAttrs] = [name]
 }
 
-const registeredStandardAttrs = new WeakSet<object>()
+// Classes whose attrs are registered, mapped to whether any of them came from standard decorator metadata.
+const registeredStandardAttrs = new WeakMap<object, boolean>()
 
 /**
  * Registers the `@attr` members recorded in decorator metadata by standard
  * decorators, so `initializeAttrs` and `defineObservedAttributes` find them.
  *
  * Walks up the class chain to include undecorated base classes, stopping at a
- * class already registered, whose attrs `meta` copies to subclasses. Reads each
- * class's own metadata because a class without a class decorator may get
- * metadata that doesn't inherit from its parent's.
+ * class already registered. Reads each class's own metadata because a class
+ * without a class decorator may get metadata that doesn't inherit from its
+ * parent's.
  */
 export function registerStandardAttrs(classObject: CustomElementClass): void {
   if (registeredStandardAttrs.has(classObject)) return
   const levels: string[][] = []
+  let current: unknown = classObject
   for (
-    let current: unknown = classObject;
+    ;
     typeof current === 'function' && !registeredStandardAttrs.has(current);
     current = Object.getPrototypeOf(current)
   ) {
     const metadata = ownMetadata(current)
     if (metadata && hasOwn(metadata, standardAttrs)) levels.unshift(metadata[standardAttrs] as string[])
   }
-  // Base class attrs first, matching the order legacy decorators register them in.
   const attrs = meta(classObject.prototype, attrKey)
-  for (const key of levels.flat()) attrs.add(key)
-  registeredStandardAttrs.add(classObject)
+  const ancestor = registeredStandardAttrs.has(current as object) ? (current as CustomElementClass) : undefined
+  const hasStandard = levels.length > 0 || (ancestor !== undefined && registeredStandardAttrs.get(ancestor)!)
+  if (hasStandard) {
+    // Base class attrs first, matching the order legacy decorators register them in. `attrs` may hold this class's
+    // legacy attrs, and a copy of an ancestor's attrs taken before its standard attrs were registered.
+    const ordered = new Set([...(ancestor ? meta(ancestor.prototype, attrKey) : []), ...levels.flat(), ...attrs])
+    attrs.clear()
+    for (const key of ordered) attrs.add(key)
+  }
+  registeredStandardAttrs.set(classObject, hasStandard)
 }
 
 /**

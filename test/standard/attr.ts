@@ -1,6 +1,6 @@
 import {expect, fixture, html} from '@open-wc/testing'
 import {controller} from '../../src/controller.js'
-import {attr} from '../../src/attr.js'
+import {attr, defineObservedAttributes} from '../../src/attr.js'
 import type {CustomElementClass} from '../../src/custom-element.js'
 
 const symbolWithMetadata = Symbol as {metadata?: symbol}
@@ -85,6 +85,41 @@ describe('Attr (standard decorators)', () => {
       ])
     })
   }
+
+  // A base compiled with standard decorators, extended by a class that registers attrs with legacy-style calls.
+  describe('mixed with legacy attrs', () => {
+    it('initializes standard base attrs before legacy subclass attrs', async () => {
+      class MixedOrderBase extends HTMLElement {
+        @attr base = 'field'
+      }
+      class MixedOrderChild extends MixedOrderBase {
+        get derived() {
+          return this.base
+        }
+      }
+      attr(MixedOrderChild.prototype, 'derived')
+      controller(MixedOrderChild)
+
+      expect(observed(MixedOrderChild)).to.deep.equal(['data-base', 'data-derived'])
+      const instance = await fixture(html`<mixed-order-child data-base="attribute"></mixed-order-child>`)
+      expect(instance).to.have.attribute('data-derived', 'attribute')
+    })
+
+    it('includes standard base attrs registered after a subclass recorded legacy attrs', async () => {
+      class MixedLateBase extends HTMLElement {
+        @attr base = ''
+      }
+      class MixedLateChild extends MixedLateBase {
+        child = ''
+      }
+      attr(MixedLateChild.prototype, 'child')
+      defineObservedAttributes(MixedLateBase)
+      controller(MixedLateChild)
+
+      const instance = await fixture<MixedLateChild>(html`<mixed-late-child data-base="attribute"></mixed-late-child>`)
+      expect(instance).to.have.property('base', 'attribute')
+    })
+  })
 
   it('reads metadata stored under a Symbol.metadata defined after Catalyst loaded', async () => {
     const original = symbolWithMetadata.metadata
