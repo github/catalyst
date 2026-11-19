@@ -181,6 +181,49 @@ describe('Attr', () => {
     })
   })
 
+  describe('initialization order', () => {
+    it('initializes field attrs in declaration order, so their callbacks keep HTML values', async () => {
+      @controller
+      class CallbackOrderAttrTest extends HTMLElement {
+        @attr ready = true
+        @attr status = 'default'
+        attributeChangedCallback(name: string) {
+          if (name === 'data-ready') this.status = 'updated'
+        }
+      }
+      const instance = await fixture<CallbackOrderAttrTest>(
+        html`<callback-order-attr-test data-status="html"></callback-order-attr-test>`
+      )
+      expect(instance).to.have.attribute('data-status', 'html')
+    })
+
+    it('initializes field attrs before getter attrs that read them, when both have HTML attributes', async () => {
+      @controller
+      class ParseOrderAttrTest extends HTMLElement {
+        @attr get count() {
+          return JSON.parse(this.payload).length
+        }
+        @attr payload = ''
+      }
+      const instance = await fixture<ParseOrderAttrTest>(
+        html`<parse-order-attr-test data-payload="[1,2]" data-count="7"></parse-order-attr-test>`
+      )
+      expect(instance).to.have.property('count', 7)
+    })
+
+    it('initializes fields without a value before getter attrs that read them', async () => {
+      @controller
+      class UnsetOrderAttrTest extends HTMLElement {
+        @attr get greeting() {
+          return this.name.toUpperCase()
+        }
+        @attr name!: string
+      }
+      const instance = await fixture<UnsetOrderAttrTest>(html`<unset-order-attr-test></unset-order-attr-test>`)
+      expect(instance).to.have.attribute('data-greeting', '')
+    })
+  })
+
   describe('inheritance', () => {
     it('registers attrs from undecorated base classes, base class first', async () => {
       class Base extends HTMLElement {

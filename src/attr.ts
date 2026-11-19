@@ -128,15 +128,18 @@ export function initializeAttrs(instance: HTMLElement, names?: Iterable<string>)
     if (typeof proto?.constructor === 'function') registerStandardAttrs(proto.constructor)
     names = meta(proto, attrKey)
   }
-  // Attrs with an HTML attribute go first, so a getter that reads one while another attr initializes gets the attribute
-  // value. An attr without one returns its default before and after it's initialized, so the order doesn't matter.
+  // A getter attr may read other attrs, so it should see them initialized. Fields read nothing, so they go first, in
+  // registration order. They're own properties by now, or have no accessor at all. Getters, setters and accessors follow,
+  // those with an HTML attribute first; one without returns its default before and after it's initialized.
+  const fields: Array<[string, string]> = []
   const present: Array<[string, string]> = []
   const absent: Array<[string, string]> = []
   for (const key of names) {
     const name = attrName(`${prefix}${key}`)
-    ;(instance.hasAttribute(name) ? present : absent).push([key, name])
+    const list = hasOwn(instance, key) || !(key in instance) ? fields : instance.hasAttribute(name) ? present : absent
+    list.push([key, name])
   }
-  for (const [key, name] of present.concat(absent)) {
+  for (const [key, name] of fields.concat(present, absent)) {
     const value = (<Record<PropertyKey, unknown>>(<unknown>instance))[key]
     let descriptor: PropertyDescriptor = {
       configurable: true,

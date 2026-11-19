@@ -150,7 +150,7 @@ When an element gets connected to the DOM, the attr is initialized. During this 
  - If the class property has a value, that is the _default_
  - When connected, if the element _does not_ have a matching attribute, the default _is_ applied.
  - When connected, if the element _does_ have a matching attribute, the default _is not_ applied, the property will be assigned to the value of the attribute instead.
- - Attrs with a matching attribute are initialized first. A getter `@attr` whose default reads another attr gets that attr's attribute value, whatever order they're declared in.
+ - Field attrs are initialized first, in the order they're declared. Getter, setter and `accessor` attrs come next, starting with those that have a matching attribute, so a getter's default can read the other attrs' values.
 
 {% capture callout %}
 Remember! The values defined in the class field are the _default_. They won't be set if the element is created and its attribute set to a custom value!
