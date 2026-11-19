@@ -100,6 +100,25 @@ describe('Attr (standard decorators)', () => {
     expect(instance).to.have.attribute('data-derived', 'attribute-derived')
   })
 
+  it('initializes getters that read a decorated getter and setter pair from its HTML value', async () => {
+    @controller
+    class StandardPairElement extends HTMLElement {
+      #name = 'field'
+      @attr get name() {
+        return this.#name
+      }
+      @attr get greeting() {
+        return `hi ${this.name}`
+      }
+      // eslint-disable-next-line @typescript-eslint/adjacent-overload-signatures
+      @attr set name(value: string) {
+        this.#name = value
+      }
+    }
+    const instance = await fixture<StandardPairElement>(html`<standard-pair data-name="attribute"></standard-pair>`)
+    expect(instance).to.have.attribute('data-greeting', 'hi attribute')
+  })
+
   // A base compiled with standard decorators, extended by a class that registers attrs with legacy-style calls.
   describe('mixed with legacy attrs', () => {
     it('initializes standard base attrs before legacy subclass attrs', async () => {

@@ -7,10 +7,7 @@ import {hasOwn, isDecoratorContext, memberName} from './decorator-context.js'
 const attrKey = 'attr'
 type attrValue = string | number | boolean
 
-// Standard decorators apply getter and setter decorators before field decorators, so record them separately and
-// register stored values first. A getter may read another attr while it initializes; a stored value can't.
 const standardAttrs = Symbol.for('catalyst:attr')
-const standardComputedAttrs = Symbol.for('catalyst:attr:computed')
 
 /**
  * Attr is a decorator which tags a property as one to be initialized via
@@ -29,39 +26,31 @@ export function attr<K extends string, This extends Record<K, attrValue>, Value 
   context: MemberContext<'field' | 'accessor' | 'getter' | 'setter', This, Value> & {readonly name: K}
 ): void
 export function attr<K extends string>(proto: Record<K, attrValue>, key: K): void
-export function attr(proto: unknown, keyOrContext: unknown, descriptor?: PropertyDescriptor): void {
+export function attr(proto: unknown, keyOrContext: unknown): void {
   if (!isDecoratorContext(keyOrContext)) {
-    const attrs = meta(proto as Record<PropertyKey, unknown>, attrKey)
-    // Legacy decorators only pass a descriptor to getters and setters. Like standard ones, an overriding getter moves
-    // after the attrs its class declares before it, which it may read.
-    if (descriptor) attrs.delete(keyOrContext as string)
-    attrs.add(keyOrContext as string)
+    meta(proto as Record<PropertyKey, unknown>, attrKey).add(keyOrContext as string)
     return
   }
   const name = memberName('attr', keyOrContext, ['field', 'accessor', 'getter', 'setter'])
   const metadata = keyOrContext.metadata as Record<PropertyKey, string[] | undefined> | undefined
   if (!metadata) throw new TypeError('@attr requires decorator metadata (`Symbol.metadata`) support')
-  const key = keyOrContext.kind === 'getter' || keyOrContext.kind === 'setter' ? standardComputedAttrs : standardAttrs
   // Metadata inherits from the parent class's metadata, so only append to this class's own list.
-  if (hasOwn(metadata, key)) metadata[key]!.push(name)
-  else metadata[key] = [name]
+  if (hasOwn(metadata, standardAttrs)) metadata[standardAttrs]!.push(name)
+  else metadata[standardAttrs] = [name]
 }
 
 /**
  * Returns the `@attr` members recorded in the class's own decorator metadata. Finds the metadata by these lists rather
  * than by `Symbol.metadata`, because another library may redefine `Symbol.metadata` after some classes are defined.
  */
-function ownStandardAttrs(classObject: object): string[][] {
+function ownStandardAttrs(classObject: object): string[] {
   for (const symbol of Object.getOwnPropertySymbols(classObject)) {
     const metadata: unknown = Object.getOwnPropertyDescriptor(classObject, symbol)!.value
-    if (typeof metadata !== 'object' || metadata === null) continue
-    // Stored attrs, then computed attrs.
-    const lists = [standardAttrs, standardComputedAttrs].map(key =>
-      hasOwn(metadata, key) ? (metadata as Record<symbol, string[]>)[key]! : []
-    )
-    if (lists.flat().length) return lists
+    if (typeof metadata === 'object' && metadata !== null && hasOwn(metadata, standardAttrs)) {
+      return (metadata as Record<symbol, string[]>)[standardAttrs]!
+    }
   }
-  return [[], []]
+  return []
 }
 
 // Classes whose attrs are registered, mapped to whether any of them came from standard decorator metadata.
@@ -90,23 +79,14 @@ export function registerStandardAttrs(classObject: CustomElementClass): void {
   const attrs = meta(classObject.prototype, attrKey)
   const ancestor = registeredStandardAttrs.has(current as object) ? (current as CustomElementClass) : undefined
   const standard = levels.map(ownStandardAttrs)
-  const hasStandard = !!standard.flat(2).length || !!registeredStandardAttrs.get(current as object)
+  const hasStandard = standard.some(level => level.length) || !!registeredStandardAttrs.get(current as object)
   if (hasStandard) {
     // Base class attrs first, matching the order legacy decorators register them in. Read each class's own legacy
     // attrs, because a subclass's copy of them can predate standard attrs registered on its ancestors.
     const ordered = new Set(ancestor ? meta(ancestor.prototype, attrKey) : [])
     for (const [i, level] of levels.entries()) {
-      const [stored, computed] = standard[i] as [string[], string[]]
-      const proto = level.prototype
-      const legacy = [...(level === classObject ? attrs : ownMeta(proto, attrKey) ?? [])]
-      // Legacy registrations don't record the member kind, so look for a getter on this class.
-      const isComputed = (key: string) => !!Object.getOwnPropertyDescriptor(proto, key)?.get
-      for (const key of stored.concat(legacy.filter(name => !isComputed(name)))) ordered.add(key)
-      // Getters and setters may read the attrs before them, so they go last, even when they override a base attr.
-      for (const key of legacy.filter(isComputed).concat(computed)) {
-        ordered.delete(key)
-        ordered.add(key)
-      }
+      for (const key of level === classObject ? attrs : ownMeta(level.prototype, attrKey) ?? []) ordered.add(key)
+      for (const key of standard[i]!) ordered.add(key)
     }
     attrs.clear()
     for (const key of ordered) attrs.add(key)
@@ -143,9 +123,13 @@ export function initializeAttrs(instance: HTMLElement, names?: Iterable<string>)
     if (typeof proto?.constructor === 'function') registerStandardAttrs(proto.constructor)
     names = meta(proto, attrKey)
   }
-  for (const key of names) {
+  const attrName = (key: string) => mustDasherize(`${prefix}${key}`)
+  // Attrs with an HTML attribute go first, so a getter that reads one while another attr initializes gets the attribute
+  // value. An attr without one returns its default before and after it's initialized, so the order doesn't matter.
+  const keys = [...names].sort((a, b) => +instance.hasAttribute(attrName(b)) - +instance.hasAttribute(attrName(a)))
+  for (const key of keys) {
     const value = (<Record<PropertyKey, unknown>>(<unknown>instance))[key]
-    const name = mustDasherize(`${prefix}${key}`)
+    const name = attrName(key)
     let descriptor: PropertyDescriptor = {
       configurable: true,
       get(this: HTMLElement): string {

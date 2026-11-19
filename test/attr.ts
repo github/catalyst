@@ -233,6 +233,27 @@ describe('Attr', () => {
       expect(observed(SecondSiblingAttrTest)).to.eql(['data-shared', 'data-second'])
     })
 
+    it('initializes getters that read an overridden attr from its HTML value', async () => {
+      class ReadOverrideBase extends HTMLElement {
+        @attr get label() {
+          return 'base'
+        }
+        @attr get derived() {
+          return `${this.label}-derived`
+        }
+      }
+      @controller
+      class ReadOverrideAttrTest extends ReadOverrideBase {
+        @attr get label() {
+          return 'sub'
+        }
+      }
+      const instance = await fixture<ReadOverrideAttrTest>(
+        html`<read-override-attr-test data-label="attribute"></read-override-attr-test>`
+      )
+      expect(instance).to.have.attribute('data-derived', 'attribute-derived')
+    })
+
     it('initializes an overriding getter attr after the attrs it reads', async () => {
       class OverrideBase extends HTMLElement {
         @attr get label() {
