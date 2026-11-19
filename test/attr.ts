@@ -211,6 +211,43 @@ describe('Attr', () => {
       expect(instance).to.have.property('count', 7)
     })
 
+    it('initializes fields named like built-in accessors in declaration order', async () => {
+      @controller
+      class BuiltinNameAttrTest extends HTMLElement {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore With define semantics TypeScript wants an initializer (TS2612). This tests a field without one.
+        @attr title!: string
+        @attr status = 'default'
+        attributeChangedCallback(name: string) {
+          if (name === 'data-title') this.status = 'updated'
+        }
+      }
+      const instance = await fixture<BuiltinNameAttrTest>(
+        html`<builtin-name-attr-test data-status="html"></builtin-name-attr-test>`
+      )
+      expect(instance).to.have.attribute('data-status', 'html')
+    })
+
+    it('orders getter attrs by the HTML attributes present after fields initialize', async () => {
+      @controller
+      class LatePresenceAttrTest extends HTMLElement {
+        @attr trigger = true
+        @attr get payload() {
+          return ''
+        }
+        @attr get count() {
+          return JSON.parse(this.payload).length
+        }
+        attributeChangedCallback(name: string) {
+          if (name === 'data-trigger') this.setAttribute('data-payload', '[1,2]')
+        }
+      }
+      const instance = await fixture<LatePresenceAttrTest>(
+        html`<late-presence-attr-test data-count="7"></late-presence-attr-test>`
+      )
+      expect(instance).to.have.property('count', 7)
+    })
+
     it('initializes fields without a value before getter attrs that read them', async () => {
       @controller
       class UnsetOrderAttrTest extends HTMLElement {

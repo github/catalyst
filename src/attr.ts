@@ -128,53 +128,65 @@ export function initializeAttrs(instance: HTMLElement, names?: Iterable<string>)
     if (typeof proto?.constructor === 'function') registerStandardAttrs(proto.constructor)
     names = meta(proto, attrKey)
   }
-  // A getter attr may read other attrs, so it should see them initialized. Fields read nothing, so they go first, in
-  // registration order. They're own properties by now, or have no accessor at all. Getters, setters and accessors follow,
-  // those with an HTML attribute first; one without returns its default before and after it's initialized.
-  const fields: Array<[string, string]> = []
-  const present: Array<[string, string]> = []
-  const absent: Array<[string, string]> = []
-  for (const key of names) {
-    const name = attrName(`${prefix}${key}`)
-    const list = hasOwn(instance, key) || !(key in instance) ? fields : instance.hasAttribute(name) ? present : absent
-    list.push([key, name])
+  const nameOf = (key: string) => attrName(`${prefix}${key}`)
+  // Only classes extending HTMLElement declare attr accessors. An attr named like a built-in one, such as `title`, is a field.
+  const isAccessor = (key: string) => {
+    for (let o = proto; o && o !== HTMLElement.prototype; o = Object.getPrototypeOf(o)) {
+      const descriptor = Object.getOwnPropertyDescriptor(o, key)
+      if (descriptor) return !('value' in descriptor)
+    }
+    return false
   }
-  for (const [key, name] of fields.concat(present, absent)) {
-    const value = (<Record<PropertyKey, unknown>>(<unknown>instance))[key]
-    let descriptor: PropertyDescriptor = {
+  // A getter attr may read other attrs, so it should see them initialized. Fields read nothing, so they go first, in
+  // registration order. They're own properties by now, or have no accessor at all.
+  const fields: string[] = []
+  const accessors: string[] = []
+  for (const key of names) (!hasOwn(instance, key) && isAccessor(key) ? accessors : fields).push(key)
+  for (const key of fields) initializeAttr(instance, key, nameOf(key))
+  // Getters, setters and accessors follow, those with an HTML attribute first, checked now because field callbacks may
+  // add attributes. One without an HTML attribute returns its default before and after it's initialized.
+  if (!accessors.length) return
+  const has = (key: string) => instance.hasAttribute(nameOf(key))
+  for (const key of accessors.filter(has).concat(accessors.filter(other => !has(other)))) {
+    initializeAttr(instance, key, nameOf(key))
+  }
+}
+
+function initializeAttr(instance: HTMLElement, key: string, name: string) {
+  const value = (<Record<PropertyKey, unknown>>(<unknown>instance))[key]
+  let descriptor: PropertyDescriptor = {
+    configurable: true,
+    get(this: HTMLElement): string {
+      return this.getAttribute(name) || ''
+    },
+    set(this: HTMLElement, newValue: string) {
+      this.setAttribute(name, newValue || '')
+    }
+  }
+  if (typeof value === 'number') {
+    descriptor = {
       configurable: true,
-      get(this: HTMLElement): string {
-        return this.getAttribute(name) || ''
+      get(this: HTMLElement): number {
+        return Number(this.getAttribute(name) || 0)
       },
       set(this: HTMLElement, newValue: string) {
-        this.setAttribute(name, newValue || '')
+        this.setAttribute(name, newValue)
       }
     }
-    if (typeof value === 'number') {
-      descriptor = {
-        configurable: true,
-        get(this: HTMLElement): number {
-          return Number(this.getAttribute(name) || 0)
-        },
-        set(this: HTMLElement, newValue: string) {
-          this.setAttribute(name, newValue)
-        }
-      }
-    } else if (typeof value === 'boolean') {
-      descriptor = {
-        configurable: true,
-        get(this: HTMLElement): boolean {
-          return this.hasAttribute(name)
-        },
-        set(this: HTMLElement, newValue: boolean) {
-          this.toggleAttribute(name, newValue)
-        }
+  } else if (typeof value === 'boolean') {
+    descriptor = {
+      configurable: true,
+      get(this: HTMLElement): boolean {
+        return this.hasAttribute(name)
+      },
+      set(this: HTMLElement, newValue: boolean) {
+        this.toggleAttribute(name, newValue)
       }
     }
-    Object.defineProperty(instance, key, descriptor)
-    if (key in instance && !instance.hasAttribute(name)) {
-      descriptor.set!.call(instance, value)
-    }
+  }
+  Object.defineProperty(instance, key, descriptor)
+  if (key in instance && !instance.hasAttribute(name)) {
+    descriptor.set!.call(instance, value)
   }
 }
 
