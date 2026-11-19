@@ -104,6 +104,22 @@ Catalyst's member decorators only support public, non-static members. `@controll
 
 Without an explicit name, `@controller` derives the element name from the class name, so the class name must survive your build. For example, if TypeScript emits standard decorators as ES2022 and esbuild then lowers that output to an older target, esbuild renames the class unless you turn on [`keepNames`](https://esbuild.github.io/api/#keep-names). Passing the tag name, as in `@controller('hello-world')`, avoids this. See [build considerations]({{ site.baseurl }}/guide/you-will-need#build-considerations).
 
+### Legacy decorators and `useDefineForClassFields`
+
+With legacy decorators, `@target` and `@targets` define a getter on the class prototype. When `useDefineForClassFields` is on, TypeScript defines each declared field on the instance, which hides that getter, so the target is always `undefined`. TypeScript turns `useDefineForClassFields` on by default when `target` is `ES2022` or later.
+
+Marking the field with `!` or `?`, or typing it as `| undefined`, still emits the field. Use `declare`, which emits nothing:
+
+```typescript
+@controller
+class HelloWorldElement extends HTMLElement {
+  @target declare output: HTMLElement | undefined
+  @targets declare items: HTMLElement[]
+}
+```
+
+`@target` returns `undefined` when no element matches, so `| undefined` is the accurate type. `@attr` works either way, because Catalyst redefines `@attr` fields on each instance when it connects. Standard decorators avoid the problem by requiring an [accessor](#standard-decorators).
+
 ### Supporting `strictPropertyInitialization`
 
 TypeScript comes with various "strict" mode settings, one of which is `strictPropertyInitialization` which lets TypeScript catch potential class properties which might not be assigned during construction of a class. This option conflicts with Catalyst's `@target`/`@targets` decorators, which safely do the assignment but TypeScript's simple heuristics cannot detect this. There are two ways to work around this:
@@ -117,7 +133,7 @@ TypeScript comes with various "strict" mode settings, one of which is `strictPro
     }
     ```
     
-    Note that this only works on TypeScript 3.7+, so if you're on an older version, you can also use the [definite initialization operator](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-7.html#definite-assignment-assertions) to do the same thing. With [standard decorators](#standard-decorators), use the definite initialization operator on an accessor instead: `@target accessor something!: HTMLElement`.
+    Note that this only works on TypeScript 3.7+, so if you're on an older version, you can also use the [definite initialization operator](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-7.html#definite-assignment-assertions) to do the same thing, as long as `useDefineForClassFields` is off ([see above](#legacy-decorators-and-usedefineforclassfields)). With [standard decorators](#standard-decorators), use the definite initialization operator on an accessor instead: `@target accessor something!: HTMLElement`.
 
 2. You can also disable the compiler option (other strict mode rules can still apply) in your `tsconfig.json` like so:
 
