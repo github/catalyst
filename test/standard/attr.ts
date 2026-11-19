@@ -2,6 +2,8 @@ import {expect, fixture, html} from '@open-wc/testing'
 import {controller} from '../../src/controller.js'
 import {attr, defineObservedAttributes} from '../../src/attr.js'
 import type {CustomElementClass} from '../../src/custom-element.js'
+import type {ClassContext} from '../../src/decorator-context.js'
+import {register} from '../../src/register.js'
 
 const symbolWithMetadata = Symbol as {metadata?: symbol}
 const observed = (classObject: CustomElementClass) => classObject.observedAttributes
@@ -117,6 +119,20 @@ describe('Attr (standard decorators)', () => {
     }
     const instance = await fixture<StandardPairElement>(html`<standard-pair data-name="attribute"></standard-pair>`)
     expect(instance).to.have.attribute('data-greeting', 'hi attribute')
+  })
+
+  // esbuild's `addInitializer` returns a value, and it throws if a class decorator returns anything but a function.
+  it('returns nothing from class decorators, whatever addInitializer returns', () => {
+    class ReturnCheckElement extends HTMLElement {}
+    const context: ClassContext<typeof ReturnCheckElement> = {
+      kind: 'class',
+      name: 'ReturnCheckElement',
+      addInitializer: () => 1
+    }
+    expect(defineObservedAttributes(ReturnCheckElement, context)).to.equal(undefined)
+    expect(controller(ReturnCheckElement, context)).to.equal(undefined)
+    expect(controller('return-check')(ReturnCheckElement, context)).to.equal(undefined)
+    expect(register(ReturnCheckElement, context)).to.equal(undefined)
   })
 
   // A base compiled with standard decorators, extended by a class that registers attrs with legacy-style calls.

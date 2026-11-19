@@ -5,18 +5,21 @@ import config from './web-test-runner.config.js'
 // and in web-test-runner.config.js with legacy decorators. test/standard has tests that need standard-only syntax.
 export const sharedFiles = ['test/attr.ts', 'test/bind.ts', 'test/controller.ts', 'test/register.ts']
 
-// esbuild only lowers legacy decorators, so compile tests with TypeScript's standard decorators first. Emit ES2020 so
-// esbuild has nothing left to lower: its class lowering renames classes, and Catalyst derives tag names from class
-// names.
+// Compile tests and source the way a modern TypeScript build does: standard decorators and native ES2022 class fields
+// with define semantics. This replaces the esbuild plugin, which only lowers legacy decorators, and whose class lowering
+// renames classes, which Catalyst derives tag names from.
 const standardDecorators = {
   name: 'standard-decorators',
+  resolveMimeType(context) {
+    if (context.path.endsWith('.ts')) return 'js'
+  },
   transform(context) {
-    if (!context.path.startsWith('/test/') || !context.path.endsWith('.ts')) return
+    if (!/^\/(src|test)\/.*\.ts$/.test(context.path)) return
     const {outputText} = ts.transpileModule(context.body, {
       fileName: context.path,
       compilerOptions: {
         experimentalDecorators: false,
-        target: ts.ScriptTarget.ES2020,
+        target: ts.ScriptTarget.ES2022,
         useDefineForClassFields: true,
         module: ts.ModuleKind.ESNext
       }
@@ -28,5 +31,5 @@ const standardDecorators = {
 export default {
   ...config,
   files: [...sharedFiles, 'test/standard/*.ts'],
-  plugins: [standardDecorators, ...config.plugins]
+  plugins: [standardDecorators]
 }

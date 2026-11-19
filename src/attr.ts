@@ -184,9 +184,10 @@ export function defineObservedAttributes(classObject: CustomElementClass): void
 export function defineObservedAttributes(classObject: CustomElementClass, context?: unknown): void {
   // Standard class decorators run before the class's decorator metadata is attached, so wait for it.
   if (isDecoratorContext(context)) {
-    return (context as ClassContext<CustomElementClass>).addInitializer(function (this: CustomElementClass) {
+    ;(context as ClassContext<CustomElementClass>).addInitializer(function (this: CustomElementClass) {
       defineObservedAttributes(this)
     })
+    return
   }
   registerStandardAttrs(classObject)
   let observed = classObject.observedAttributes || []
