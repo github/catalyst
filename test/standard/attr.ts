@@ -133,6 +133,35 @@ describe('Attr (standard decorators)', () => {
       expect(instance).to.have.attribute('data-derived', 'attribute')
     })
 
+    for (const registered of [false, true]) {
+      it(`initializes an overriding legacy getter after the attrs it reads${
+        registered ? ', with a registered base' : ''
+      }`, async () => {
+        class Base extends HTMLElement {
+          @attr get label() {
+            return 'base'
+          }
+        }
+        class Child extends Base {
+          input = 'field'
+          get label() {
+            return `${this.input}-label`
+          }
+        }
+        if (registered) defineObservedAttributes(Base)
+        attr(Child.prototype, 'input')
+        attr(Child.prototype, 'label')
+        const name = registered ? 'mixed-override-registered' : 'mixed-override'
+        controller(name)(Child)
+
+        const instance = document.createElement(name)
+        instance.setAttribute('data-input', 'attribute')
+        document.body.append(instance)
+        expect(instance).to.have.attribute('data-label', 'attribute-label')
+        instance.remove()
+      })
+    }
+
     it('initializes legacy base attrs before standard subclass attrs', async () => {
       class MixedLegacyBase extends HTMLElement {
         base = 'field'

@@ -97,10 +97,13 @@ export function registerStandardAttrs(classObject: CustomElementClass): void {
     const ordered = new Set(ancestor ? meta(ancestor.prototype, attrKey) : [])
     for (const [i, level] of levels.entries()) {
       const [stored, computed] = standard[i] as [string[], string[]]
-      for (const key of stored) ordered.add(key)
-      for (const key of level === classObject ? attrs : ownMeta(level.prototype, attrKey) ?? []) ordered.add(key)
-      // A getter that overrides a base attr may read this class's stored attrs, so move it after them.
-      for (const key of computed) {
+      const proto = level.prototype
+      const legacy = [...(level === classObject ? attrs : ownMeta(proto, attrKey) ?? [])]
+      // Legacy registrations don't record the member kind, so look for a getter on this class.
+      const isComputed = (key: string) => !!Object.getOwnPropertyDescriptor(proto, key)?.get
+      for (const key of stored.concat(legacy.filter(name => !isComputed(name)))) ordered.add(key)
+      // Getters and setters may read the attrs before them, so they go last, even when they override a base attr.
+      for (const key of legacy.filter(isComputed).concat(computed)) {
         ordered.delete(key)
         ordered.add(key)
       }
@@ -180,13 +183,13 @@ export function initializeAttrs(instance: HTMLElement, names?: Iterable<string>)
   }
 }
 
-export function defineObservedAttributes(
-  classObject: CustomElementClass,
-  context?: ClassContext<CustomElementClass>
-): void {
+// The legacy overload comes last, so `Parameters` reads it and callbacks such as `forEach` still accept the function.
+export function defineObservedAttributes<C extends CustomElementClass>(classObject: C, context: ClassContext<C>): void
+export function defineObservedAttributes(classObject: CustomElementClass): void
+export function defineObservedAttributes(classObject: CustomElementClass, context?: unknown): void {
   // Standard class decorators run before the class's decorator metadata is attached, so wait for it.
   if (isDecoratorContext(context)) {
-    return context.addInitializer(function (this: CustomElementClass) {
+    return (context as ClassContext<CustomElementClass>).addInitializer(function (this: CustomElementClass) {
       defineObservedAttributes(this)
     })
   }

@@ -3,7 +3,7 @@
 // declaration Lit adds in test/standard. Nothing here runs. `@target` and `@targets` need `accessor` in standard mode
 // and a plain field in legacy mode, so they're covered by test/target.ts and test/standard/target.ts instead.
 import {controller} from '../../src/controller.js'
-import {attr} from '../../src/attr.js'
+import {attr, defineObservedAttributes} from '../../src/attr.js'
 import {register} from '../../src/register.js'
 import {target, targets} from '../../src/target.js'
 import type {CustomElementClass} from '../../src/custom-element.js'
@@ -55,3 +55,9 @@ export const registerResult: CustomElementClass = register(untyped, untyped)
 export const registerReturn: CustomElementClass = null as unknown as ReturnType<typeof register>
 export const targetParameters: [Record<string, unknown>, string] = null as unknown as Parameters<typeof target>
 export const targetsReturn: void = null as unknown as ReturnType<typeof targets>
+export const defineObservedAttributesParameters: [CustomElementClass] = null as unknown as Parameters<
+  typeof defineObservedAttributes
+>
+// Callbacks such as `map` pass extra arguments, which the legacy overload accepts.
+export const defineObservedAttributesCallback: (classObject: CustomElementClass, index: number) => void =
+  defineObservedAttributes
