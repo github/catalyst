@@ -94,6 +94,11 @@ export function registerStandardAttrs(classObject: CustomElementClass): void {
   registeredStandardAttrs.set(classObject, hasStandard)
 }
 
+// Every element dasherizes the same few names, so cache them.
+const attrNames = new Map<string, string>()
+const attrName = (prefixed: string): string =>
+  attrNames.get(prefixed) ?? attrNames.set(prefixed, mustDasherize(prefixed)).get(prefixed)!
+
 /**
  * initializeAttrs is called with a set of class property names (if omitted, it
  * will look for any properties tagged with the `@attr` decorator). With this
@@ -123,13 +128,16 @@ export function initializeAttrs(instance: HTMLElement, names?: Iterable<string>)
     if (typeof proto?.constructor === 'function') registerStandardAttrs(proto.constructor)
     names = meta(proto, attrKey)
   }
-  const attrName = (key: string) => mustDasherize(`${prefix}${key}`)
   // Attrs with an HTML attribute go first, so a getter that reads one while another attr initializes gets the attribute
   // value. An attr without one returns its default before and after it's initialized, so the order doesn't matter.
-  const keys = [...names].sort((a, b) => +instance.hasAttribute(attrName(b)) - +instance.hasAttribute(attrName(a)))
-  for (const key of keys) {
+  const present: Array<[string, string]> = []
+  const absent: Array<[string, string]> = []
+  for (const key of names) {
+    const name = attrName(`${prefix}${key}`)
+    ;(instance.hasAttribute(name) ? present : absent).push([key, name])
+  }
+  for (const [key, name] of present.concat(absent)) {
     const value = (<Record<PropertyKey, unknown>>(<unknown>instance))[key]
-    const name = attrName(key)
     let descriptor: PropertyDescriptor = {
       configurable: true,
       get(this: HTMLElement): string {
@@ -181,7 +189,7 @@ export function defineObservedAttributes(classObject: CustomElementClass, contex
   let observed = classObject.observedAttributes || []
 
   const prefix = classObject.attrPrefix ?? 'data-'
-  const attrToAttributeName = (name: string) => mustDasherize(`${prefix}${name}`)
+  const attrToAttributeName = (name: string) => attrName(`${prefix}${name}`)
 
   Object.defineProperty(classObject, 'observedAttributes', {
     configurable: true,
