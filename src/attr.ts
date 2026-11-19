@@ -1,7 +1,7 @@
 import type {CustomElementClass} from './custom-element.js'
 import {mustDasherize} from './dasherize.js'
 import {meta, ownMeta} from './core.js'
-import type {MemberContext} from './decorator-context.js'
+import type {ClassContext, MemberContext} from './decorator-context.js'
 import {hasOwn, isDecoratorContext, memberName} from './decorator-context.js'
 
 const attrKey = 'attr'
@@ -29,9 +29,13 @@ export function attr<K extends string, This extends Record<K, attrValue>, Value 
   context: MemberContext<'field' | 'accessor' | 'getter' | 'setter', This, Value> & {readonly name: K}
 ): void
 export function attr<K extends string>(proto: Record<K, attrValue>, key: K): void
-export function attr(proto: unknown, keyOrContext: unknown): void {
+export function attr(proto: unknown, keyOrContext: unknown, descriptor?: PropertyDescriptor): void {
   if (!isDecoratorContext(keyOrContext)) {
-    meta(proto as Record<PropertyKey, unknown>, attrKey).add(keyOrContext as string)
+    const attrs = meta(proto as Record<PropertyKey, unknown>, attrKey)
+    // Legacy decorators only pass a descriptor to getters and setters. Like standard ones, an overriding getter moves
+    // after the attrs its class declares before it, which it may read.
+    if (descriptor) attrs.delete(keyOrContext as string)
+    attrs.add(keyOrContext as string)
     return
   }
   const name = memberName('attr', keyOrContext, ['field', 'accessor', 'getter', 'setter'])
@@ -47,16 +51,17 @@ export function attr(proto: unknown, keyOrContext: unknown): void {
  * Returns the `@attr` members recorded in the class's own decorator metadata. Finds the metadata by these lists rather
  * than by `Symbol.metadata`, because another library may redefine `Symbol.metadata` after some classes are defined.
  */
-function ownStandardAttrs(classObject: object): string[] {
+function ownStandardAttrs(classObject: object): string[][] {
   for (const symbol of Object.getOwnPropertySymbols(classObject)) {
     const metadata: unknown = Object.getOwnPropertyDescriptor(classObject, symbol)!.value
     if (typeof metadata !== 'object' || metadata === null) continue
-    const attrs = [standardAttrs, standardComputedAttrs].flatMap(key =>
+    // Stored attrs, then computed attrs.
+    const lists = [standardAttrs, standardComputedAttrs].map(key =>
       hasOwn(metadata, key) ? (metadata as Record<symbol, string[]>)[key]! : []
     )
-    if (attrs.length) return attrs
+    if (lists.flat().length) return lists
   }
-  return []
+  return [[], []]
 }
 
 // Classes whose attrs are registered, mapped to whether any of them came from standard decorator metadata.
@@ -85,14 +90,20 @@ export function registerStandardAttrs(classObject: CustomElementClass): void {
   const attrs = meta(classObject.prototype, attrKey)
   const ancestor = registeredStandardAttrs.has(current as object) ? (current as CustomElementClass) : undefined
   const standard = levels.map(ownStandardAttrs)
-  const hasStandard = standard.some(level => level.length) || !!registeredStandardAttrs.get(current as object)
+  const hasStandard = !!standard.flat(2).length || !!registeredStandardAttrs.get(current as object)
   if (hasStandard) {
     // Base class attrs first, matching the order legacy decorators register them in. Read each class's own legacy
     // attrs, because a subclass's copy of them can predate standard attrs registered on its ancestors.
     const ordered = new Set(ancestor ? meta(ancestor.prototype, attrKey) : [])
     for (const [i, level] of levels.entries()) {
+      const [stored, computed] = standard[i] as [string[], string[]]
+      for (const key of stored) ordered.add(key)
       for (const key of level === classObject ? attrs : ownMeta(level.prototype, attrKey) ?? []) ordered.add(key)
-      for (const key of standard[i]!) ordered.add(key)
+      // A getter that overrides a base attr may read this class's stored attrs, so move it after them.
+      for (const key of computed) {
+        ordered.delete(key)
+        ordered.add(key)
+      }
     }
     attrs.clear()
     for (const key of ordered) attrs.add(key)
@@ -169,7 +180,16 @@ export function initializeAttrs(instance: HTMLElement, names?: Iterable<string>)
   }
 }
 
-export function defineObservedAttributes(classObject: CustomElementClass): void {
+export function defineObservedAttributes(
+  classObject: CustomElementClass,
+  context?: ClassContext<CustomElementClass>
+): void {
+  // Standard class decorators run before the class's decorator metadata is attached, so wait for it.
+  if (isDecoratorContext(context)) {
+    return context.addInitializer(function (this: CustomElementClass) {
+      defineObservedAttributes(this)
+    })
+  }
   registerStandardAttrs(classObject)
   let observed = classObject.observedAttributes || []
 

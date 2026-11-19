@@ -232,6 +232,36 @@ describe('Attr', () => {
       expect(observed(FirstSiblingAttrTest)).to.eql(['data-shared', 'data-first'])
       expect(observed(SecondSiblingAttrTest)).to.eql(['data-shared', 'data-second'])
     })
+
+    it('initializes an overriding getter attr after the attrs it reads', async () => {
+      class OverrideBase extends HTMLElement {
+        @attr get label() {
+          return 'base'
+        }
+      }
+      @controller
+      class OverrideGetterAttrTest extends OverrideBase {
+        @attr input = 'field'
+        @attr get label() {
+          return `${this.input}-label`
+        }
+      }
+      const instance = await fixture<OverrideGetterAttrTest>(
+        html`<override-getter-attr-test data-input="attribute"></override-getter-attr-test>`
+      )
+      expect(instance).to.have.attribute('data-label', 'attribute-label')
+    })
+  })
+
+  it('registers attrs when defineObservedAttributes decorates the class', async () => {
+    @controller
+    @defineObservedAttributes
+    class DecoratedObservedAttrTest extends HTMLElement {
+      @attr foo = 'bar'
+    }
+    expect(observed(DecoratedObservedAttrTest)).to.include('data-foo')
+    const instance = await fixture(html`<decorated-observed-attr-test></decorated-observed-attr-test>`)
+    expect(instance).to.have.attribute('data-foo', 'bar')
   })
 
   describe('without @controller', () => {

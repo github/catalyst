@@ -119,6 +119,20 @@ describe('Attr (standard decorators)', () => {
       expect(instance).to.have.attribute('data-derived', 'attribute')
     })
 
+    it('initializes standard stored attrs before legacy attrs on the same class', async () => {
+      class MixedSameClass extends HTMLElement {
+        @attr base = 'field'
+        get derived() {
+          return this.base
+        }
+      }
+      attr(MixedSameClass.prototype, 'derived')
+      controller(MixedSameClass)
+
+      const instance = await fixture(html`<mixed-same-class data-base="attribute"></mixed-same-class>`)
+      expect(instance).to.have.attribute('data-derived', 'attribute')
+    })
+
     it('initializes legacy base attrs before standard subclass attrs', async () => {
       class MixedLegacyBase extends HTMLElement {
         base = 'field'
