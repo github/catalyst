@@ -197,6 +197,21 @@ describe('Attr (standard decorators)', () => {
       })
     }
 
+    it('initializes standard fields before legacy fields registered later on the same class', async () => {
+      class MixedCallbackOrder extends HTMLElement {
+        @attr ready = true
+        status = 'default'
+        attributeChangedCallback(name: string) {
+          if (name === 'data-ready') this.status = 'updated'
+        }
+      }
+      attr(MixedCallbackOrder.prototype, 'status')
+      controller(MixedCallbackOrder)
+
+      const instance = await fixture(html`<mixed-callback-order data-status="html"></mixed-callback-order>`)
+      expect(instance).to.have.attribute('data-status', 'html')
+    })
+
     it('initializes legacy base attrs before standard subclass attrs', async () => {
       class MixedLegacyBase extends HTMLElement {
         base = 'field'

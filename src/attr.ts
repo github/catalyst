@@ -81,12 +81,13 @@ export function registerStandardAttrs(classObject: CustomElementClass): void {
   const standard = levels.map(ownStandardAttrs)
   const hasStandard = standard.some(level => level.length) || !!registeredStandardAttrs.get(current as object)
   if (hasStandard) {
-    // Base class attrs first, matching the order legacy decorators register them in. Read each class's own legacy
-    // attrs, because a subclass's copy of them can predate standard attrs registered on its ancestors.
+    // Base class attrs first, matching the order legacy decorators register them in. Within a class, standard attrs
+    // come first, because they're recorded when the class is defined and legacy `attr()` calls can only follow. Read
+    // each class's own legacy attrs, because a subclass's copy of them can predate standard attrs on its ancestors.
     const ordered = new Set(ancestor ? meta(ancestor.prototype, attrKey) : [])
     for (const [i, level] of levels.entries()) {
-      for (const key of level === classObject ? attrs : ownMeta(level.prototype, attrKey) ?? []) ordered.add(key)
       for (const key of standard[i]!) ordered.add(key)
+      for (const key of level === classObject ? attrs : ownMeta(level.prototype, attrKey) ?? []) ordered.add(key)
     }
     attrs.clear()
     for (const key of ordered) attrs.add(key)
