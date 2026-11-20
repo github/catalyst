@@ -1,7 +1,9 @@
 import {expect, fixture, html} from '@open-wc/testing'
 import {controller} from '../../src/controller.js'
-import {attr} from '../../src/attr.js'
+import {attr, defineObservedAttributes} from '../../src/attr.js'
 import type {CustomElementClass} from '../../src/custom-element.js'
+import type {ClassContext} from '../../src/decorator-context.js'
+import {register} from '../../src/register.js'
 
 const symbolWithMetadata = Symbol as {metadata?: symbol}
 const observed = (classObject: CustomElementClass) => classObject.observedAttributes
@@ -86,6 +88,164 @@ describe('Attr (standard decorators)', () => {
     })
   }
 
+  it('initializes stored attrs before getter attrs that read them', async () => {
+    @controller
+    class StandardDependentElement extends HTMLElement {
+      @attr base = 'field'
+      @attr get derived() {
+        return `${this.base}-derived`
+      }
+    }
+    const instance = await fixture<StandardDependentElement>(
+      html`<standard-dependent data-base="attribute"></standard-dependent>`
+    )
+    expect(instance).to.have.attribute('data-derived', 'attribute-derived')
+  })
+
+  it('initializes getters that read a decorated getter and setter pair from its HTML value', async () => {
+    @controller
+    class StandardPairElement extends HTMLElement {
+      #name = 'field'
+      @attr get name() {
+        return this.#name
+      }
+      @attr get greeting() {
+        return `hi ${this.name}`
+      }
+      // eslint-disable-next-line @typescript-eslint/adjacent-overload-signatures
+      @attr set name(value: string) {
+        this.#name = value
+      }
+    }
+    const instance = await fixture<StandardPairElement>(html`<standard-pair data-name="attribute"></standard-pair>`)
+    expect(instance).to.have.attribute('data-greeting', 'hi attribute')
+  })
+
+  // esbuild's `addInitializer` returns a value, and it throws if a class decorator returns anything but a function.
+  it('returns nothing from class decorators, whatever addInitializer returns', () => {
+    class ReturnCheckElement extends HTMLElement {}
+    const context: ClassContext<typeof ReturnCheckElement> = {
+      kind: 'class',
+      name: 'ReturnCheckElement',
+      addInitializer: () => 1
+    }
+    expect(defineObservedAttributes(ReturnCheckElement, context)).to.equal(undefined)
+    expect(controller(ReturnCheckElement, context)).to.equal(undefined)
+    expect(controller('return-check')(ReturnCheckElement, context)).to.equal(undefined)
+    expect(register(ReturnCheckElement, context)).to.equal(undefined)
+  })
+
+  // A base compiled with standard decorators, extended by a class that registers attrs with legacy-style calls.
+  describe('mixed with legacy attrs', () => {
+    it('initializes standard base attrs before legacy subclass attrs', async () => {
+      class MixedOrderBase extends HTMLElement {
+        @attr base = 'field'
+      }
+      class MixedOrderChild extends MixedOrderBase {
+        get derived() {
+          return this.base
+        }
+      }
+      attr(MixedOrderChild.prototype, 'derived')
+      controller(MixedOrderChild)
+
+      expect(observed(MixedOrderChild)).to.deep.equal(['data-base', 'data-derived'])
+      const instance = await fixture(html`<mixed-order-child data-base="attribute"></mixed-order-child>`)
+      expect(instance).to.have.attribute('data-derived', 'attribute')
+    })
+
+    it('initializes standard stored attrs before legacy attrs on the same class', async () => {
+      class MixedSameClass extends HTMLElement {
+        @attr base = 'field'
+        get derived() {
+          return this.base
+        }
+      }
+      attr(MixedSameClass.prototype, 'derived')
+      controller(MixedSameClass)
+
+      const instance = await fixture(html`<mixed-same-class data-base="attribute"></mixed-same-class>`)
+      expect(instance).to.have.attribute('data-derived', 'attribute')
+    })
+
+    for (const registered of [false, true]) {
+      it(`initializes an overriding legacy getter after the attrs it reads${
+        registered ? ', with a registered base' : ''
+      }`, async () => {
+        class Base extends HTMLElement {
+          @attr get label() {
+            return 'base'
+          }
+        }
+        class Child extends Base {
+          input = 'field'
+          get label() {
+            return `${this.input}-label`
+          }
+        }
+        if (registered) defineObservedAttributes(Base)
+        attr(Child.prototype, 'input')
+        attr(Child.prototype, 'label')
+        const name = registered ? 'mixed-override-registered' : 'mixed-override'
+        controller(name)(Child)
+
+        const instance = document.createElement(name)
+        instance.setAttribute('data-input', 'attribute')
+        document.body.append(instance)
+        expect(instance).to.have.attribute('data-label', 'attribute-label')
+        instance.remove()
+      })
+    }
+
+    it('initializes standard fields before legacy fields registered later on the same class', async () => {
+      class MixedCallbackOrder extends HTMLElement {
+        @attr ready = true
+        status = 'default'
+        attributeChangedCallback(name: string) {
+          if (name === 'data-ready') this.status = 'updated'
+        }
+      }
+      attr(MixedCallbackOrder.prototype, 'status')
+      controller(MixedCallbackOrder)
+
+      const instance = await fixture(html`<mixed-callback-order data-status="html"></mixed-callback-order>`)
+      expect(instance).to.have.attribute('data-status', 'html')
+    })
+
+    it('initializes legacy base attrs before standard subclass attrs', async () => {
+      class MixedLegacyBase extends HTMLElement {
+        base = 'field'
+      }
+      attr(MixedLegacyBase.prototype, 'base')
+      @controller
+      class MixedLegacyChildElement extends MixedLegacyBase {
+        @attr get derived() {
+          return `${this.base}-derived`
+        }
+      }
+
+      const instance = await fixture<MixedLegacyChildElement>(
+        html`<mixed-legacy-child data-base="attribute"></mixed-legacy-child>`
+      )
+      expect(instance.getAttribute('data-derived')).to.equal('attribute-derived')
+    })
+
+    it('includes standard base attrs registered after a subclass recorded legacy attrs', async () => {
+      class MixedLateBase extends HTMLElement {
+        @attr base = ''
+      }
+      class MixedLateChild extends MixedLateBase {
+        child = ''
+      }
+      attr(MixedLateChild.prototype, 'child')
+      defineObservedAttributes(MixedLateBase)
+      controller(MixedLateChild)
+
+      const instance = await fixture<MixedLateChild>(html`<mixed-late-child data-base="attribute"></mixed-late-child>`)
+      expect(instance).to.have.property('base', 'attribute')
+    })
+  })
+
   it('reads metadata stored under a Symbol.metadata defined after Catalyst loaded', async () => {
     const original = symbolWithMetadata.metadata
     symbolWithMetadata.metadata = Symbol('late metadata')
@@ -101,6 +261,26 @@ describe('Attr (standard decorators)', () => {
     } finally {
       symbolWithMetadata.metadata = original
     }
+  })
+
+  it('reads base class metadata stored before Symbol.metadata changed', async () => {
+    const original = symbolWithMetadata.metadata
+    class StandardLateBase extends HTMLElement {
+      @attr early = 'early'
+    }
+    symbolWithMetadata.metadata = Symbol('late metadata')
+    let instance: HTMLElement
+    try {
+      @controller
+      class StandardLateChildElement extends StandardLateBase {
+        @attr late = 'late'
+      }
+      instance = await fixture<StandardLateChildElement>(html`<standard-late-child></standard-late-child>`)
+    } finally {
+      symbolWithMetadata.metadata = original
+    }
+    expect(instance.getAttribute('data-early')).to.equal('early')
+    expect(instance.getAttribute('data-late')).to.equal('late')
   })
 
   it('throws a clear error without decorator metadata', () => {

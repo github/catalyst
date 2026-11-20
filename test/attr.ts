@@ -181,6 +181,86 @@ describe('Attr', () => {
     })
   })
 
+  describe('initialization order', () => {
+    it('initializes field attrs in declaration order, so their callbacks keep HTML values', async () => {
+      @controller
+      class CallbackOrderAttrTest extends HTMLElement {
+        @attr ready = true
+        @attr status = 'default'
+        attributeChangedCallback(name: string) {
+          if (name === 'data-ready') this.status = 'updated'
+        }
+      }
+      const instance = await fixture<CallbackOrderAttrTest>(
+        html`<callback-order-attr-test data-status="html"></callback-order-attr-test>`
+      )
+      expect(instance).to.have.attribute('data-status', 'html')
+    })
+
+    it('initializes field attrs before getter attrs that read them, when both have HTML attributes', async () => {
+      @controller
+      class ParseOrderAttrTest extends HTMLElement {
+        @attr get count() {
+          return JSON.parse(this.payload).length
+        }
+        @attr payload = ''
+      }
+      const instance = await fixture<ParseOrderAttrTest>(
+        html`<parse-order-attr-test data-payload="[1,2]" data-count="7"></parse-order-attr-test>`
+      )
+      expect(instance).to.have.property('count', 7)
+    })
+
+    it('initializes fields named like built-in accessors in declaration order', async () => {
+      @controller
+      class BuiltinNameAttrTest extends HTMLElement {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore With define semantics TypeScript wants an initializer (TS2612). This tests a field without one.
+        @attr title!: string
+        @attr status = 'default'
+        attributeChangedCallback(name: string) {
+          if (name === 'data-title') this.status = 'updated'
+        }
+      }
+      const instance = await fixture<BuiltinNameAttrTest>(
+        html`<builtin-name-attr-test data-status="html"></builtin-name-attr-test>`
+      )
+      expect(instance).to.have.attribute('data-status', 'html')
+    })
+
+    it('orders getter attrs by the HTML attributes present after fields initialize', async () => {
+      @controller
+      class LatePresenceAttrTest extends HTMLElement {
+        @attr trigger = true
+        @attr get payload() {
+          return ''
+        }
+        @attr get count() {
+          return JSON.parse(this.payload).length
+        }
+        attributeChangedCallback(name: string) {
+          if (name === 'data-trigger') this.setAttribute('data-payload', '[1,2]')
+        }
+      }
+      const instance = await fixture<LatePresenceAttrTest>(
+        html`<late-presence-attr-test data-count="7"></late-presence-attr-test>`
+      )
+      expect(instance).to.have.property('count', 7)
+    })
+
+    it('initializes fields without a value before getter attrs that read them', async () => {
+      @controller
+      class UnsetOrderAttrTest extends HTMLElement {
+        @attr get greeting() {
+          return this.name.toUpperCase()
+        }
+        @attr name!: string
+      }
+      const instance = await fixture<UnsetOrderAttrTest>(html`<unset-order-attr-test></unset-order-attr-test>`)
+      expect(instance).to.have.attribute('data-greeting', '')
+    })
+  })
+
   describe('inheritance', () => {
     it('registers attrs from undecorated base classes, base class first', async () => {
       class Base extends HTMLElement {
@@ -232,6 +312,57 @@ describe('Attr', () => {
       expect(observed(FirstSiblingAttrTest)).to.eql(['data-shared', 'data-first'])
       expect(observed(SecondSiblingAttrTest)).to.eql(['data-shared', 'data-second'])
     })
+
+    it('initializes getters that read an overridden attr from its HTML value', async () => {
+      class ReadOverrideBase extends HTMLElement {
+        @attr get label() {
+          return 'base'
+        }
+        @attr get derived() {
+          return `${this.label}-derived`
+        }
+      }
+      @controller
+      class ReadOverrideAttrTest extends ReadOverrideBase {
+        @attr get label() {
+          return 'sub'
+        }
+      }
+      const instance = await fixture<ReadOverrideAttrTest>(
+        html`<read-override-attr-test data-label="attribute"></read-override-attr-test>`
+      )
+      expect(instance).to.have.attribute('data-derived', 'attribute-derived')
+    })
+
+    it('initializes an overriding getter attr after the attrs it reads', async () => {
+      class OverrideBase extends HTMLElement {
+        @attr get label() {
+          return 'base'
+        }
+      }
+      @controller
+      class OverrideGetterAttrTest extends OverrideBase {
+        @attr input = 'field'
+        @attr get label() {
+          return `${this.input}-label`
+        }
+      }
+      const instance = await fixture<OverrideGetterAttrTest>(
+        html`<override-getter-attr-test data-input="attribute"></override-getter-attr-test>`
+      )
+      expect(instance).to.have.attribute('data-label', 'attribute-label')
+    })
+  })
+
+  it('registers attrs when defineObservedAttributes decorates the class', async () => {
+    @controller
+    @defineObservedAttributes
+    class DecoratedObservedAttrTest extends HTMLElement {
+      @attr foo = 'bar'
+    }
+    expect(observed(DecoratedObservedAttrTest)).to.include('data-foo')
+    const instance = await fixture(html`<decorated-observed-attr-test></decorated-observed-attr-test>`)
+    expect(instance).to.have.attribute('data-foo', 'bar')
   })
 
   describe('without @controller', () => {

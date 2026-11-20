@@ -9,7 +9,7 @@ function assert(condition: boolean, message: string) {
 describe('Symbol.metadata (standard decorators)', () => {
   it('is defined when Catalyst loads, so TypeScript output includes decorator metadata', () => {
     const metadata = (Symbol as {metadata?: symbol}).metadata
-    assert(metadata === Symbol.for('Symbol.metadata'), `expected Symbol.metadata, got ${String(metadata)}`)
+    assert(typeof metadata === 'symbol', `expected Symbol.metadata, got ${String(metadata)}`)
   })
 
   it('registers attrs from TypeScript output', () => {

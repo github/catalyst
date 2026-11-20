@@ -1,5 +1,4 @@
 import {CatalystDelegate} from './core.js'
-import {registerStandardAttrs} from './attr.js'
 import type {CustomElementClass} from './custom-element.js'
 import type {ClassContext} from './decorator-context.js'
 import {isDecoratorContext} from './decorator-context.js'
@@ -37,17 +36,11 @@ export function controller(
 }
 
 function decorate(classObject: CustomElementClass, context: unknown, name?: string) {
-  if (!isDecoratorContext(context)) return defineController(classObject, name)
+  if (!isDecoratorContext(context)) return void new CatalystDelegate(classObject, name)
   // Standard class decorators run before static fields such as `observedAttributes` and `attrPrefix` are assigned.
   // Class initializers run after them, which is when legacy class decorators run.
   const classContext = context as ClassContext<CustomElementClass>
   classContext.addInitializer(function (this: CustomElementClass) {
-    defineController(this, name)
+    new CatalystDelegate(this, name)
   })
-}
-
-function defineController(classObject: CustomElementClass, name?: string) {
-  // Picks up `@attr` members compiled as standard decorators, including when `controller` is called directly.
-  registerStandardAttrs(classObject)
-  new CatalystDelegate(classObject, name)
 }

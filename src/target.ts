@@ -13,6 +13,9 @@ import {isDecoratorContext, memberName} from './decorator-context.js'
  * With standard decorators it must decorate an accessor:
  * `@target accessor foo!: HTMLElement`.
  */
+// The legacy overload comes first, so calls with untyped arguments resolve to it, and last, so `ReturnType` and
+// `Parameters` read it.
+export function target<K extends string>(proto: Record<K, unknown>, key: K): void
 export function target<This extends HTMLElement, Value>(
   value: AccessorTarget<This, Value>,
   context: MemberContext<'accessor', This, Value>
@@ -40,6 +43,9 @@ export function target(proto: unknown, keyOrContext: unknown): unknown {
  * With standard decorators it must decorate an accessor:
  * `@targets accessor foos!: HTMLElement[]`.
  */
+// The legacy overload comes first, so calls with untyped arguments resolve to it, and last, so `ReturnType` and
+// `Parameters` read it.
+export function targets<K extends string>(proto: Record<K, unknown>, key: K): void
 export function targets<This extends HTMLElement, Value>(
   value: AccessorTarget<This, Value>,
   context: MemberContext<'accessor', This, Value>

@@ -6,7 +6,7 @@
 export interface ClassContext<C = unknown> {
   readonly kind: 'class'
   readonly name: string | undefined
-  readonly metadata?: object
+  readonly metadata?: object | undefined
   addInitializer(initializer: (this: C) => void): void
 }
 
@@ -17,7 +17,7 @@ export interface MemberContext<Kind extends string = string, This = unknown, Val
   readonly name: string
   readonly static: false
   readonly private: false
-  readonly metadata?: object
+  readonly metadata?: object | undefined
   readonly access: {get?(object: This): Value; set?(object: This, value: Value): void}
   addInitializer(initializer: (this: This) => void): void
 }
@@ -42,16 +42,6 @@ try {
 }
 
 export const hasOwn = (object: object, key: PropertyKey): boolean => Object.prototype.hasOwnProperty.call(object, key)
-
-/**
- * Returns the decorator metadata of the class itself, ignoring metadata it inherits from its parent class.
- */
-export function ownMetadata(classObject: object): Record<PropertyKey, unknown> | undefined {
-  // Look the key up on every call, like the SWC and Babel helpers: another library may define `Symbol.metadata`
-  // after this module loads.
-  const key = (Symbol as {metadata?: symbol}).metadata ?? Symbol.for('Symbol.metadata')
-  if (hasOwn(classObject, key)) return (classObject as Record<symbol, Record<PropertyKey, unknown>>)[key]
-}
 
 // Standard decorators receive a context object as their second argument; legacy decorators receive the member name.
 export function isDecoratorContext(value: unknown): value is ClassContext | MemberContext {

@@ -20,7 +20,7 @@ jobs:
       - run: npm ci
 
       - name: Use Ruby 2.7.3
-        uses: ruby/setup-ruby@7f797815d8adceb1c412e7abefdd1ab4abc47a5f # v1.335.0
+        uses: ruby/setup-ruby@b3aaceaef7e0ee231b499e7b5f49c03fc1d32199 # v1.338.0
         with:
           ruby-version: '2.7.3'
           bundler-cache: true
@@ -32,7 +32,7 @@ jobs:
           JEKYLL_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Run Lighthouse CI
-        run: npx @lhci/cli@0.9.x autorun
+        run: npm exec --no -- lhci autorun
         env:
           JEKYLL_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           LHCI_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
