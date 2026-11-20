@@ -9,6 +9,9 @@ type attrValue = string | number | boolean
 
 const standardAttrs = Symbol.for('catalyst:attr')
 
+// Getters of `@attr accessor` members. Auto-accessors store a value like fields, so they initialize with fields.
+const storedAccessorGetters = new WeakSet<object>()
+
 /**
  * Attr is a decorator which tags a property as one to be initialized via
  * `initializeAttrs`.
@@ -32,6 +35,7 @@ export function attr(proto: unknown, keyOrContext: unknown): void {
     return
   }
   const name = memberName('attr', keyOrContext, ['field', 'accessor', 'getter', 'setter'])
+  if (keyOrContext.kind === 'accessor') storedAccessorGetters.add((proto as {get: object}).get)
   const metadata = keyOrContext.metadata as Record<PropertyKey, string[] | undefined> | undefined
   if (!metadata) throw new TypeError('@attr requires decorator metadata (`Symbol.metadata`) support')
   // Metadata inherits from the parent class's metadata, so only append to this class's own list.
@@ -131,10 +135,11 @@ export function initializeAttrs(instance: HTMLElement, names?: Iterable<string>)
   }
   const nameOf = (key: string) => attrName(`${prefix}${key}`)
   // Only classes extending HTMLElement declare attr accessors. An attr named like a built-in one, such as `title`, is a field.
+  // So is an `@attr accessor`, which stores its value.
   const isAccessor = (key: string) => {
     for (let o = proto; o && o !== HTMLElement.prototype; o = Object.getPrototypeOf(o)) {
       const descriptor = Object.getOwnPropertyDescriptor(o, key)
-      if (descriptor) return !('value' in descriptor)
+      if (descriptor) return !('value' in descriptor || storedAccessorGetters.has(descriptor.get!))
     }
     return false
   }
