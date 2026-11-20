@@ -102,6 +102,39 @@ describe('Attr (standard decorators)', () => {
     expect(instance).to.have.attribute('data-derived', 'attribute-derived')
   })
 
+  // Setting a missing attr's attribute can run connectedCallback before the rest initialize, so the order is observable.
+  it('initializes accessor attrs in registration order, like fields', async () => {
+    const seen: Record<string, unknown[]> = {field: [], accessor: []}
+    @controller
+    class FieldOrderElement extends HTMLElement {
+      @attr first = ''
+      @attr second = ''
+      connectedCallback() {
+        seen.field!.push(this.second)
+      }
+    }
+    @controller
+    class AccessorOrderElement extends HTMLElement {
+      @attr accessor first = ''
+      @attr accessor second = ''
+      connectedCallback() {
+        seen.accessor!.push(this.second)
+      }
+    }
+    expect(FieldOrderElement).to.exist
+    expect(AccessorOrderElement).to.exist
+    const container = await fixture(html`<div></div>`)
+    // Elements from an inert document upgrade when inserted, with their attributes already set, as innerHTML does.
+    const inert = document.implementation.createHTMLDocument()
+    for (const tag of ['field-order', 'accessor-order']) {
+      const element = inert.createElement(tag)
+      element.setAttribute('data-second', 'html')
+      container.append(document.adoptNode(element))
+    }
+    expect(seen.field).to.have.length(1)
+    expect(seen.accessor).to.eql(seen.field)
+  })
+
   it('initializes getters that read a decorated getter and setter pair from its HTML value', async () => {
     @controller
     class StandardPairElement extends HTMLElement {
