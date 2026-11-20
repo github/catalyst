@@ -98,7 +98,7 @@ TypeScript 5.0+ and SWC (`decoratorVersion: "2023-11"`) compile standard (TC39) 
     ```
 
     Assigning to the accessor throws a `TypeError`, just as assigning to the getter-only legacy property does.
-- `@attr` records its fields in [decorator metadata](https://github.com/tc39/proposal-decorator-metadata), so with TypeScript you need version 5.2 or later. `@attr` can decorate a field, an `accessor`, a getter or a setter.
+- `@attr` records its fields in [decorator metadata](https://github.com/tc39/proposal-decorator-metadata), so with TypeScript you need version 5.2 or later. `@attr` can decorate a field, an `accessor`, a getter or a setter. Prefer a field, such as `@attr name!: string` in place of a legacy `@attr declare name: string`: standard decorators register accessors before fields, so mixing them changes the order attrs initialize in (see [attrs]({{ site.baseurl }}/guide/attrs#default-values)).
 
 Catalyst's member decorators only support public, non-static members. `@controller` (and `@register`) define the element once static fields such as `observedAttributes` and `attrPrefix` are assigned, the same as with legacy decorators.
 

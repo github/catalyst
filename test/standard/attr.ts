@@ -103,6 +103,16 @@ describe('Attr (standard decorators)', () => {
   })
 
   // Setting a missing attr's attribute can run connectedCallback before the rest initialize, so the order is observable.
+  // Standard decorators apply accessor decorators before field decorators, so accessors register first.
+  it('registers accessor attrs before field attrs declared above them', () => {
+    @controller
+    class StandardRegistrationOrderElement extends HTMLElement {
+      @attr first = ''
+      @attr accessor second = ''
+    }
+    expect(observed(StandardRegistrationOrderElement)).to.eql(['data-second', 'data-first'])
+  })
+
   it('initializes accessor attrs in registration order, like fields', async () => {
     const seen: Record<string, unknown[]> = {field: [], accessor: []}
     @controller
