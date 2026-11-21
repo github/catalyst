@@ -102,7 +102,6 @@ describe('Attr (standard decorators)', () => {
     expect(instance).to.have.attribute('data-derived', 'attribute-derived')
   })
 
-  // Setting a missing attr's attribute can run connectedCallback before the rest initialize, so the order is observable.
   // Standard decorators apply accessor decorators before field decorators, so accessors register first.
   it('registers accessor attrs before field attrs declared above them', () => {
     @controller
@@ -113,8 +112,17 @@ describe('Attr (standard decorators)', () => {
     expect(observed(StandardRegistrationOrderElement)).to.eql(['data-second', 'data-first'])
   })
 
-  it('initializes accessor attrs in registration order, like fields', async () => {
-    const seen: Record<string, unknown[]> = {field: [], accessor: []}
+  // Setting a missing attr's attribute can run connectedCallback before the rest initialize, so the order is observable.
+  it('initializes accessor attrs in registration order, like fields, even when another decorator wraps them', async () => {
+    const seen: Record<string, unknown[]> = {field: [], accessor: [], wrapped: []}
+    const wrap = <This, Value>(value: ClassAccessorDecoratorTarget<This, Value>) => ({
+      get(this: This) {
+        return value.get.call(this)
+      },
+      set(this: This, newValue: Value) {
+        value.set.call(this, newValue)
+      }
+    })
     @controller
     class FieldOrderElement extends HTMLElement {
       @attr first = ''
@@ -131,18 +139,28 @@ describe('Attr (standard decorators)', () => {
         seen.accessor!.push(this.second)
       }
     }
+    @controller
+    class WrappedOrderElement extends HTMLElement {
+      @wrap @attr accessor first = ''
+      @attr accessor second = ''
+      connectedCallback() {
+        seen.wrapped!.push(this.second)
+      }
+    }
     expect(FieldOrderElement).to.exist
     expect(AccessorOrderElement).to.exist
+    expect(WrappedOrderElement).to.exist
     const container = await fixture(html`<div></div>`)
     // Elements from an inert document upgrade when inserted, with their attributes already set, as innerHTML does.
     const inert = document.implementation.createHTMLDocument()
-    for (const tag of ['field-order', 'accessor-order']) {
+    for (const tag of ['field-order', 'accessor-order', 'wrapped-order']) {
       const element = inert.createElement(tag)
       element.setAttribute('data-second', 'html')
       container.append(document.adoptNode(element))
     }
     expect(seen.field).to.have.length(1)
     expect(seen.accessor).to.eql(seen.field)
+    expect(seen.wrapped).to.eql(seen.field)
   })
 
   it('initializes getters that read a decorated getter and setter pair from its HTML value', async () => {
@@ -239,6 +257,30 @@ describe('Attr (standard decorators)', () => {
         instance.remove()
       })
     }
+
+    it('initializes a legacy getter overriding a standard accessor attr after the attrs it reads', async () => {
+      class Base extends HTMLElement {
+        @attr accessor label = 'base'
+      }
+      class Child extends Base {
+        input = 'field'
+        override get label() {
+          return `${this.input}-label`
+        }
+        override set label(value: string) {
+          super.label = value
+        }
+      }
+      attr(Child.prototype, 'input')
+      attr(Child.prototype, 'label')
+      controller('mixed-accessor-override')(Child)
+
+      const instance = document.createElement('mixed-accessor-override')
+      instance.setAttribute('data-input', 'attribute')
+      document.body.append(instance)
+      expect(instance).to.have.attribute('data-label', 'attribute-label')
+      instance.remove()
+    })
 
     it('initializes standard fields before legacy fields registered later on the same class', async () => {
       class MixedCallbackOrder extends HTMLElement {
