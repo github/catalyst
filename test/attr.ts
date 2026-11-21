@@ -387,5 +387,36 @@ describe('Attr', () => {
       const instance = await fixture(html`<initialize-only-attr-test></initialize-only-attr-test>`)
       expect(instance).to.have.attribute('data-foo', 'baz')
     })
+
+    // Customized built-ins inherit accessors such as `value` from interfaces like HTMLInputElement. An attr declared
+    // without a value has no own property, and the inherited accessor must not make it initialize like a getter attr.
+    it('initializes attrs named like accessors of a built-in base element in registration order', function (this: Mocha.Context) {
+      const changes: unknown[] = []
+      class BuiltinAttrInput extends HTMLInputElement {
+        declare value: string
+        status = 'idle'
+        connectedCallback() {
+          initializeAttrs(this)
+        }
+        attributeChangedCallback(name: string) {
+          changes.push([name, this.status])
+        }
+      }
+      attr(BuiltinAttrInput.prototype as unknown as Record<'value', string>, 'value')
+      attr(BuiltinAttrInput.prototype as unknown as Record<'status', string>, 'status')
+      defineObservedAttributes(BuiltinAttrInput)
+      customElements.define('builtin-attr-input', BuiltinAttrInput, {extends: 'input'})
+      const element = document.createElement('input', {is: 'builtin-attr-input'})
+      // Safari doesn't support customized built-in elements.
+      if (!(element instanceof BuiltinAttrInput)) this.skip()
+      element.setAttribute('data-status', 'html')
+      document.body.append(element)
+      element.remove()
+      // `value` registers first, so it initializes and reflects before `status` reads its HTML value.
+      expect(changes).to.eql([
+        ['data-status', 'idle'],
+        ['data-value', 'idle']
+      ])
+    })
   })
 })

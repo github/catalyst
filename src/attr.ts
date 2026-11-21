@@ -8,9 +8,8 @@ const attrKey = 'attr'
 type attrValue = string | number | boolean
 
 const standardAttrs = Symbol.for('catalyst:attr')
-
-// Getters of `@attr accessor` members. Auto-accessors store a value like fields, so they initialize with fields.
-const storedAccessorGetters = new WeakSet<object>()
+// Names of standard `@attr` getters and setters, which compute their value rather than store it.
+const standardComputedAttrs = Symbol.for('catalyst:attr:computed')
 
 /**
  * Attr is a decorator which tags a property as one to be initialized via
@@ -35,30 +34,36 @@ export function attr(proto: unknown, keyOrContext: unknown): void {
     return
   }
   const name = memberName('attr', keyOrContext, ['field', 'accessor', 'getter', 'setter'])
-  if (keyOrContext.kind === 'accessor') storedAccessorGetters.add((proto as {get: object}).get)
   const metadata = keyOrContext.metadata as Record<PropertyKey, string[] | undefined> | undefined
   if (!metadata) throw new TypeError('@attr requires decorator metadata (`Symbol.metadata`) support')
-  // Metadata inherits from the parent class's metadata, so only append to this class's own list.
-  if (hasOwn(metadata, standardAttrs)) metadata[standardAttrs]!.push(name)
-  else metadata[standardAttrs] = [name]
+  // Metadata inherits from the parent class's metadata, so only append to this class's own lists. The kind is recorded
+  // now, because another decorator may replace the member's getter.
+  const record = (list: symbol) => {
+    if (hasOwn(metadata, list)) metadata[list]!.push(name)
+    else metadata[list] = [name]
+  }
+  record(standardAttrs)
+  if (keyOrContext.kind === 'getter' || keyOrContext.kind === 'setter') record(standardComputedAttrs)
 }
 
 /**
  * Returns the `@attr` members recorded in the class's own decorator metadata. Finds the metadata by these lists rather
  * than by `Symbol.metadata`, because another library may redefine `Symbol.metadata` after some classes are defined.
  */
-function ownStandardAttrs(classObject: object): string[] {
+function ownStandardAttrs(classObject: object): Record<symbol, string[] | undefined> {
   for (const symbol of Object.getOwnPropertySymbols(classObject)) {
     const metadata: unknown = Object.getOwnPropertyDescriptor(classObject, symbol)!.value
     if (typeof metadata === 'object' && metadata !== null && hasOwn(metadata, standardAttrs)) {
-      return (metadata as Record<symbol, string[]>)[standardAttrs]!
+      return metadata as Record<symbol, string[]>
     }
   }
-  return []
+  return {}
 }
 
 // Classes whose attrs are registered, mapped to whether any of them came from standard decorator metadata.
 const registeredStandardAttrs = new WeakMap<object, boolean>()
+// Standard attrs of a registered class, including inherited ones, mapped to whether they're getters or setters.
+const standardAttrKinds = new WeakMap<object, Map<string, boolean>>()
 
 /**
  * Registers the `@attr` members recorded in decorator metadata by standard
@@ -82,8 +87,19 @@ export function registerStandardAttrs(classObject: CustomElementClass): void {
   }
   const attrs = meta(classObject.prototype, attrKey)
   const ancestor = registeredStandardAttrs.has(current as object) ? (current as CustomElementClass) : undefined
-  const standard = levels.map(ownStandardAttrs)
+  const kinds = new Map(standardAttrKinds.get(current as object))
+  const standard = levels.map(level => {
+    const metadata = ownStandardAttrs(level)
+    const own = metadata[standardAttrs] ?? []
+    const computed = metadata[standardComputedAttrs] ?? []
+    // A subclass that redefines an inherited standard attr without decorating it, such as a legacy getter, decides
+    // its kind from its own definition.
+    for (const key of kinds.keys()) if (hasOwn(level.prototype, key) && !own.includes(key)) kinds.delete(key)
+    for (const key of own) kinds.set(key, computed.includes(key))
+    return own
+  })
   const hasStandard = standard.some(level => level.length) || !!registeredStandardAttrs.get(current as object)
+  standardAttrKinds.set(classObject, kinds)
   if (hasStandard) {
     // Base class attrs first, matching the order legacy decorators register them in. Within a class, standard attrs
     // come first, because they're recorded when the class is defined and legacy `attr()` calls can only follow. Read
@@ -124,6 +140,7 @@ const attrName = (prefixed: string): string =>
  * `@controller` decorator it should not call this manually.
  */
 const initialized = new WeakSet<Element>()
+const nativeCode = /\{\s*\[native code\]\s*\}$/
 export function initializeAttrs(instance: HTMLElement, names?: Iterable<string>): void {
   if (initialized.has(instance)) return
   initialized.add(instance)
@@ -134,12 +151,18 @@ export function initializeAttrs(instance: HTMLElement, names?: Iterable<string>)
     names = meta(proto, attrKey)
   }
   const nameOf = (key: string) => attrName(`${prefix}${key}`)
-  // Only classes extending HTMLElement declare attr accessors. An attr named like a built-in one, such as `title`, is a field.
-  // So is an `@attr accessor`, which stores its value.
+  const kinds = standardAttrKinds.get(proto?.constructor)
+  // Standard decorators record whether an attr is a getter or setter. For legacy ones, look for an accessor on the
+  // classes above the built-in element they extend. An attr named like a built-in accessor, such as `title`, is a field.
   const isAccessor = (key: string) => {
-    for (let o = proto; o && o !== HTMLElement.prototype; o = Object.getPrototypeOf(o)) {
+    if (kinds?.has(key)) return kinds.get(key)
+    for (
+      let o = proto;
+      o && !nativeCode.test(Function.prototype.toString.call(o.constructor));
+      o = Object.getPrototypeOf(o)
+    ) {
       const descriptor = Object.getOwnPropertyDescriptor(o, key)
-      if (descriptor) return !('value' in descriptor || storedAccessorGetters.has(descriptor.get!))
+      if (descriptor) return !('value' in descriptor)
     }
     return false
   }
