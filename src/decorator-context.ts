@@ -48,6 +48,10 @@ export function isDecoratorContext(value: unknown): value is ClassContext | Memb
   return typeof value === 'object' && value !== null && 'kind' in value && 'addInitializer' in value
 }
 
+export function assertClass(decorator: string, context: ClassContext | MemberContext): void {
+  if (context.kind !== 'class') throw new TypeError(`@${decorator} must decorate a class`)
+}
+
 export function memberName(decorator: string, context: ClassContext | MemberContext, kinds: string[]): string {
   // `kinds` never includes 'class', so class contexts fail the first check.
   const member = context as MemberContext

@@ -2,7 +2,7 @@ import type {CustomElementClass} from './custom-element.js'
 import {mustDasherize} from './dasherize.js'
 import {meta, ownMeta} from './core.js'
 import type {ClassContext, MemberContext} from './decorator-context.js'
-import {hasOwn, isDecoratorContext, memberName} from './decorator-context.js'
+import {assertClass, hasOwn, isDecoratorContext, memberName} from './decorator-context.js'
 
 const attrKey = 'attr'
 type attrValue = string | number | boolean
@@ -91,7 +91,8 @@ export function registerStandardAttrs(classObject: CustomElementClass): void {
   const standard = levels.map(level => {
     const metadata = ownStandardAttrs(level)
     const own = metadata[standardAttrs] ?? []
-    const computed = metadata[standardComputedAttrs] ?? []
+    // Metadata inherits from the parent class's, so ignore a computed list this class doesn't own.
+    const computed = (hasOwn(metadata, standardComputedAttrs) && metadata[standardComputedAttrs]) || []
     // A subclass that redefines an inherited standard attr without decorating it, such as a legacy getter, decides
     // its kind from its own definition.
     for (const key of kinds.keys()) if (hasOwn(level.prototype, key) && !own.includes(key)) kinds.delete(key)
@@ -141,26 +142,26 @@ const attrName = (prefixed: string): string =>
  */
 const initialized = new WeakSet<Element>()
 const nativeCode = /\{\s*\[native code\]\s*\}$/
+// Prototypes mapped to whether they belong to a built-in class. Reading a class's source is slow, so do it once.
+const nativePrototypes = new WeakMap<object, boolean>()
+const isNative = (proto: object): boolean =>
+  nativePrototypes.get(proto) ??
+  nativePrototypes.set(proto, nativeCode.test(Function.prototype.toString.call(proto.constructor))).get(proto)!
 export function initializeAttrs(instance: HTMLElement, names?: Iterable<string>): void {
   if (initialized.has(instance)) return
   initialized.add(instance)
   const proto = Object.getPrototypeOf(instance)
   const prefix = proto?.constructor?.attrPrefix ?? 'data-'
-  if (!names) {
-    if (typeof proto?.constructor === 'function') registerStandardAttrs(proto.constructor)
-    names = meta(proto, attrKey)
-  }
+  // Registering also records the kinds of standard attrs, which explicitly named attrs need too.
+  if (typeof proto?.constructor === 'function') registerStandardAttrs(proto.constructor)
+  if (!names) names = meta(proto, attrKey)
   const nameOf = (key: string) => attrName(`${prefix}${key}`)
   const kinds = standardAttrKinds.get(proto?.constructor)
   // Standard decorators record whether an attr is a getter or setter. For legacy ones, look for an accessor on the
   // classes above the built-in element they extend. An attr named like a built-in accessor, such as `title`, is a field.
   const isAccessor = (key: string) => {
     if (kinds?.has(key)) return kinds.get(key)
-    for (
-      let o = proto;
-      o && !nativeCode.test(Function.prototype.toString.call(o.constructor));
-      o = Object.getPrototypeOf(o)
-    ) {
+    for (let o = proto; o && !isNative(o); o = Object.getPrototypeOf(o)) {
       const descriptor = Object.getOwnPropertyDescriptor(o, key)
       if (descriptor) return !('value' in descriptor)
     }
@@ -225,6 +226,7 @@ export function defineObservedAttributes(classObject: CustomElementClass): void
 export function defineObservedAttributes(classObject: CustomElementClass, context?: unknown): void {
   // Standard class decorators run before the class's decorator metadata is attached, so wait for it.
   if (isDecoratorContext(context)) {
+    assertClass('defineObservedAttributes', context)
     ;(context as ClassContext<CustomElementClass>).addInitializer(function (this: CustomElementClass) {
       defineObservedAttributes(this)
     })

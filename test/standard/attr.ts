@@ -1,6 +1,6 @@
 import {expect, fixture, html} from '@open-wc/testing'
 import {controller} from '../../src/controller.js'
-import {attr, defineObservedAttributes} from '../../src/attr.js'
+import {attr, defineObservedAttributes, initializeAttrs} from '../../src/attr.js'
 import type {CustomElementClass} from '../../src/custom-element.js'
 import type {ClassContext} from '../../src/decorator-context.js'
 import {register} from '../../src/register.js'
@@ -113,8 +113,8 @@ describe('Attr (standard decorators)', () => {
   })
 
   // Setting a missing attr's attribute can run connectedCallback before the rest initialize, so the order is observable.
-  it('initializes accessor attrs in registration order, like fields, even when another decorator wraps them', async () => {
-    const seen: Record<string, unknown[]> = {field: [], accessor: [], wrapped: []}
+  it('initializes accessor attrs in registration order, like fields, even when wrapped or overriding a getter', async () => {
+    const seen: Record<string, unknown[]> = {field: [], accessor: [], wrapped: [], override: []}
     const wrap = <This, Value>(value: ClassAccessorDecoratorTarget<This, Value>) => ({
       get(this: This) {
         return value.get.call(this)
@@ -147,13 +147,27 @@ describe('Attr (standard decorators)', () => {
         seen.wrapped!.push(this.second)
       }
     }
+    class GetterBase extends HTMLElement {
+      @attr get first() {
+        return ''
+      }
+    }
+    @controller
+    class OverrideOrderElement extends GetterBase {
+      @attr override accessor first = ''
+      @attr accessor second = ''
+      connectedCallback() {
+        seen.override!.push(this.second)
+      }
+    }
     expect(FieldOrderElement).to.exist
     expect(AccessorOrderElement).to.exist
     expect(WrappedOrderElement).to.exist
+    expect(OverrideOrderElement).to.exist
     const container = await fixture(html`<div></div>`)
     // Elements from an inert document upgrade when inserted, with their attributes already set, as innerHTML does.
     const inert = document.implementation.createHTMLDocument()
-    for (const tag of ['field-order', 'accessor-order', 'wrapped-order']) {
+    for (const tag of ['field-order', 'accessor-order', 'wrapped-order', 'override-order']) {
       const element = inert.createElement(tag)
       element.setAttribute('data-second', 'html')
       container.append(document.adoptNode(element))
@@ -161,6 +175,28 @@ describe('Attr (standard decorators)', () => {
     expect(seen.field).to.have.length(1)
     expect(seen.accessor).to.eql(seen.field)
     expect(seen.wrapped).to.eql(seen.field)
+    expect(seen.override).to.eql(seen.field)
+  })
+
+  it('initializes explicitly named accessor attrs in the order given, like fields', () => {
+    class ExplicitNamesElement extends HTMLElement {
+      static observedAttributes = ['data-ready']
+      @attr accessor ready = true
+      @attr accessor status = 'default'
+      connectedCallback() {
+        initializeAttrs(this, ['ready', 'status'])
+      }
+      attributeChangedCallback() {
+        this.status = 'updated'
+      }
+    }
+    customElements.define('explicit-names-element', ExplicitNamesElement)
+    const element = document.createElement('explicit-names-element') as ExplicitNamesElement
+    element.setAttribute('data-status', 'html')
+    document.body.append(element)
+    element.remove()
+    // `ready` initializes first, so its callback runs before `status` reads its HTML value.
+    expect(element.status).to.equal('html')
   })
 
   it('initializes getters that read a decorated getter and setter pair from its HTML value', async () => {
@@ -408,5 +444,21 @@ describe('Attr (standard decorators)', () => {
           }
         }
     ).to.throw(TypeError, message)
+  })
+
+  it('throws when a class decorator decorates a member', () => {
+    for (const [decorator, name] of [
+      [controller, 'controller'],
+      [register, 'register'],
+      [defineObservedAttributes, 'defineObservedAttributes']
+    ] as const) {
+      expect(
+        () =>
+          class extends HTMLElement {
+            // @ts-expect-error class decorators can't decorate methods
+            @decorator foo() {}
+          }
+      ).to.throw(TypeError, `@${name} must decorate a class`)
+    }
   })
 })
