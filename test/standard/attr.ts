@@ -178,6 +178,36 @@ describe('Attr (standard decorators)', () => {
     expect(seen.override).to.eql(seen.field)
   })
 
+  // Undecorated auto-accessors have no metadata recording that they store a value, but they have a setter, which
+  // computed getter attrs don't, so they initialize in registration order as in v1.8.1.
+  for (const registration of ['attr calls', 'explicit names'] as const) {
+    it(`initializes undecorated accessors registered by ${registration} in registration order`, () => {
+      class UndecoratedAccessorElement extends HTMLElement {
+        static observedAttributes = ['data-ready']
+        accessor ready = true
+        accessor status = 'default'
+        connectedCallback() {
+          if (registration === 'explicit names') initializeAttrs(this, ['ready', 'status'])
+          else initializeAttrs(this)
+        }
+        attributeChangedCallback() {
+          this.status = 'updated'
+        }
+      }
+      if (registration === 'attr calls') {
+        attr(UndecoratedAccessorElement.prototype, 'ready')
+        attr(UndecoratedAccessorElement.prototype, 'status')
+      }
+      const tag = `undecorated-accessor-${registration.replace(' ', '-')}`
+      customElements.define(tag, UndecoratedAccessorElement)
+      const element = document.createElement(tag) as UndecoratedAccessorElement
+      element.setAttribute('data-status', 'html')
+      document.body.append(element)
+      element.remove()
+      expect(element.status).to.equal('html')
+    })
+  }
+
   it('initializes explicitly named accessor attrs in the order given, like fields', () => {
     class ExplicitNamesElement extends HTMLElement {
       static observedAttributes = ['data-ready']
@@ -300,11 +330,9 @@ describe('Attr (standard decorators)', () => {
       }
       class Child extends Base {
         input = 'field'
+        // A getter without a setter computes its value, so it initializes after the attrs it reads.
         override get label() {
           return `${this.input}-label`
-        }
-        override set label(value: string) {
-          super.label = value
         }
       }
       attr(Child.prototype, 'input')
