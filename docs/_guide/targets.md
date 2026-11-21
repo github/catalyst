@@ -139,7 +139,7 @@ Important to note here is that nodes from the `shadowRoot` get returned _first_.
 
 ### What about without Decorators?
 
-If you're using decorators, then the `@target` and `@targets` decorators will turn the decorated properties into getters.
+If you're using decorators, then the `@target` and `@targets` decorators will turn the decorated properties into getters. With [standard decorators]({{ site.baseurl }}/guide/decorators#standard-decorators), decorate an accessor instead of a field: `@target accessor output!: HTMLElement`.
 
 If you're not using decorators, then you'll need to make a `getter`, and call `findTarget(this, key)` or `findTargets(this, key)` in the getter, for example:
 

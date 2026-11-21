@@ -1,4 +1,6 @@
 import type {CustomElementClass} from './custom-element.js'
+import type {ClassContext} from './decorator-context.js'
+import {assertClass, isDecoratorContext} from './decorator-context.js'
 import {dasherize} from './dasherize.js'
 
 /**
@@ -7,8 +9,25 @@ import {dasherize} from './dasherize.js'
  * The classname is converted to a appropriate tag name.
  *
  * Example: HelloController => hello-controller
+ *
+ * It can be used as a class decorator with both TypeScript's
+ * `experimentalDecorators` and standard decorators.
  */
-export function register(classObject: CustomElementClass, name?: string): CustomElementClass {
+// The legacy overload comes first, so calls with untyped arguments resolve to it, and last, so `ReturnType` and
+// `Parameters` read it.
+export function register(classObject: CustomElementClass, name?: string): CustomElementClass
+export function register<C extends CustomElementClass>(classObject: C, context: ClassContext<C>): void
+export function register(classObject: CustomElementClass, name?: string): CustomElementClass
+export function register(classObject: CustomElementClass, nameOrContext?: unknown): CustomElementClass | void {
+  if (isDecoratorContext(nameOrContext)) {
+    assertClass('register', nameOrContext)
+    // Like `@controller`, define the element once static fields are assigned.
+    ;(nameOrContext as ClassContext<CustomElementClass>).addInitializer(function (this: CustomElementClass) {
+      register(this)
+    })
+    return
+  }
+  const name = nameOrContext as string | undefined
   const tagName = name || dasherize(classObject.name).replace(/-element$/, '')
 
   try {

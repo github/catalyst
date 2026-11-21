@@ -27,6 +27,35 @@ describe('controller', () => {
     expect(instance).to.exist
   })
 
+  it('registers attrs when called as a function', async () => {
+    class FunctionAttrElement extends HTMLElement {
+      @attr foo = 'bar'
+    }
+    controller('function-attr-element')(FunctionAttrElement)
+    instance = await fixture(html`<function-attr-element />`)
+    expect(instance).to.have.attribute('data-foo', 'bar')
+  })
+
+  it('defines the element after static fields are assigned', async () => {
+    const changed: string[] = []
+    @controller
+    class ControllerStaticsElement extends HTMLElement {
+      static observedAttributes = ['data-extra']
+      static attrPrefix = 'x-'
+      @attr name = 'a'
+      attributeChangedCallback(name: string) {
+        changed.push(name)
+      }
+    }
+    const element = await fixture<ControllerStaticsElement>(html`<controller-statics></controller-statics>`)
+    expect(element).to.have.attribute('x-name', 'a')
+    changed.length = 0
+    element.setAttribute('data-extra', '1')
+    element.setAttribute('x-name', 'b')
+    expect(changed).to.eql(['data-extra', 'x-name'])
+    expect(element.name).to.equal('b')
+  })
+
   it('adds data-catalyst to elements with custom names', async () => {
     @controller('custom-named-element')
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
