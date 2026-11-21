@@ -388,6 +388,20 @@ describe('Attr', () => {
       expect(instance).to.have.attribute('data-foo', 'baz')
     })
 
+    it('initializes an attr named constructor', () => {
+      class ConstructorAttrTest extends HTMLElement {
+        connectedCallback() {
+          initializeAttrs(this, ['constructor'])
+        }
+      }
+      Object.defineProperty(ConstructorAttrTest.prototype, 'constructor', {configurable: true, get: () => 'default'})
+      customElements.define('constructor-attr-test', ConstructorAttrTest)
+      const instance = document.createElement('constructor-attr-test')
+      document.body.append(instance)
+      instance.remove()
+      expect(instance).to.have.attribute('data-constructor', 'default')
+    })
+
     // Customized built-ins inherit accessors such as `value` from interfaces like HTMLInputElement. An attr declared
     // without a value has no own property, and the inherited accessor must not make it initialize like a getter attr.
     it('initializes attrs named like accessors of a built-in base element in registration order', function (this: Mocha.Context) {

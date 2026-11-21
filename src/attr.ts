@@ -40,7 +40,8 @@ export function attr(proto: unknown, keyOrContext: unknown): void {
   // now, because another decorator may replace the member's getter.
   const record = (list: symbol) => {
     if (hasOwn(metadata, list)) metadata[list]!.push(name)
-    else metadata[list] = [name]
+    // Define the list rather than assign it, which fails if the parent class's metadata is frozen.
+    else Object.defineProperty(metadata, list, {value: [name], enumerable: true})
   }
   record(standardAttrs)
   if (keyOrContext.kind === 'getter' || keyOrContext.kind === 'setter') record(standardComputedAttrs)
@@ -146,7 +147,12 @@ const nativeCode = /\{\s*\[native code\]\s*\}$/
 const nativePrototypes = new WeakMap<object, boolean>()
 const isNative = (proto: object): boolean =>
   nativePrototypes.get(proto) ??
-  nativePrototypes.set(proto, nativeCode.test(Function.prototype.toString.call(proto.constructor))).get(proto)!
+  nativePrototypes
+    .set(
+      proto,
+      typeof proto.constructor === 'function' && nativeCode.test(Function.prototype.toString.call(proto.constructor))
+    )
+    .get(proto)!
 export function initializeAttrs(instance: HTMLElement, names?: Iterable<string>): void {
   if (initialized.has(instance)) return
   initialized.add(instance)
