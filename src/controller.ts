@@ -1,7 +1,7 @@
 import {CatalystDelegate} from './core.js'
 import type {CustomElementClass} from './custom-element.js'
 import type {ClassContext} from './decorator-context.js'
-import {isDecoratorContext} from './decorator-context.js'
+import {assertClass, isDecoratorContext} from './decorator-context.js'
 
 /**
  * The decorator returned by `controller(name)`. It accepts both TypeScript's
@@ -37,6 +37,7 @@ export function controller(
 
 function decorate(classObject: CustomElementClass, context: unknown, name?: string) {
   if (!isDecoratorContext(context)) return void new CatalystDelegate(classObject, name)
+  assertClass('controller', context)
   // Standard class decorators run before static fields such as `observedAttributes` and `attrPrefix` are assigned.
   // Class initializers run after them, which is when legacy class decorators run.
   const classContext = context as ClassContext<CustomElementClass>

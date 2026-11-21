@@ -1,6 +1,6 @@
 import type {CustomElementClass} from './custom-element.js'
 import type {ClassContext} from './decorator-context.js'
-import {isDecoratorContext} from './decorator-context.js'
+import {assertClass, isDecoratorContext} from './decorator-context.js'
 import {dasherize} from './dasherize.js'
 
 /**
@@ -20,6 +20,7 @@ export function register<C extends CustomElementClass>(classObject: C, context: 
 export function register(classObject: CustomElementClass, name?: string): CustomElementClass
 export function register(classObject: CustomElementClass, nameOrContext?: unknown): CustomElementClass | void {
   if (isDecoratorContext(nameOrContext)) {
+    assertClass('register', nameOrContext)
     // Like `@controller`, define the element once static fields are assigned.
     ;(nameOrContext as ClassContext<CustomElementClass>).addInitializer(function (this: CustomElementClass) {
       register(this)
