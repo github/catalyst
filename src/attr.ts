@@ -157,13 +157,15 @@ export function initializeAttrs(instance: HTMLElement, names?: Iterable<string>)
   if (!names) names = meta(proto, attrKey)
   const nameOf = (key: string) => attrName(`${prefix}${key}`)
   const kinds = standardAttrKinds.get(proto?.constructor)
-  // Standard decorators record whether an attr is a getter or setter. For legacy ones, look for an accessor on the
-  // classes above the built-in element they extend. An attr named like a built-in accessor, such as `title`, is a field.
+  // Standard decorators record whether an attr is a getter or setter. For others, look for a getter without a setter
+  // on the classes above the built-in element they extend. One with a setter, such as an auto-accessor or a getter and
+  // setter pair, stores a value as far as Catalyst can tell, so it keeps registration order, as in v1.8.1. An attr
+  // named like a built-in accessor, such as `title`, is a field.
   const isAccessor = (key: string) => {
     if (kinds?.has(key)) return kinds.get(key)
     for (let o = proto; o && !isNative(o); o = Object.getPrototypeOf(o)) {
       const descriptor = Object.getOwnPropertyDescriptor(o, key)
-      if (descriptor) return !('value' in descriptor)
+      if (descriptor) return !!descriptor.get && !descriptor.set
     }
     return false
   }
