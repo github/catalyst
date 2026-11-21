@@ -432,6 +432,22 @@ describe('Attr (standard decorators)', () => {
     expect(instance.getAttribute('data-late')).to.equal('late')
   })
 
+  it('records subclass attrs when the base class metadata is frozen', async () => {
+    const freeze = (_: unknown, context: ClassDecoratorContext) => void Object.freeze(context.metadata)
+    @freeze
+    class FrozenMetadataBase extends HTMLElement {
+      @attr base = 'base'
+    }
+    @controller
+    class FrozenMetadataChildElement extends FrozenMetadataBase {
+      @attr child = 'child'
+    }
+    expect(observed(FrozenMetadataChildElement)).to.eql(['data-base', 'data-child'])
+    const instance = await fixture(html`<frozen-metadata-child></frozen-metadata-child>`)
+    expect(instance).to.have.attribute('data-base', 'base')
+    expect(instance).to.have.attribute('data-child', 'child')
+  })
+
   it('throws a clear error without decorator metadata', () => {
     const original = symbolWithMetadata.metadata
     delete symbolWithMetadata.metadata
