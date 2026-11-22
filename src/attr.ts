@@ -28,7 +28,7 @@ export function attr<K extends string, This extends Record<K, attrValue>, Value 
   context: MemberContext<'field' | 'accessor' | 'getter' | 'setter', This, Value> & {readonly name: K}
 ): void
 export function attr<K extends string>(proto: Record<K, attrValue>, key: K): void
-export function attr(proto: unknown, keyOrContext: unknown): void {
+export function attr(proto: unknown, keyOrContext: unknown): void | ((value: unknown) => unknown) {
   if (!isDecoratorContext(keyOrContext)) {
     meta(proto as Record<PropertyKey, unknown>, attrKey).add(keyOrContext as string)
     return
@@ -45,6 +45,13 @@ export function attr(proto: unknown, keyOrContext: unknown): void {
   }
   record(standardAttrs)
   if (keyOrContext.kind === 'getter' || keyOrContext.kind === 'setter') record(standardComputedAttrs)
+  // A field without a value replaces a legacy `declare` field, which emitted nothing. So keep a value set on the element
+  // before it upgraded, such as on a clone of inert template content, instead of replacing it with `undefined`.
+  if (keyOrContext.kind === 'field') {
+    return function (this: unknown, value: unknown) {
+      return value === undefined && hasOwn(this as object, name) ? (this as Record<string, unknown>)[name] : value
+    }
+  }
 }
 
 /**
