@@ -396,6 +396,23 @@ describe('Attr', () => {
       expect(Object.getOwnPropertySymbols(HTMLDivElement.prototype).map(String)).to.eql(before)
     })
 
+    it('initializes named attrs of a class with a frozen prototype', () => {
+      class FrozenProtoAttrTest extends HTMLElement {
+        count = 8
+        connectedCallback() {
+          initializeAttrs(this, ['count'])
+        }
+      }
+      Object.freeze(FrozenProtoAttrTest.prototype)
+      customElements.define('frozen-proto-attr-test', FrozenProtoAttrTest)
+      const instance = document.createElement('frozen-proto-attr-test') as FrozenProtoAttrTest
+      document.body.append(instance)
+      instance.remove()
+      expect(instance.count).to.equal(8)
+      instance.count = 9
+      expect(instance).to.have.attribute('data-count', '9')
+    })
+
     it('initializes an attr named constructor', () => {
       class ConstructorAttrTest extends HTMLElement {
         connectedCallback() {

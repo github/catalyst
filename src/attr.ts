@@ -83,8 +83,13 @@ const standardAttrKinds = new WeakMap<object, Map<string, boolean>>()
  * parent's.
  */
 export function registerStandardAttrs(classObject: CustomElementClass, recheck = false): void {
-  // A class registered before its metadata was attached found no standard attrs, so `recheck` looks again.
-  if (recheck && registeredStandardAttrs.get(classObject) === false) registeredStandardAttrs.delete(classObject)
+  // A class or base class registered before its metadata was attached missed its own standard attrs, so `recheck`
+  // registers the whole chain again.
+  if (recheck) {
+    for (let c: unknown = classObject; typeof c === 'function'; c = Object.getPrototypeOf(c)) {
+      registeredStandardAttrs.delete(c)
+    }
+  }
   if (registeredStandardAttrs.has(classObject)) return
   const levels: CustomElementClass[] = []
   let current: unknown = classObject
@@ -95,7 +100,6 @@ export function registerStandardAttrs(classObject: CustomElementClass, recheck =
   ) {
     levels.unshift(current as CustomElementClass)
   }
-  const attrs = meta(classObject.prototype, attrKey)
   const ancestor = registeredStandardAttrs.has(current as object) ? (current as CustomElementClass) : undefined
   const kinds = new Map(standardAttrKinds.get(current as object))
   const standard = levels.map(level => {
@@ -111,7 +115,9 @@ export function registerStandardAttrs(classObject: CustomElementClass, recheck =
   })
   const hasStandard = standard.some(level => level.length) || !!registeredStandardAttrs.get(current as object)
   standardAttrKinds.set(classObject, kinds)
+  // Only classes with standard attrs need their registered attrs merged, so leave others' prototypes alone.
   if (hasStandard) {
+    const attrs = meta(classObject.prototype, attrKey)
     // Base class attrs first, matching the order legacy decorators register them in. Within a class, standard attrs
     // come first, because they're recorded when the class is defined and legacy `attr()` calls can only follow. Read
     // each class's own legacy attrs, because a subclass's copy of them can predate standard attrs on its ancestors.
