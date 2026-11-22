@@ -471,6 +471,38 @@ describe('Attr (standard decorators)', () => {
     expect(instance).to.have.attribute('data-value', 'default')
   })
 
+  it('registers standard attrs of a subclass that an earlier call missed, when its base has some', async () => {
+    const early = (classObject: CustomElementClass) => defineObservedAttributes(classObject)
+    class EarlyBase extends HTMLElement {
+      @attr base = 'base'
+    }
+    @controller
+    @early
+    class EarlyChildElement extends EarlyBase {
+      @attr child = 'child'
+    }
+    expect(observed(EarlyChildElement)).to.include.members(['data-base', 'data-child'])
+    const instance = await fixture(html`<early-child data-child="html"></early-child>`)
+    expect((instance as EarlyChildElement).child).to.equal('html')
+    expect(instance).to.have.attribute('data-base', 'base')
+  })
+
+  it('registers standard attrs of a base registered before its metadata was attached', async () => {
+    const early = (classObject: CustomElementClass) => defineObservedAttributes(classObject)
+    @early
+    class EarlyRegisteredBase extends HTMLElement {
+      @attr base = 'base'
+    }
+    @controller
+    class EarlyBaseChildElement extends EarlyRegisteredBase {
+      @attr child = 'child'
+    }
+    expect(observed(EarlyBaseChildElement)).to.include.members(['data-base', 'data-child'])
+    const instance = await fixture(html`<early-base-child></early-base-child>`)
+    expect(instance).to.have.attribute('data-base', 'base')
+    expect(instance).to.have.attribute('data-child', 'child')
+  })
+
   it('records subclass attrs when the base class metadata is frozen', async () => {
     const freeze = (_: unknown, context: ClassDecoratorContext) => void Object.freeze(context.metadata)
     @freeze
