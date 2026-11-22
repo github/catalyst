@@ -26,6 +26,21 @@ describe('Attr (standard decorators, set semantics)', () => {
     expect(instance).to.have.attribute('data-title', 'value')
   })
 
+  it('keeps values set before upgrade through a built-in accessor', async () => {
+    @controller
+    class SetSemanticsPreUpgradeTitleElement extends HTMLElement {
+      @attr title!: string
+    }
+    expect(SetSemanticsPreUpgradeTitleElement).to.exist
+    const template = document.createElement('template')
+    template.content.append(template.content.ownerDocument.createElement('set-semantics-pre-upgrade-title'))
+    const clone = template.content.firstElementChild!.cloneNode() as SetSemanticsPreUpgradeTitleElement
+    clone.title = 'set before upgrade'
+    const container = await fixture(html`<div></div>`)
+    container.append(clone)
+    expect(clone).to.have.attribute('data-title', 'set before upgrade')
+  })
+
   it('keeps values set before upgrade on fields without a value', async () => {
     @controller
     class SetSemanticsPreUpgradeElement extends HTMLElement {

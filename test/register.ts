@@ -1,6 +1,8 @@
 import {expect} from '@open-wc/testing'
 import {restore, replace, fake} from 'sinon'
 import {register} from '../src/register.js'
+import {attr, defineObservedAttributes} from '../src/attr.js'
+import type {CustomElementClass} from '../src/custom-element.js'
 
 describe('register', () => {
   afterEach(() => {
@@ -43,6 +45,25 @@ describe('register', () => {
       class MyThirdClass extends HTMLElement {}
       expect(customElements.define).to.be.calledOnceWithExactly('my-third-class', MyThirdClass)
     }).to.throw(Error)
+  })
+
+  it('registers the class it decorates when an outer class decorator replaces it', () => {
+    const decorated: CustomElementClass[] = []
+    const wrap = <C extends CustomElementClass>(classObject: C) => {
+      decorated.push(classObject)
+      return class extends classObject {}
+    }
+    // Legacy `register` returns the class, which TypeScript rejects for a class with members of its own.
+    const registerClass = register as (classObject: CustomElementClass, context?: unknown) => void
+    @wrap
+    @registerClass
+    @defineObservedAttributes
+    class OuterRegisterElement extends HTMLElement {
+      @attr foo = 'bar'
+    }
+    expect(OuterRegisterElement).to.exist
+    expect(window.customElements.get('outer-register')).to.equal(decorated[0])
+    expect(decorated[0].observedAttributes).to.include('data-foo')
   })
 
   it('dasherises class names', () => {

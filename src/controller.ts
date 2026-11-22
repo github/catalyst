@@ -1,4 +1,5 @@
 import {CatalystDelegate} from './core.js'
+import {decoratedClass} from './attr.js'
 import type {CustomElementClass} from './custom-element.js'
 import type {ClassContext} from './decorator-context.js'
 import {assertClass, isDecoratorContext} from './decorator-context.js'
@@ -42,6 +43,6 @@ function decorate(classObject: CustomElementClass, context: unknown, name?: stri
   // Class initializers run after them, which is when legacy class decorators run.
   const classContext = context as ClassContext<CustomElementClass>
   classContext.addInitializer(function (this: CustomElementClass) {
-    new CatalystDelegate(this, name)
+    new CatalystDelegate(decoratedClass(classObject, classContext, this), name)
   })
 }

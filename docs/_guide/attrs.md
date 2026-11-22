@@ -152,6 +152,7 @@ When an element gets connected to the DOM, the attr is initialized. During this 
  - When connected, if the element _does_ have a matching attribute, the default _is not_ applied, the property will be assigned to the value of the attribute instead.
  - Field and `accessor` attrs are initialized first, in the order they're registered. Getter and setter attrs come next, starting with those that have a matching attribute, so a getter's default can read the other attrs' values.
  - With legacy decorators, Catalyst can't tell an `accessor` from a getter and setter you wrote, so only a getter without a setter counts as a getter attr. Any attr with a setter initializes in registration order, as in earlier versions.
+ - A class decorator that returns a subclass of the decorated class gets its decorator metadata. If that subclass replaces an `@attr` getter with an `accessor`, or a getter and setter pair, the attr keeps the getter's place in the order.
  - Standard decorators register `accessor` attrs before field attrs, whatever order they're declared in. To initialize attrs in declaration order, as legacy decorators do, decorate fields, not accessors: `@attr name!: string`.
 
 {% capture callout %}
