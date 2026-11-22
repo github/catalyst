@@ -503,6 +503,45 @@ describe('Attr (standard decorators)', () => {
     expect(instance).to.have.attribute('data-child', 'child')
   })
 
+  it('registers standard attrs with @defineObservedAttributes that an earlier call missed', async () => {
+    const early = (classObject: CustomElementClass) => defineObservedAttributes(classObject)
+    @register
+    @defineObservedAttributes
+    @early
+    class EarlyDecoratorObservedElement extends HTMLElement {
+      @attr value = 'default'
+      connectedCallback() {
+        initializeAttrs(this)
+      }
+    }
+    expect(observed(EarlyDecoratorObservedElement)).to.include('data-value')
+    const instance = await fixture(html`<early-decorator-observed></early-decorator-observed>`)
+    expect(instance).to.have.attribute('data-value', 'default')
+  })
+
+  // TypeScript attaches the decorator metadata to the class a class decorator returns, not the one it decorated.
+  it('initializes a getter that a replacing class decorator adds after the attrs it reads', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TypeScript requires `any[]` for a mixin constructor.
+    const withLabel = <C extends new (...args: any[]) => {input: string}>(classObject: C) =>
+      class extends classObject {
+        get label() {
+          return `${this.input}-label`
+        }
+      }
+    @controller('replaced-getter')
+    @withLabel
+    class ReplacedGetterElement extends HTMLElement {
+      @attr accessor label = 'base'
+      @attr input = 'field'
+    }
+    expect(ReplacedGetterElement).to.exist
+    const instance = document.createElement('replaced-getter')
+    instance.setAttribute('data-input', 'attribute')
+    document.body.append(instance)
+    expect(instance).to.have.attribute('data-label', 'attribute-label')
+    instance.remove()
+  })
+
   it('records subclass attrs when the base class metadata is frozen', async () => {
     const freeze = (_: unknown, context: ClassDecoratorContext) => void Object.freeze(context.metadata)
     @freeze
