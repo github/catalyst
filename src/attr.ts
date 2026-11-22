@@ -52,10 +52,30 @@ export function attr(proto: unknown, keyOrContext: unknown): void | ((value: unk
   if (keyOrContext.kind === 'field') {
     return function (this: object, value: unknown) {
       if (hasOwn(this, name)) return value === undefined ? (this as Record<string, unknown>)[name] : value
+      // A built-in accessor such as `title` keeps a value set before upgrade in an attribute, which a legacy `declare`
+      // field reads through the accessor, so `initializeAttrs` reads it once the field is still unset.
+      if (value === undefined && name in this) {
+        if (!shadowingFields.has(this)) shadowingFields.set(this, new Set())
+        shadowingFields.get(this)!.add(name)
+      }
       Object.defineProperty(this, name, {value, configurable: true, enumerable: true, writable: true})
       return value
     }
   }
+}
+
+// Standard fields without a value that hide an inherited accessor, by element.
+const shadowingFields = new WeakMap<object, Set<string>>()
+// Decorator metadata of classes that an outer class decorator replaced, which leaves the metadata on the replacement.
+const replacedMetadata = new WeakMap<object, object>()
+
+/**
+ * Returns the class a standard class decorator received, which is the class legacy decorators register, rather than
+ * the class its initializer runs on, which an outer class decorator may have replaced.
+ */
+export function decoratedClass<C extends CustomElementClass>(classObject: C, context: ClassContext, final: unknown): C {
+  if (final !== classObject && context.metadata) replacedMetadata.set(classObject, context.metadata)
+  return classObject
 }
 
 /**
@@ -63,6 +83,8 @@ export function attr(proto: unknown, keyOrContext: unknown): void | ((value: unk
  * than by `Symbol.metadata`, because another library may redefine `Symbol.metadata` after some classes are defined.
  */
 function ownStandardAttrs(classObject: object): Record<symbol, string[] | undefined> {
+  const replaced = replacedMetadata.get(classObject)
+  if (replaced) return replaced as Record<symbol, string[]>
   for (const symbol of Object.getOwnPropertySymbols(classObject)) {
     const metadata: unknown = Object.getOwnPropertyDescriptor(classObject, symbol)!.value
     if (typeof metadata === 'object' && metadata !== null && hasOwn(metadata, standardAttrs)) {
@@ -218,7 +240,9 @@ export function initializeAttrs(instance: HTMLElement, names?: Iterable<string>)
 }
 
 function initializeAttr(instance: HTMLElement, key: string, name: string) {
-  const value = (<Record<PropertyKey, unknown>>(<unknown>instance))[key]
+  const record = instance as unknown as Record<PropertyKey, unknown>
+  if (shadowingFields.get(instance)?.has(key) && record[key] === undefined) delete record[key]
+  const value = record[key]
   let descriptor: PropertyDescriptor = {
     configurable: true,
     get(this: HTMLElement): string {
@@ -263,9 +287,10 @@ export function defineObservedAttributes(classObject: CustomElementClass, contex
   if (isDecoratorContext(context)) {
     assertClass('defineObservedAttributes', context)
     ;(context as ClassContext<CustomElementClass>).addInitializer(function (this: CustomElementClass) {
+      const decorated = decoratedClass(classObject, context as ClassContext, this)
       // Another class decorator may have registered the class before its metadata was attached.
-      registerStandardAttrs(this, true)
-      defineObservedAttributes(this)
+      registerStandardAttrs(decorated, true)
+      defineObservedAttributes(decorated)
     })
     return
   }

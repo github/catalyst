@@ -458,6 +458,25 @@ describe('Attr (standard decorators)', () => {
     expect(element.label).to.equal('default')
   })
 
+  // A built-in accessor such as `title` stores the value in an attribute, not an own property. A legacy `declare` field
+  // reads it through the inherited getter.
+  it('keeps values set before upgrade through a built-in accessor on fields without a value', async () => {
+    @controller
+    class PreUpgradeTitleElement extends HTMLElement {
+      @attr title!: string
+    }
+    expect(PreUpgradeTitleElement).to.exist
+    const template = document.createElement('template')
+    template.content.append(template.content.ownerDocument.createElement('pre-upgrade-title'))
+    const element = template.content.firstElementChild!.cloneNode() as PreUpgradeTitleElement
+    element.title = 'set before upgrade'
+    const container = await fixture(html`<div></div>`)
+    container.append(element)
+    expect(element).to.be.instanceOf(PreUpgradeTitleElement)
+    expect(element.title).to.equal('set before upgrade')
+    expect(element).to.have.attribute('data-title', 'set before upgrade')
+  })
+
   // Another class decorator can call defineObservedAttributes before the class's metadata is attached.
   it('registers standard attrs that an earlier defineObservedAttributes call missed', async () => {
     const early = (classObject: CustomElementClass) => defineObservedAttributes(classObject)

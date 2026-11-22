@@ -22,9 +22,8 @@ export function register(classObject: CustomElementClass, nameOrContext?: unknow
   if (isDecoratorContext(nameOrContext)) {
     assertClass('register', nameOrContext)
     // Like `@controller`, define the element once static fields are assigned.
-    ;(nameOrContext as ClassContext<CustomElementClass>).addInitializer(function (this: CustomElementClass) {
-      register(this)
-    })
+    // Like legacy decorators, register the class this decorator received, even if an outer decorator replaced it.
+    ;(nameOrContext as ClassContext<CustomElementClass>).addInitializer(() => register(classObject))
     return
   }
   const name = nameOrContext as string | undefined

@@ -3,6 +3,7 @@ import {replace, fake, spy} from 'sinon'
 import {controller} from '../src/controller.js'
 import {attr} from '../src/attr.js'
 import {lazyDefine} from '../src/lazy-define.js'
+import type {CustomElementClass} from '../src/custom-element.js'
 
 describe('controller', () => {
   let instance
@@ -54,6 +55,25 @@ describe('controller', () => {
     element.setAttribute('x-name', 'b')
     expect(changed).to.eql(['data-extra', 'x-name'])
     expect(element.name).to.equal('b')
+  })
+
+  // Legacy class decorators define the class they receive, and the class an outer decorator returns isn't defined.
+  it('defines the class it decorates when an outer class decorator replaces it', async () => {
+    const decorated: CustomElementClass[] = []
+    const wrap = <C extends CustomElementClass>(classObject: C) => {
+      decorated.push(classObject)
+      return class extends classObject {}
+    }
+    @wrap
+    @controller
+    class OuterWrapElement extends HTMLElement {
+      @attr foo = 'bar'
+    }
+    expect(OuterWrapElement).to.exist
+    expect(customElements.get('outer-wrap')).to.equal(decorated[0])
+    expect(decorated[0].observedAttributes).to.include('data-foo')
+    instance = await fixture(html`<outer-wrap />`)
+    expect(instance).to.have.attribute('data-foo', 'bar')
   })
 
   it('adds data-catalyst to elements with custom names', async () => {
