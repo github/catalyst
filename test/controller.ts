@@ -57,7 +57,8 @@ describe('controller', () => {
     expect(element.name).to.equal('b')
   })
 
-  // Legacy class decorators define the class they receive, and the class an outer decorator returns isn't defined.
+  // Legacy decorators define the class they receive. Standard decorators define the class an outer decorator returns,
+  // which extends it. Both use the name of the class they receive.
   it('defines the class it decorates when an outer class decorator replaces it', async () => {
     const decorated: CustomElementClass[] = []
     const wrap = <C extends CustomElementClass>(classObject: C) => {
@@ -70,9 +71,11 @@ describe('controller', () => {
       @attr foo = 'bar'
     }
     expect(OuterWrapElement).to.exist
-    expect(customElements.get('outer-wrap')).to.equal(decorated[0])
-    expect(decorated[0].observedAttributes).to.include('data-foo')
+    const defined = customElements.get('outer-wrap')!
+    expect(defined === decorated[0] || defined.prototype instanceof decorated[0]).to.equal(true)
+    expect((defined as CustomElementClass).observedAttributes).to.include('data-foo')
     instance = await fixture(html`<outer-wrap />`)
+    expect(instance).to.be.instanceOf(decorated[0])
     expect(instance).to.have.attribute('data-foo', 'bar')
   })
 
