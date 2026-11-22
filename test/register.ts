@@ -62,8 +62,9 @@ describe('register', () => {
       @attr foo = 'bar'
     }
     expect(OuterRegisterElement).to.exist
-    expect(window.customElements.get('outer-register')).to.equal(decorated[0])
-    expect(decorated[0].observedAttributes).to.include('data-foo')
+    const defined = window.customElements.get('outer-register')!
+    expect(defined === decorated[0] || defined.prototype instanceof decorated[0]).to.equal(true)
+    expect((defined as CustomElementClass).observedAttributes).to.include('data-foo')
   })
 
   it('initializes attrs of the class it decorates when an outer class decorator replaces it', async () => {

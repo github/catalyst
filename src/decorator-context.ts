@@ -41,19 +41,33 @@ try {
   // `Symbol` is frozen, for example by SES `lockdown()`. Legacy decorators don't need metadata.
 }
 
-// Decorator metadata of classes that an outer class decorator replaced, which leaves the metadata on the replacement.
-export const replacedMetadata = new WeakMap<object, object>()
+export const hasOwn = (object: object, key: PropertyKey): boolean => Object.prototype.hasOwnProperty.call(object, key)
+
+// The `@attr` members a class records in its decorator metadata.
+export const standardAttrs = Symbol.for('catalyst:attr')
 
 /**
- * Returns the class a standard class decorator received, which is the class legacy decorators register, rather than
- * the class its initializer runs on, which an outer class decorator may have replaced.
+ * Returns the class's own decorator metadata, if it records `@attr` members. Finds the metadata by those rather than by
+ * `Symbol.metadata`, because another library may redefine `Symbol.metadata` after some classes are defined.
  */
-export function decoratedClass<C>(classObject: C, context: ClassContext, final: unknown): C {
-  if (final !== classObject && context.metadata) replacedMetadata.set(classObject as object, context.metadata)
-  return classObject
+export function ownMetadata(classObject: object): Record<symbol, string[] | undefined> | undefined {
+  for (const symbol of Object.getOwnPropertySymbols(classObject)) {
+    const metadata: unknown = Object.getOwnPropertyDescriptor(classObject, symbol)!.value
+    if (typeof metadata === 'object' && metadata !== null && hasOwn(metadata, standardAttrs)) {
+      return metadata as Record<symbol, string[]>
+    }
+  }
 }
 
-export const hasOwn = (object: object, key: PropertyKey): boolean => Object.prototype.hasOwnProperty.call(object, key)
+// Metadata of classes that a class decorator received. A class decorator can return a class it defines, and
+// TypeScript then replaces that class's metadata with the metadata of the class it decorated.
+export const receivedMetadata = new WeakMap<object, object>()
+
+export function receiveClass(decorator: string, context: ClassContext | MemberContext, classObject: object): void {
+  assertClass(decorator, context)
+  const metadata = ownMetadata(classObject)
+  if (metadata) receivedMetadata.set(classObject, metadata)
+}
 
 // Standard decorators receive a context object as their second argument; legacy decorators receive the member name.
 export function isDecoratorContext(value: unknown): value is ClassContext | MemberContext {

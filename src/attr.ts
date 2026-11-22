@@ -3,18 +3,18 @@ import {mustDasherize} from './dasherize.js'
 import {meta, ownMeta} from './core.js'
 import type {ClassContext, MemberContext} from './decorator-context.js'
 import {
-  assertClass,
-  decoratedClass,
   hasOwn,
   isDecoratorContext,
   memberName,
-  replacedMetadata
+  ownMetadata,
+  receiveClass,
+  receivedMetadata,
+  standardAttrs
 } from './decorator-context.js'
 
 const attrKey = 'attr'
 type attrValue = string | number | boolean
 
-const standardAttrs = Symbol.for('catalyst:attr')
 // Names of standard `@attr` getters and setters, which compute their value rather than store it.
 const standardComputedAttrs = Symbol.for('catalyst:attr:computed')
 
@@ -74,20 +74,27 @@ export function attr(proto: unknown, keyOrContext: unknown): void | ((value: unk
 // Standard fields without a value that hide an inherited accessor, by element.
 const shadowingFields = new WeakMap<object, Set<string>>()
 /**
- * Returns the `@attr` members recorded in the class's own decorator metadata. Finds the metadata by these lists rather
- * than by `Symbol.metadata`, because another library may redefine `Symbol.metadata` after some classes are defined.
+ * Returns the `@attr` members recorded in the class's own decorator metadata, followed by those in metadata it had
+ * when a class decorator received it.
  */
 function ownStandardAttrs(classObject: object): Record<symbol, string[] | undefined> {
-  const replaced = replacedMetadata.get(classObject)
-  // Metadata inherits from the parent class's, so a class without standard attrs of its own doesn't own the list.
-  if (replaced && hasOwn(replaced, standardAttrs)) return replaced as Record<symbol, string[]>
-  for (const symbol of Object.getOwnPropertySymbols(classObject)) {
-    const metadata: unknown = Object.getOwnPropertyDescriptor(classObject, symbol)!.value
-    if (typeof metadata === 'object' && metadata !== null && hasOwn(metadata, standardAttrs)) {
-      return metadata as Record<symbol, string[]>
-    }
+  const current = ownMetadata(classObject) ?? {}
+  const received = receivedMetadata.get(classObject) as Record<symbol, string[] | undefined> | undefined
+  if (!received || received === current) return current
+  const own = (metadata: Record<symbol, string[] | undefined>, list: symbol) =>
+    (hasOwn(metadata, list) && metadata[list]) || []
+  return {
+    [standardAttrs]: [...own(current, standardAttrs), ...own(received, standardAttrs)],
+    [standardComputedAttrs]: [...own(current, standardComputedAttrs), ...own(received, standardComputedAttrs)]
   }
-  return {}
+}
+
+// The first definition of a member on the classes above the built-in element they extend.
+function findDescriptor(proto: object | null, key: string): PropertyDescriptor | undefined {
+  for (let o = proto; o && !isNative(o); o = Object.getPrototypeOf(o)) {
+    const descriptor = Object.getOwnPropertyDescriptor(o, key)
+    if (descriptor) return descriptor
+  }
 }
 
 // Classes whose attrs are registered, mapped to whether any of them came from standard decorator metadata.
@@ -136,7 +143,7 @@ export function registerStandardAttrs(classObject: CustomElementClass, recheck =
       // A stored attr has no definition on the prototype, or an accessor with both a getter and a setter. Anything
       // else comes from a class that a class decorator returned, which TypeScript attaches the metadata to, so it
       // decides its kind from its own definition.
-      const descriptor = Object.getOwnPropertyDescriptor(level.prototype, key)
+      const descriptor = findDescriptor(level.prototype, key)
       if (!computed.includes(key) && descriptor && !(descriptor.get && descriptor.set)) kinds.delete(key)
       else kinds.set(key, computed.includes(key))
     }
@@ -186,6 +193,7 @@ const attrName = (prefixed: string): string =>
  * `@controller` decorator it should not call this manually.
  */
 const initialized = new WeakSet<Element>()
+const rechecked = new WeakSet<object>()
 const nativeCode = /\{\s*\[native code\]\s*\}$/
 // Prototypes mapped to whether they belong to a built-in class. Reading a class's source is slow, so do it once.
 const nativePrototypes = new WeakMap<object, boolean>()
@@ -204,7 +212,12 @@ export function initializeAttrs(instance: HTMLElement, names?: Iterable<string>)
   const prefix = proto?.constructor?.attrPrefix ?? 'data-'
   // Registering also records the kinds of standard attrs, which explicitly named attrs need too. Built-in elements
   // have none, and registering would write to their prototypes.
-  if (typeof proto?.constructor === 'function' && !isNative(proto)) registerStandardAttrs(proto.constructor)
+  // The first element of a class registers it again, because an earlier registration may have come before the class's
+  // metadata was attached.
+  if (typeof proto?.constructor === 'function' && !isNative(proto)) {
+    registerStandardAttrs(proto.constructor, !rechecked.has(proto.constructor))
+    rechecked.add(proto.constructor)
+  }
   if (!names) names = meta(proto, attrKey)
   // A field without a value that hides an inherited accessor reads it, as a legacy `declare` field did, so remove the
   // field's own property while it's still unset.
@@ -283,9 +296,9 @@ export function defineObservedAttributes(classObject: CustomElementClass): void
 export function defineObservedAttributes(classObject: CustomElementClass, context?: unknown): void {
   // Standard class decorators run before the class's decorator metadata is attached, so wait for it.
   if (isDecoratorContext(context)) {
-    assertClass('defineObservedAttributes', context)
+    receiveClass('defineObservedAttributes', context, classObject)
     ;(context as ClassContext<CustomElementClass>).addInitializer(function (this: CustomElementClass) {
-      defineObservedAttributes(decoratedClass(classObject, context as ClassContext, this))
+      defineObservedAttributes(this)
     })
     return
   }

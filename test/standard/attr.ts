@@ -620,6 +620,87 @@ describe('Attr (standard decorators)', () => {
     instance.remove()
   })
 
+  it('initializes standard attrs that initializeAttrs finds after an early registration', async () => {
+    const early = (classObject: CustomElementClass) => defineObservedAttributes(classObject)
+    @early
+    class EarlyInitBase extends HTMLElement {
+      @attr base = 'base-default'
+    }
+    @early
+    class EarlyInitElement extends EarlyInitBase {
+      @attr value = 'default'
+      connectedCallback() {
+        initializeAttrs(this)
+      }
+    }
+    register(EarlyInitElement)
+    const instance = await fixture<EarlyInitElement>(
+      html`<early-init data-value="html" data-base="base-html"></early-init>`
+    )
+    expect(instance.value).to.equal('html')
+    expect(instance.base).to.equal('base-html')
+  })
+
+  it('observes and initializes attrs a class decorator adds in the class it returns', async () => {
+    const withExtra = <C extends CustomElementClass>(classObject: C) =>
+      class extends classObject {
+        @attr extra = 'extra'
+      }
+    @controller('returned-attrs')
+    @withExtra
+    class ReturnedAttrsElement extends HTMLElement {
+      @attr own = 'own'
+    }
+    expect(observed(ReturnedAttrsElement)).to.eql(['data-own', 'data-extra'])
+    const instance = await fixture(html`<returned-attrs data-extra="html"></returned-attrs>`)
+    expect(instance).to.have.attribute('data-own', 'own')
+    expect((instance as unknown as {extra: string}).extra).to.equal('html')
+  })
+
+  it('defines the class an outer class decorator returns, under the name of the class it decorated', async () => {
+    const wrap = <C extends CustomElementClass>(classObject: C) => {
+      attr(classObject.prototype as Record<'early', string>, 'early')
+      return class extends classObject {}
+    }
+    @wrap
+    @controller
+    class OuterReturnedElement extends HTMLElement {
+      early = 'early'
+      @attr late = 'late'
+    }
+    expect(customElements.get('outer-returned')).to.equal(OuterReturnedElement)
+    expect(observed(OuterReturnedElement)).to.eql(['data-early', 'data-late'])
+    const instance = await fixture(html`<outer-returned></outer-returned>`)
+    expect(instance).to.be.instanceOf(OuterReturnedElement)
+  })
+
+  for (const outer of ['class', 'base']) {
+    it(`initializes a getter a replacing class decorator adds after fields when an outer decorator replaces the ${outer}`, async () => {
+      const wrap = <C extends CustomElementClass>(classObject: C) => class extends classObject {}
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TypeScript requires `any[]` for a mixin constructor.
+      const withLabel = <C extends new (...args: any[]) => {input: string}>(classObject: C) =>
+        class extends classObject {
+          get label() {
+            return `${this.input}-label`
+          }
+        }
+      const name = `stacked-getter-${outer}`
+      @wrap
+      @withLabel
+      class StackedBase extends HTMLElement {
+        @attr accessor label = 'base'
+        @attr input = 'field'
+      }
+      if (outer === 'class') controller(name)(StackedBase)
+      else controller(name)(class extends StackedBase {})
+      const instance = document.createElement(name)
+      instance.setAttribute('data-input', 'attribute')
+      document.body.append(instance)
+      expect(instance).to.have.attribute('data-label', 'attribute-label')
+      instance.remove()
+    })
+  }
+
   it('records subclass attrs when the base class metadata is frozen', async () => {
     const freeze = (_: unknown, context: ClassDecoratorContext) => void Object.freeze(context.metadata)
     @freeze
