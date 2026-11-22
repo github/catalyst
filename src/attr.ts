@@ -47,9 +47,13 @@ export function attr(proto: unknown, keyOrContext: unknown): void | ((value: unk
   if (keyOrContext.kind === 'getter' || keyOrContext.kind === 'setter') record(standardComputedAttrs)
   // A field without a value replaces a legacy `declare` field, which emitted nothing. So keep a value set on the element
   // before it upgraded, such as on a clone of inert template content, instead of replacing it with `undefined`.
+  // Define the field here too, so that with `useDefineForClassFields: false` its assignment doesn't reach a built-in
+  // setter of the same name, such as `title`, which would add an attribute while the element is constructed.
   if (keyOrContext.kind === 'field') {
-    return function (this: unknown, value: unknown) {
-      return value === undefined && hasOwn(this as object, name) ? (this as Record<string, unknown>)[name] : value
+    return function (this: object, value: unknown) {
+      if (hasOwn(this, name)) return value === undefined ? (this as Record<string, unknown>)[name] : value
+      Object.defineProperty(this, name, {value, configurable: true, enumerable: true, writable: true})
+      return value
     }
   }
 }
@@ -110,7 +114,14 @@ export function registerStandardAttrs(classObject: CustomElementClass, recheck =
     // A subclass that redefines an inherited standard attr without decorating it, such as a legacy getter, decides
     // its kind from its own definition.
     for (const key of kinds.keys()) if (hasOwn(level.prototype, key) && !own.includes(key)) kinds.delete(key)
-    for (const key of own) kinds.set(key, computed.includes(key))
+    for (const key of own) {
+      // A stored attr has no definition on the prototype, or an accessor with both a getter and a setter. Anything
+      // else comes from a class that a class decorator returned, which TypeScript attaches the metadata to, so it
+      // decides its kind from its own definition.
+      const descriptor = Object.getOwnPropertyDescriptor(level.prototype, key)
+      if (!computed.includes(key) && descriptor && !(descriptor.get && descriptor.set)) kinds.delete(key)
+      else kinds.set(key, computed.includes(key))
+    }
     return own
   })
   const hasStandard = standard.some(level => level.length) || !!registeredStandardAttrs.get(current as object)
@@ -252,6 +263,8 @@ export function defineObservedAttributes(classObject: CustomElementClass, contex
   if (isDecoratorContext(context)) {
     assertClass('defineObservedAttributes', context)
     ;(context as ClassContext<CustomElementClass>).addInitializer(function (this: CustomElementClass) {
+      // Another class decorator may have registered the class before its metadata was attached.
+      registerStandardAttrs(this, true)
       defineObservedAttributes(this)
     })
     return
