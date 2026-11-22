@@ -41,6 +41,18 @@ try {
   // `Symbol` is frozen, for example by SES `lockdown()`. Legacy decorators don't need metadata.
 }
 
+// Decorator metadata of classes that an outer class decorator replaced, which leaves the metadata on the replacement.
+export const replacedMetadata = new WeakMap<object, object>()
+
+/**
+ * Returns the class a standard class decorator received, which is the class legacy decorators register, rather than
+ * the class its initializer runs on, which an outer class decorator may have replaced.
+ */
+export function decoratedClass<C>(classObject: C, context: ClassContext, final: unknown): C {
+  if (final !== classObject && context.metadata) replacedMetadata.set(classObject as object, context.metadata)
+  return classObject
+}
+
 export const hasOwn = (object: object, key: PropertyKey): boolean => Object.prototype.hasOwnProperty.call(object, key)
 
 // Standard decorators receive a context object as their second argument; legacy decorators receive the member name.

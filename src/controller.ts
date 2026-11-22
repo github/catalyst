@@ -1,8 +1,7 @@
 import {CatalystDelegate} from './core.js'
-import {decoratedClass} from './attr.js'
 import type {CustomElementClass} from './custom-element.js'
 import type {ClassContext} from './decorator-context.js'
-import {assertClass, isDecoratorContext} from './decorator-context.js'
+import {assertClass, decoratedClass, isDecoratorContext} from './decorator-context.js'
 
 /**
  * The decorator returned by `controller(name)`. It accepts both TypeScript's

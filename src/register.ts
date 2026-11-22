@@ -1,6 +1,6 @@
 import type {CustomElementClass} from './custom-element.js'
 import type {ClassContext} from './decorator-context.js'
-import {assertClass, isDecoratorContext} from './decorator-context.js'
+import {assertClass, decoratedClass, isDecoratorContext} from './decorator-context.js'
 import {dasherize} from './dasherize.js'
 
 /**
@@ -23,7 +23,9 @@ export function register(classObject: CustomElementClass, nameOrContext?: unknow
     assertClass('register', nameOrContext)
     // Like `@controller`, define the element once static fields are assigned.
     // Like legacy decorators, register the class this decorator received, even if an outer decorator replaced it.
-    ;(nameOrContext as ClassContext<CustomElementClass>).addInitializer(() => register(classObject))
+    ;(nameOrContext as ClassContext<CustomElementClass>).addInitializer(function (this: CustomElementClass) {
+      register(decoratedClass(classObject, nameOrContext as ClassContext, this))
+    })
     return
   }
   const name = nameOrContext as string | undefined

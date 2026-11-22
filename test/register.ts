@@ -1,7 +1,7 @@
 import {expect} from '@open-wc/testing'
 import {restore, replace, fake} from 'sinon'
 import {register} from '../src/register.js'
-import {attr, defineObservedAttributes} from '../src/attr.js'
+import {attr, defineObservedAttributes, initializeAttrs} from '../src/attr.js'
 import type {CustomElementClass} from '../src/custom-element.js'
 
 describe('register', () => {
@@ -64,6 +64,29 @@ describe('register', () => {
     expect(OuterRegisterElement).to.exist
     expect(window.customElements.get('outer-register')).to.equal(decorated[0])
     expect(decorated[0].observedAttributes).to.include('data-foo')
+  })
+
+  it('initializes attrs of the class it decorates when an outer class decorator replaces it', async () => {
+    const decorated: CustomElementClass[] = []
+    const wrap = <C extends CustomElementClass>(classObject: C) => {
+      decorated.push(classObject)
+      return class extends classObject {}
+    }
+    const registerClass = register as (classObject: CustomElementClass, context?: unknown) => void
+    @wrap
+    @registerClass
+    class OuterRegisterAttrsElement extends HTMLElement {
+      @attr foo = 'bar'
+      connectedCallback() {
+        initializeAttrs(this)
+      }
+    }
+    expect(OuterRegisterAttrsElement).to.exist
+    const element = document.createElement('outer-register-attrs')
+    document.body.append(element)
+    expect(element).to.be.instanceOf(decorated[0])
+    expect(element.getAttribute('data-foo')).to.equal('bar')
+    element.remove()
   })
 
   it('dasherises class names', () => {
