@@ -561,6 +561,65 @@ describe('Attr (standard decorators)', () => {
     instance.remove()
   })
 
+  it('registers standard attrs with a direct defineObservedAttributes call that an earlier call missed', async () => {
+    const early = (classObject: CustomElementClass) => defineObservedAttributes(classObject)
+    @early
+    class EarlyDirectObservedElement extends HTMLElement {
+      @attr value = 'default'
+      connectedCallback() {
+        initializeAttrs(this)
+      }
+    }
+    defineObservedAttributes(EarlyDirectObservedElement)
+    register(EarlyDirectObservedElement)
+    expect(observed(EarlyDirectObservedElement)).to.include('data-value')
+    const instance = await fixture<EarlyDirectObservedElement>(
+      html`<early-direct-observed data-value="html"></early-direct-observed>`
+    )
+    expect(instance.value).to.equal('html')
+  })
+
+  it('initializes inherited getter attrs after fields when an outer class decorator replaces a subclass', async () => {
+    const wrap = <C extends CustomElementClass>(classObject: C) => class extends classObject {}
+    class ReplacedInheritedBase extends HTMLElement {
+      @attr get label() {
+        return `${this.input}-label`
+      }
+      @attr input = 'field'
+    }
+    @wrap
+    @controller('replaced-inherited-child')
+    class ReplacedInheritedChild extends ReplacedInheritedBase {}
+    expect(ReplacedInheritedChild).to.exist
+    const instance = document.createElement('replaced-inherited-child')
+    instance.setAttribute('data-input', 'attribute')
+    document.body.append(instance)
+    expect(instance).to.have.attribute('data-label', 'attribute-label')
+    instance.remove()
+  })
+
+  it('initializes a getter that a replacing class decorator adds over a field without a value last', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TypeScript requires `any[]` for a mixin constructor.
+    const withLabel = <C extends new (...args: any[]) => {input: string}>(classObject: C) =>
+      class extends classObject {
+        get label() {
+          return `${this.input}-label`
+        }
+      }
+    @controller('replaced-field-getter')
+    @withLabel
+    class ReplacedFieldGetterElement extends HTMLElement {
+      @attr label!: string
+      @attr input = 'field'
+    }
+    expect(ReplacedFieldGetterElement).to.exist
+    const instance = document.createElement('replaced-field-getter')
+    instance.setAttribute('data-input', 'attribute')
+    document.body.append(instance)
+    expect(instance).to.have.attribute('data-label', 'attribute-label')
+    instance.remove()
+  })
+
   it('records subclass attrs when the base class metadata is frozen', async () => {
     const freeze = (_: unknown, context: ClassDecoratorContext) => void Object.freeze(context.metadata)
     @freeze

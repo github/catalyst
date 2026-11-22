@@ -2,7 +2,14 @@ import type {CustomElementClass} from './custom-element.js'
 import {mustDasherize} from './dasherize.js'
 import {meta, ownMeta} from './core.js'
 import type {ClassContext, MemberContext} from './decorator-context.js'
-import {assertClass, hasOwn, isDecoratorContext, memberName} from './decorator-context.js'
+import {
+  assertClass,
+  decoratedClass,
+  hasOwn,
+  isDecoratorContext,
+  memberName,
+  replacedMetadata
+} from './decorator-context.js'
 
 const attrKey = 'attr'
 type attrValue = string | number | boolean
@@ -66,25 +73,14 @@ export function attr(proto: unknown, keyOrContext: unknown): void | ((value: unk
 
 // Standard fields without a value that hide an inherited accessor, by element.
 const shadowingFields = new WeakMap<object, Set<string>>()
-// Decorator metadata of classes that an outer class decorator replaced, which leaves the metadata on the replacement.
-const replacedMetadata = new WeakMap<object, object>()
-
-/**
- * Returns the class a standard class decorator received, which is the class legacy decorators register, rather than
- * the class its initializer runs on, which an outer class decorator may have replaced.
- */
-export function decoratedClass<C extends CustomElementClass>(classObject: C, context: ClassContext, final: unknown): C {
-  if (final !== classObject && context.metadata) replacedMetadata.set(classObject, context.metadata)
-  return classObject
-}
-
 /**
  * Returns the `@attr` members recorded in the class's own decorator metadata. Finds the metadata by these lists rather
  * than by `Symbol.metadata`, because another library may redefine `Symbol.metadata` after some classes are defined.
  */
 function ownStandardAttrs(classObject: object): Record<symbol, string[] | undefined> {
   const replaced = replacedMetadata.get(classObject)
-  if (replaced) return replaced as Record<symbol, string[]>
+  // Metadata inherits from the parent class's, so a class without standard attrs of its own doesn't own the list.
+  if (replaced && hasOwn(replaced, standardAttrs)) return replaced as Record<symbol, string[]>
   for (const symbol of Object.getOwnPropertySymbols(classObject)) {
     const metadata: unknown = Object.getOwnPropertyDescriptor(classObject, symbol)!.value
     if (typeof metadata === 'object' && metadata !== null && hasOwn(metadata, standardAttrs)) {
@@ -210,6 +206,10 @@ export function initializeAttrs(instance: HTMLElement, names?: Iterable<string>)
   // have none, and registering would write to their prototypes.
   if (typeof proto?.constructor === 'function' && !isNative(proto)) registerStandardAttrs(proto.constructor)
   if (!names) names = meta(proto, attrKey)
+  // A field without a value that hides an inherited accessor reads it, as a legacy `declare` field did, so remove the
+  // field's own property while it's still unset.
+  const record = instance as unknown as Record<PropertyKey, unknown>
+  for (const key of shadowingFields.get(instance) ?? []) if (record[key] === undefined) delete record[key]
   const nameOf = (key: string) => attrName(`${prefix}${key}`)
   const kinds = standardAttrKinds.get(proto?.constructor)
   // Standard decorators record whether an attr is a getter or setter. For others, look for a getter without a setter
@@ -240,9 +240,7 @@ export function initializeAttrs(instance: HTMLElement, names?: Iterable<string>)
 }
 
 function initializeAttr(instance: HTMLElement, key: string, name: string) {
-  const record = instance as unknown as Record<PropertyKey, unknown>
-  if (shadowingFields.get(instance)?.has(key) && record[key] === undefined) delete record[key]
-  const value = record[key]
+  const value = (<Record<PropertyKey, unknown>>(<unknown>instance))[key]
   let descriptor: PropertyDescriptor = {
     configurable: true,
     get(this: HTMLElement): string {
@@ -287,14 +285,12 @@ export function defineObservedAttributes(classObject: CustomElementClass, contex
   if (isDecoratorContext(context)) {
     assertClass('defineObservedAttributes', context)
     ;(context as ClassContext<CustomElementClass>).addInitializer(function (this: CustomElementClass) {
-      const decorated = decoratedClass(classObject, context as ClassContext, this)
-      // Another class decorator may have registered the class before its metadata was attached.
-      registerStandardAttrs(decorated, true)
-      defineObservedAttributes(decorated)
+      defineObservedAttributes(decoratedClass(classObject, context as ClassContext, this))
     })
     return
   }
-  registerStandardAttrs(classObject)
+  // Another class decorator may have registered the class before its metadata was attached, so register it again.
+  registerStandardAttrs(classObject, true)
   let observed = classObject.observedAttributes || []
 
   const prefix = classObject.attrPrefix ?? 'data-'
