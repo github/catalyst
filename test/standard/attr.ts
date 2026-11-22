@@ -432,6 +432,32 @@ describe('Attr (standard decorators)', () => {
     expect(instance.getAttribute('data-late')).to.equal('late')
   })
 
+  // Code can set properties on an element before it upgrades, such as a clone of inert template content. A field
+  // without a value replaces a legacy `declare` field, which emitted nothing, so it keeps those values.
+  it('keeps values set before upgrade on fields without a value, as legacy declare fields did', async () => {
+    @controller
+    class PreUpgradeElement extends HTMLElement {
+      @attr runner!: string
+      @attr cost!: number
+      @attr label = 'default'
+    }
+    expect(PreUpgradeElement).to.exist
+    const template = document.createElement('template')
+    template.content.append(template.content.ownerDocument.createElement('pre-upgrade'))
+    const element = template.content.firstElementChild!.cloneNode() as PreUpgradeElement
+    expect(element).not.to.be.instanceOf(PreUpgradeElement)
+    Object.assign(element, {runner: 'Linux 2-core', cost: 800, label: 'set before upgrade'})
+    const container = await fixture(html`<div></div>`)
+    container.append(element)
+    expect(element).to.be.instanceOf(PreUpgradeElement)
+    expect(element.runner).to.equal('Linux 2-core')
+    expect(element.cost).to.equal(800)
+    expect(element).to.have.attribute('data-runner', 'Linux 2-core')
+    expect(element).to.have.attribute('data-cost', '800')
+    // A field with a value replaces it, as with legacy decorators.
+    expect(element.label).to.equal('default')
+  })
+
   // Another class decorator can call defineObservedAttributes before the class's metadata is attached.
   it('registers standard attrs that an earlier defineObservedAttributes call missed', async () => {
     const early = (classObject: CustomElementClass) => defineObservedAttributes(classObject)
