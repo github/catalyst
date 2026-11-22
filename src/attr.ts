@@ -75,7 +75,9 @@ const standardAttrKinds = new WeakMap<object, Map<string, boolean>>()
  * without a class decorator may get metadata that doesn't inherit from its
  * parent's.
  */
-export function registerStandardAttrs(classObject: CustomElementClass): void {
+export function registerStandardAttrs(classObject: CustomElementClass, recheck = false): void {
+  // A class registered before its metadata was attached found no standard attrs, so `recheck` looks again.
+  if (recheck && registeredStandardAttrs.get(classObject) === false) registeredStandardAttrs.delete(classObject)
   if (registeredStandardAttrs.has(classObject)) return
   const levels: CustomElementClass[] = []
   let current: unknown = classObject
@@ -158,8 +160,9 @@ export function initializeAttrs(instance: HTMLElement, names?: Iterable<string>)
   initialized.add(instance)
   const proto = Object.getPrototypeOf(instance)
   const prefix = proto?.constructor?.attrPrefix ?? 'data-'
-  // Registering also records the kinds of standard attrs, which explicitly named attrs need too.
-  if (typeof proto?.constructor === 'function') registerStandardAttrs(proto.constructor)
+  // Registering also records the kinds of standard attrs, which explicitly named attrs need too. Built-in elements
+  // have none, and registering would write to their prototypes.
+  if (typeof proto?.constructor === 'function' && !isNative(proto)) registerStandardAttrs(proto.constructor)
   if (!names) names = meta(proto, attrKey)
   const nameOf = (key: string) => attrName(`${prefix}${key}`)
   const kinds = standardAttrKinds.get(proto?.constructor)

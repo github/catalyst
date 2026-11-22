@@ -388,6 +388,14 @@ describe('Attr', () => {
       expect(instance).to.have.attribute('data-foo', 'baz')
     })
 
+    it('leaves built-in element prototypes alone when initializing named attrs', () => {
+      const before = Object.getOwnPropertySymbols(HTMLDivElement.prototype).map(String)
+      const div = document.createElement('div')
+      initializeAttrs(div, ['fooBar'])
+      expect(div).to.have.attribute('data-foo-bar', '')
+      expect(Object.getOwnPropertySymbols(HTMLDivElement.prototype).map(String)).to.eql(before)
+    })
+
     it('initializes an attr named constructor', () => {
       class ConstructorAttrTest extends HTMLElement {
         connectedCallback() {

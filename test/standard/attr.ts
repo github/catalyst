@@ -432,6 +432,19 @@ describe('Attr (standard decorators)', () => {
     expect(instance.getAttribute('data-late')).to.equal('late')
   })
 
+  // Another class decorator can call defineObservedAttributes before the class's metadata is attached.
+  it('registers standard attrs that an earlier defineObservedAttributes call missed', async () => {
+    const early = (classObject: CustomElementClass) => defineObservedAttributes(classObject)
+    @controller
+    @early
+    class EarlyObservedElement extends HTMLElement {
+      @attr value = 'default'
+    }
+    expect(observed(EarlyObservedElement)).to.include('data-value')
+    const instance = await fixture(html`<early-observed></early-observed>`)
+    expect(instance).to.have.attribute('data-value', 'default')
+  })
+
   it('records subclass attrs when the base class metadata is frozen', async () => {
     const freeze = (_: unknown, context: ClassDecoratorContext) => void Object.freeze(context.metadata)
     @freeze

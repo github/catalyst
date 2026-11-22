@@ -30,13 +30,13 @@ The preferred way to handle this is to disable renaming class names in your buil
 
 #### ESBuild
 
-When using ESBuild you can turn off all class and function name minification with the [`keep_names`](https://esbuild.github.io/api/#keep-names) option. Setting this to `true` in your build will opt-out all classes and all functions from minification.
+When using ESBuild you can turn off all class and function name minification with the [`keepNames`](https://esbuild.github.io/api/#keep-names) option. Setting this to `true` in your build will opt-out all classes and all functions from minification.
 
-With [standard decorators]({{ site.baseurl }}/guide/decorators#standard-decorators), esbuild renames classes in TypeScript's output even without minification, and `keep_names` only prevents it from esbuild 0.18.2. Passing a tag name to `@controller` works with every build tool.
+With [standard decorators]({{ site.baseurl }}/guide/decorators#standard-decorators), esbuild renames classes in TypeScript's output even without minification, and `keepNames` only prevents it from esbuild 0.18.2. Passing a tag name to `@controller` works with every build tool.
 
 
 ```ts
-{ keep_names: true }
+{ keepNames: true }
 // Or --keep-names on the CLI
 ```
 

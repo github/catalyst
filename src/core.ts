@@ -1,7 +1,7 @@
 import {register} from './register.js'
 import {bind, bindShadow} from './bind.js'
 import {autoShadowRoot} from './auto-shadow-root.js'
-import {defineObservedAttributes, initializeAttrs} from './attr.js'
+import {defineObservedAttributes, initializeAttrs, registerStandardAttrs} from './attr.js'
 import type {CustomElementClass} from './custom-element.js'
 import {observe} from './lazy-define.js'
 
@@ -43,6 +43,7 @@ export class CatalystDelegate {
       }
     })
 
+    registerStandardAttrs(classObject, true)
     defineObservedAttributes(classObject)
     register(classObject, elementName)
   }
