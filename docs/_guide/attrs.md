@@ -153,6 +153,7 @@ When an element gets connected to the DOM, the attr is initialized. During this 
  - Field and `accessor` attrs are initialized first, in the order they're registered. Getter and setter attrs come next, starting with those that have a matching attribute, so a getter's default can read the other attrs' values.
  - With legacy decorators, Catalyst can't tell an `accessor` from a getter and setter you wrote, so only a getter without a setter counts as a getter attr. Any attr with a setter initializes in registration order, as in earlier versions.
  - A class decorator that returns a subclass of the decorated class gets its decorator metadata. If that subclass replaces an `@attr` getter with an `accessor`, or a getter and setter pair, the attr keeps the getter's place in the order. Attrs that class decorator registers with `attr()` on the decorated class initialize before that class's standard attrs.
+ - A standard `@attr` field without a value, such as `@attr title!: string`, leaves a built-in accessor of the same name working until the element connects, as a legacy `declare` field did. With TypeScript 5.2 and 5.3, which run field initializers before fields are defined, the field hides it until then.
  - Standard decorators register `accessor` attrs before field attrs, whatever order they're declared in. To initialize attrs in declaration order, as legacy decorators do, decorate fields, not accessors: `@attr name!: string`.
 
 {% capture callout %}

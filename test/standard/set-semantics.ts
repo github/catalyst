@@ -41,6 +41,22 @@ describe('Attr (standard decorators, set semantics)', () => {
     expect(clone).to.have.attribute('data-title', 'set before upgrade')
   })
 
+  it('keeps read-only values set before upgrade on fields without a value', async () => {
+    @controller
+    class SetSemanticsReadonlyElement extends HTMLElement {
+      @attr runner!: string
+    }
+    expect(SetSemanticsReadonlyElement).to.exist
+    const template = document.createElement('template')
+    template.content.append(template.content.ownerDocument.createElement('set-semantics-readonly'))
+    const clone = template.content.firstElementChild!.cloneNode() as SetSemanticsReadonlyElement
+    Object.defineProperty(clone, 'runner', {value: 'before', configurable: true})
+    const container = await fixture(html`<div></div>`)
+    container.append(clone)
+    expect(clone).to.be.instanceOf(SetSemanticsReadonlyElement)
+    expect(clone).to.have.attribute('data-runner', 'before')
+  })
+
   it('keeps values set before upgrade on fields without a value', async () => {
     @controller
     class SetSemanticsPreUpgradeElement extends HTMLElement {
