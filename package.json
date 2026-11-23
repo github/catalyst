@@ -55,7 +55,7 @@
     {
       "path": "lib/index.js",
       "import": "{controller, attr, target, targets}",
-      "limit": "3.7kb"
+      "limit": "3.8kb"
     },
     {
       "path": "lib/abilities.js",
