@@ -1,5 +1,6 @@
 {
   "include": ["src", "test"],
+  "exclude": ["test/standard"],
   "compilerOptions": {
     "baseUrl": ".",
     "esModuleInterop": true,

@@ -96,3 +96,10 @@ export function meta(proto: Record<PropertyKey, unknown>, name: string): Set<str
   if (!map.has(name)) map.set(name, new Set<string>())
   return map.get(name)!
 }
+
+// Like `meta`, but only reads the metadata, including inherited metadata unless `own` is set, and doesn't create it.
+export function ownMeta(proto: object | undefined, name: string, own = true): Set<string> | undefined {
+  if (proto && (!own || Object.prototype.hasOwnProperty.call(proto, symbol))) {
+    return (proto as Record<PropertyKey, Map<string, Set<string>> | undefined>)[symbol]?.get(name)
+  }
+}

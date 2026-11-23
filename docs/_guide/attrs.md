@@ -16,7 +16,7 @@ Catalyst includes the `@attr` decorator, which provides nice syntax sugar to sim
  - The attribute name is automatically [observed, meaning `attributeChangedCallback` will fire when it changes](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements#using_the_lifecycle_callbacks).
  - Assigning a value in the class description will make that value the _default_ value, so when the element is connected that value is set (unless the element has the attribute defined already).
 
-To use the `@attr` decorator, attach it to a class field, and it will get/set the value of the matching `data-*` attribute.
+To use the `@attr` decorator, attach it to a class field, and it will get/set the value of the matching `data-*` attribute. With [standard decorators]({{ site.baseurl }}/guide/decorators#standard-decorators), `@attr` needs decorator metadata support, which TypeScript has from version 5.2.
 
 ### Example
 
@@ -150,6 +150,11 @@ When an element gets connected to the DOM, the attr is initialized. During this 
  - If the class property has a value, that is the _default_
  - When connected, if the element _does not_ have a matching attribute, the default _is_ applied.
  - When connected, if the element _does_ have a matching attribute, the default _is not_ applied, the property will be assigned to the value of the attribute instead.
+ - Field and `accessor` attrs are initialized first, in the order they're registered. Getter and setter attrs come next, starting with those that have a matching attribute, so a getter's default can read the other attrs' values.
+ - With legacy decorators, Catalyst can't tell an `accessor` from a getter and setter you wrote, so only a getter without a setter counts as a getter attr. Any attr with a setter initializes in registration order, as in earlier versions.
+ - A class decorator that returns a subclass of the decorated class gets its decorator metadata. If that subclass replaces an `@attr` getter with an `accessor`, or a getter and setter pair, the attr keeps the getter's place in the order. Attrs that class decorator registers with `attr()` on the decorated class initialize before that class's standard attrs.
+ - A standard `@attr` field without a value, such as `@attr title!: string`, leaves a built-in accessor of the same name working until the element connects, as a legacy `declare` field did. With TypeScript 5.2 and 5.3, which run field initializers before fields are defined, the field hides it until then.
+ - Standard decorators register `accessor` attrs before field attrs, whatever order they're declared in. To initialize attrs in declaration order, as legacy decorators do, decorate fields, not accessors: `@attr name!: string`.
 
 {% capture callout %}
 Remember! The values defined in the class field are the _default_. They won't be set if the element is created and its attribute set to a custom value!

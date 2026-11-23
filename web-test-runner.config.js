@@ -1,7 +1,7 @@
 import {esbuildPlugin} from '@web/dev-server-esbuild'
 
 export default {
-  files: ['test/*'],
+  files: ['test/*.ts'],
   nodeResolve: true,
   concurrency: 1,
   testsFinishTimeout: 30000,

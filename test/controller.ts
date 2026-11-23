@@ -3,6 +3,7 @@ import {replace, fake, spy} from 'sinon'
 import {controller} from '../src/controller.js'
 import {attr} from '../src/attr.js'
 import {lazyDefine} from '../src/lazy-define.js'
+import type {CustomElementClass} from '../src/custom-element.js'
 
 describe('controller', () => {
   let instance
@@ -25,6 +26,58 @@ describe('controller', () => {
     controller('custom-element-name')(class AnotherClass extends HTMLElement {})
     instance = await fixture(html`<custom-element-name />`)
     expect(instance).to.exist
+  })
+
+  it('registers attrs when called as a function', async () => {
+    class FunctionAttrElement extends HTMLElement {
+      @attr foo = 'bar'
+    }
+    controller('function-attr-element')(FunctionAttrElement)
+    instance = await fixture(html`<function-attr-element />`)
+    expect(instance).to.have.attribute('data-foo', 'bar')
+  })
+
+  it('defines the element after static fields are assigned', async () => {
+    const changed: string[] = []
+    @controller
+    class ControllerStaticsElement extends HTMLElement {
+      static observedAttributes = ['data-extra']
+      static attrPrefix = 'x-'
+      @attr name = 'a'
+      attributeChangedCallback(name: string) {
+        changed.push(name)
+      }
+    }
+    const element = await fixture<ControllerStaticsElement>(html`<controller-statics></controller-statics>`)
+    expect(element).to.have.attribute('x-name', 'a')
+    changed.length = 0
+    element.setAttribute('data-extra', '1')
+    element.setAttribute('x-name', 'b')
+    expect(changed).to.eql(['data-extra', 'x-name'])
+    expect(element.name).to.equal('b')
+  })
+
+  // Legacy decorators define the class they receive. Standard decorators define the class an outer decorator returns,
+  // which extends it. Both use the name of the class they receive.
+  it('defines the class it decorates when an outer class decorator replaces it', async () => {
+    const decorated: CustomElementClass[] = []
+    const wrap = <C extends CustomElementClass>(classObject: C) => {
+      decorated.push(classObject)
+      return class extends classObject {}
+    }
+    @wrap
+    @controller
+    class OuterWrapElement extends HTMLElement {
+      @attr foo = 'bar'
+    }
+    expect(OuterWrapElement).to.exist
+    const defined = customElements.get('outer-wrap')!
+    expect(defined === decorated[0] || defined.prototype instanceof decorated[0]).to.equal(true)
+    expect((defined as CustomElementClass).observedAttributes).to.include('data-foo')
+    expect((window as unknown as Record<string, unknown>).OuterWrapElement === defined).to.equal(true)
+    instance = await fixture(html`<outer-wrap />`)
+    expect(instance).to.be.instanceOf(decorated[0])
+    expect(instance).to.have.attribute('data-foo', 'bar')
   })
 
   it('adds data-catalyst to elements with custom names', async () => {

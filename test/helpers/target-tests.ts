@@ -1,0 +1,94 @@
+import {expect, fixture, html} from '@open-wc/testing'
+
+/**
+ * Target tests shared by both decorator modes. test/target.ts (legacy decorators) and test/standard/target.ts
+ * (standard decorators) each define `<target-test>` with `foo`, `baz`, `qux`, `shadow` and `bing` targets, a `foos`
+ * targets list and a plain `bar = 'hello'` field, then call this.
+ */
+export function targetTests() {
+  let instance: HTMLElement
+  beforeEach(async () => {
+    instance = await fixture(html`<target-test>
+      <target-test>
+        <div id="el1" data-target="target-test.barfoo target-test.foobar"></div>
+        <div id="el2" data-target="target-test.foo" data-targets="target-test.foos"></div>
+        <div id="el3" data-target="target-test.bing"></div>
+      </target-test>
+      <div id="el4" data-target="target-test.foo" data-targets="target-test.foos"></div>
+      <div id="el5" data-target="target-test.baz" data-targets="target-test.foos"></div>
+      <div id="el6" data-target="target-test.bar target-test.bing"></div>
+      <div id="el7" data-target="target-test.bazbaz"></div>
+      <div id="el8" data-target="other-target.qux target-test.qux"></div>
+    </target-test>`)
+  })
+
+  describe('target', () => {
+    it('returns the first element where closest tag is the controller', async () => {
+      expect(instance).to.have.property('foo').exist.with.attribute('id', 'el4')
+      expect(instance.querySelector('target-test')).to.have.property('foo').exist.with.attribute('id', 'el2')
+    })
+
+    it('does not assign to non-target decorated properties', async () => {
+      expect(instance).to.have.property('bar', 'hello')
+    })
+
+    it('returns the first element that has the exact target name', async () => {
+      expect(instance).to.have.property('baz').exist.with.attribute('id', 'el5')
+    })
+
+    it('returns target when there are mutliple target values', async () => {
+      expect(instance).to.have.property('bing').exist.with.attribute('id', 'el6')
+    })
+
+    it('returns targets when there are mutliple target values with different controllers', async () => {
+      expect(instance).to.have.property('qux').exist.with.attribute('id', 'el8')
+    })
+
+    it('returns targets from the shadowRoot, if available', async () => {
+      instance.attachShadow({mode: 'open'})
+      const el = document.createElement('div')
+      el.setAttribute('data-target', 'target-test.shadow')
+      instance.shadowRoot!.appendChild(el)
+      expect(instance).to.have.property('shadow', el)
+    })
+
+    it('prioritises shadowRoot targets over others', async () => {
+      instance.attachShadow({mode: 'open'})
+      const shadowEl = document.createElement('div')
+      shadowEl.setAttribute('data-target', 'target-test.foo')
+      instance.shadowRoot!.appendChild(shadowEl)
+      expect(instance).to.have.property('foo', shadowEl)
+    })
+  })
+
+  it('throws when a target is assigned, because it is a getter', () => {
+    expect(() => {
+      ;(instance as unknown as Record<string, unknown>).foo = document.body
+    }).to.throw(TypeError)
+    expect(() => {
+      ;(instance as unknown as Record<string, unknown>).foos = []
+    }).to.throw(TypeError)
+  })
+
+  describe('targets', () => {
+    it('returns all elements where closest tag is the controller', async () => {
+      expect(instance).to.have.property('foos').with.lengthOf(2)
+      expect(instance).to.have.nested.property('foos[0]').with.attribute('id', 'el4')
+      expect(instance).to.have.nested.property('foos[1]').with.attribute('id', 'el5')
+    })
+
+    it('returns all elements inside a shadow root', async () => {
+      instance.attachShadow({mode: 'open'})
+      const els = [document.createElement('div'), document.createElement('div'), document.createElement('div')]
+      for (const el of els) el.setAttribute('data-targets', 'target-test.foos')
+      instance.shadowRoot!.append(...els)
+
+      expect(instance).to.have.property('foos').with.lengthOf(5)
+      expect(instance).to.have.nested.property('foos[0]', els[0])
+      expect(instance).to.have.nested.property('foos[1]', els[1])
+      expect(instance).to.have.nested.property('foos[2]', els[2])
+      expect(instance).to.have.nested.property('foos[3]').with.attribute('id', 'el4')
+      expect(instance).to.have.nested.property('foos[4]').with.attribute('id', 'el5')
+    })
+  })
+}
