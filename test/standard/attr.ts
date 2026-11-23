@@ -701,6 +701,48 @@ describe('Attr (standard decorators)', () => {
     })
   }
 
+  // TypeScript 5.4 and later run a field's initializers right after it's defined, so the field can be removed there.
+  it('leaves built-in accessors of fields without a value working until the element connects', async () => {
+    @controller
+    class BuiltinBeforeConnectElement extends HTMLElement {
+      @attr title!: string
+      @attr hidden!: boolean
+    }
+    const element = new BuiltinBeforeConnectElement()
+    expect(element.title).to.equal('')
+    element.title = 'tooltip'
+    element.hidden = true
+    expect(element).to.have.attribute('title', 'tooltip')
+    expect(element).to.have.attribute('hidden')
+    const container = await fixture(html`<div></div>`)
+    container.append(element)
+    expect(element).to.have.attribute('data-title', 'tooltip')
+  })
+
+  it('does not write to a frozen base class prototype without standard attrs', async () => {
+    class FrozenAncestorBase extends HTMLElement {
+      connectedCallback() {
+        // Without names, initializeAttrs records them on the frozen prototype, as in v1.8.1.
+        initializeAttrs(this, Object.getPrototypeOf(this) === FrozenAncestorBase.prototype ? [] : undefined)
+      }
+    }
+    Object.freeze(FrozenAncestorBase.prototype)
+    class FrozenAncestorChild extends FrozenAncestorBase {
+      @attr child = 'child'
+    }
+    class FrozenAncestorGrandchild extends FrozenAncestorChild {}
+    customElements.define('frozen-ancestor-base', FrozenAncestorBase)
+    customElements.define('frozen-ancestor-child', FrozenAncestorChild)
+    customElements.define('frozen-ancestor-grandchild', FrozenAncestorGrandchild)
+    const container = await fixture(html`<div></div>`)
+    container.append(document.createElement('frozen-ancestor-child'))
+    container.append(document.createElement('frozen-ancestor-grandchild'))
+    container.append(document.createElement('frozen-ancestor-base'))
+    const child = document.createElement('frozen-ancestor-child')
+    container.append(child)
+    expect(child).to.have.attribute('data-child', 'child')
+  })
+
   it('records subclass attrs when the base class metadata is frozen', async () => {
     const freeze = (_: unknown, context: ClassDecoratorContext) => void Object.freeze(context.metadata)
     @freeze

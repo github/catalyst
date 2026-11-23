@@ -74,6 +74,7 @@ describe('controller', () => {
     const defined = customElements.get('outer-wrap')!
     expect(defined === decorated[0] || defined.prototype instanceof decorated[0]).to.equal(true)
     expect((defined as CustomElementClass).observedAttributes).to.include('data-foo')
+    expect((window as unknown as Record<string, unknown>).OuterWrapElement === defined).to.equal(true)
     instance = await fixture(html`<outer-wrap />`)
     expect(instance).to.be.instanceOf(decorated[0])
     expect(instance).to.have.attribute('data-foo', 'bar')

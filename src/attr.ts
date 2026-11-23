@@ -57,8 +57,23 @@ export function attr(proto: unknown, keyOrContext: unknown): void | ((value: unk
   // Define the field here too, so that with `useDefineForClassFields: false` its assignment doesn't reach a built-in
   // setter of the same name, such as `title`, which would add an attribute while the element is constructed.
   if (keyOrContext.kind === 'field') {
+    // Remove a field without a value that hides a built-in accessor, so the accessor works until the element connects.
+    // TypeScript 5.4 and later run this right after defining the field; `initializeAttrs` covers earlier versions.
+    keyOrContext.addInitializer(function (this: unknown) {
+      const element = this as Record<string, unknown>
+      if (shadowingFields.get(element)?.has(name) && hasOwn(element, name) && element[name] === undefined) {
+        delete element[name]
+      }
+    })
     return function (this: object, value: unknown) {
-      if (hasOwn(this, name)) return value === undefined ? (this as Record<string, unknown>)[name] : value
+      if (hasOwn(this, name)) {
+        const own = Object.getOwnPropertyDescriptor(this, name)!
+        const kept = value === undefined ? (this as Record<string, unknown>)[name] : value
+        // A read-only value set before upgrade would make the field's assignment throw with `useDefineForClassFields`
+        // off, so make it writable.
+        if (!own.writable && !own.set) Object.defineProperty(this, name, {...own, value: kept, writable: true})
+        return kept
+      }
       // A built-in accessor such as `title` keeps a value set before upgrade in an attribute, which a legacy `declare`
       // field reads through the accessor, so `initializeAttrs` reads it once the field is still unset.
       if (value === undefined && name in this) {
@@ -157,7 +172,8 @@ export function registerStandardAttrs(classObject: CustomElementClass, recheck =
     // Base class attrs first, matching the order legacy decorators register them in. Within a class, standard attrs
     // come first, because they're recorded when the class is defined and legacy `attr()` calls can only follow. Read
     // each class's own legacy attrs, because a subclass's copy of them can predate standard attrs on its ancestors.
-    const ordered = new Set(ancestor ? meta(ancestor.prototype, attrKey) : [])
+    // Read the ancestor's attrs without creating them, because a class without standard attrs may be frozen.
+    const ordered = new Set(ancestor && ownMeta(ancestor.prototype, attrKey, false))
     for (const [i, level] of levels.entries()) {
       for (const key of standard[i]!) ordered.add(key)
       for (const key of level === classObject ? attrs : ownMeta(level.prototype, attrKey) ?? []) ordered.add(key)

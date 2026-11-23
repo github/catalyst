@@ -63,6 +63,14 @@ export function ownMetadata(classObject: object): Record<symbol, string[] | unde
 // TypeScript then replaces that class's metadata with the metadata of the class it decorated.
 export const receivedMetadata = new WeakMap<object, object>()
 
+// Classes that an outer class decorator returned, mapped to the name of the class a Catalyst decorator received.
+export const receivedNames = new WeakMap<object, string>()
+
+// Records the name of the class a standard class decorator received for the class its initializer runs on.
+export function nameAs(final: {name: string}, received: {name: string}): void {
+  if (final !== received) receivedNames.set(final, received.name)
+}
+
 export function receiveClass(decorator: string, context: ClassContext | MemberContext, classObject: object): void {
   assertClass(decorator, context)
   const metadata = ownMetadata(classObject)
